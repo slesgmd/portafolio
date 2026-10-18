@@ -8,17 +8,13 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 
 - **Fase:** F0a — Sitio en producción.
 - **Sesión 1:** cerrada (18/10/2026). Revisiones 1.3 y 1.4 del plan, entorno y tarea **0.1a**.
-- **Sesión 2:** cerrada (18/10/2026). Tarea **0.1b**, hecha de forma autónoma mientras el usuario estaba ausente. Las decisiones tomadas sin consultar están más abajo.
+- **Sesión 2:** cerrada (18/10/2026). Tarea **0.1b**, hecha de forma autónoma mientras el usuario estaba ausente. Las decisiones tomadas sin consultar (D1–D11) están más abajo; el usuario aprobó D1–D10.
 - **Siguiente sesión:** 3 → tarea **0.2a** (repo en GitHub, `ci.yml` pasos 1–5, protección de `main`).
 
 ## Siguiente paso concreto
 
-1. Al volver el usuario:
-   - anotar las horas de la 0.1b;
-   - revisar con él las decisiones "decidido sin consultar" de la sesión 2;
-   - si quiere, comparar los hooks con los de Ontos (ver I6).
-2. Plan breve de la 0.2a y esperar el ok. Crear el repositorio en GitHub y proteger `main` toca la cuenta del usuario: requiere su ok explícito en el momento.
-3. **Para la 0.2a** (rev. 1.4):
+1. Plan breve de la 0.2a y esperar el ok. Crear el repositorio en GitHub y proteger `main` toca la cuenta del usuario: requiere su ok explícito en el momento.
+2. **Para la 0.2a** (rev. 1.4):
    - `scripts/check-provenance.ts` en el paso 3, con `fetch-depth: 0`, y su prueba negativa en un repositorio git temporal. Casos: trailer `Co-authored-by`, mensaje, contenido y nombre de archivo, más un caso limpio.
    - `ASTRO_TELEMETRY_DISABLED=1` en los workflows.
    - Los términos de `check-provenance.ts` deben ser los mismos que los de `.githooks/commit-msg` (`names`).
@@ -32,7 +28,7 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 | Sesión 0 (revisión, sin tarea del plan) | — (sin repo) | 0,5 |
 | Revisiones 1.3 y 1.4 del plan | `docs: añade el plan (rev. 1.4) y el progreso` | 0,5 |
 | 0.1a Repositorio base | `chore: inicializa el repositorio con Astro y TypeScript` | 0,5 |
-| 0.1b ESLint, Prettier, hooks y ADR 0005 propuesto | `chore: configura ESLint, Prettier y los hooks de git` | pendiente (las da el usuario) |
+| 0.1b ESLint, Prettier, hooks y ADR 0005 propuesto | `chore: configura ESLint, Prettier y los hooks de git` | 0,25 |
 
 ## Decisiones tomadas
 
@@ -52,7 +48,7 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 | Telemetría de Astro | Desactivada en local y en CI (aprobado) | 0.2a |
 | Neutralidad del repositorio | Ninguna mención al asistente de código ni a su proveedor en archivos, nombres, commits, PR ni contribuidores. Instrucciones en `AGENTS.md`; el archivo propio del asistente es local, con una importación de `AGENTS.md` | `AGENTS.md`, revisión 1.4 |
 
-### Decidido sin consultar (sesión 2, 0.1b; pendiente de revisión del usuario)
+### Decidido sin consultar (sesión 2, 0.1b; D1–D10 aprobadas por el usuario)
 
 El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción más conservadora y coherente con el plan, y anotarla aquí. Todo queda detallado en el ADR 0005 (propuesto).
 
@@ -68,7 +64,7 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 | D8 | `pre-commit` comprueba (`--check`) y no reescribe; revisa la copia de trabajo; omite Vitest, avisándolo, hasta la 0.2a | Reescribir archivos preparados en parte mezcla cambios. La CI es la compuerta real | `.githooks/pre-commit` |
 | D9 | `commit-msg`: 11 tipos de Conventional Commits, asunto ≤ 100 caracteres, acepta `fixup!`/`squash!`/`amend!`/`Merge`; elimina `Co-authored-by:`, "Generated with/by" y enlaces al dominio del asistente o del proveedor, e informa de cada línea eliminada; términos: nombre del asistente y del proveedor | §12; 100 es el límite habitual de commitlint | `.githooks/commit-msg` |
 | D10 | Hooks activados con `pnpm hooks:install` (y ya activados en este clon), no con un script `prepare` automático | Sin efectos laterales al instalar; CI no los necesita | `package.json`, README |
-| D11 | Hooks escritos desde cero sin mirar Ontos (instrucción del usuario) | — | I6 |
+| D11 | Hooks escritos desde cero sin mirar Ontos (instrucción del usuario; no se compararán) | — | I6 |
 
 ## División de la F0a en sesiones (aprobada)
 
@@ -124,7 +120,7 @@ Se resuelven en su tarea, sin cambiar el plan ahora:
 
 - **I3 (0.7):** el registro debe detectar si falta `ui/Tool.astro` sin importar `tools/*/ui/` (§5.2): comprobar solo la ruta.
 - **I4 (0.3):** cómo ejecutar wrangler "en la versión del lockfile" en un job que no instala el proyecto (§7).
-- **I6 (0.1b):** hooks según el esquema de Ontos. **Cambio del usuario (sesión 2):** se escribieron desde cero según la §12, sin mirar Ontos. Si el usuario quiere, se comparan después con los de Ontos; necesita la ruta local.
+- **I6 (0.1b):** hooks según el esquema de Ontos. **Cambio del usuario (sesión 2):** se escribieron desde cero según la §12, sin mirar Ontos. El usuario decidió no compararlos con los de Ontos. Cerrado.
 
 ## Entorno (18/10/2026)
 
@@ -139,9 +135,7 @@ Se resuelven en su tarea, sin cambiar el plan ahora:
 
 ## Pendientes y bloqueos
 
-- Horas de la 0.1b: las da el usuario.
-- Revisión de las decisiones D1–D11 de la sesión 2.
-- Comparar los hooks con los de Ontos (opcional; necesita la ruta local).
+- PLAN §12 dice que los hooks siguen "el mismo esquema que en Ontos"; ya no es así (I6). Ajustar el texto en la próxima revisión del plan, con ok del usuario.
 - `eslint-plugin-jsx-a11y-x` tiene un solo mantenedor visible. Volver a `eslint-plugin-jsx-a11y` cuando admita ESLint 10 (ADR 0005).
 - Retirar el override de `eslint-module-utils` cuando `eslint-plugin-boundaries` dependa de la 2.14.0 o de una posterior. Revisarlo en cada PR de Renovate que lo actualice.
 - La verificación de la §4 se hizo con fixtures temporales, no versionados. Los casos permanentes van en `tests/gates/` (0.2b y 0.7).
