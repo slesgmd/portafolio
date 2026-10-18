@@ -31,18 +31,26 @@ pnpm check        # tipos (astro check)
 pnpm lint         # ESLint, con las fronteras entre capas (ADR 0005)
 pnpm format       # aplica Prettier
 pnpm format:check # comprueba el formato sin cambiar archivos
+pnpm provenance   # comprobación de procedencia de commits y archivos (PLAN §12)
 pnpm build        # genera dist/
 pnpm preview      # sirve dist/ en local
 ```
 
 Hooks de git:
 
-- `pre-commit` pasa Prettier y ESLint sobre los archivos preparados.
+- `pre-commit` pasa Prettier y ESLint sobre los archivos preparados, y las pruebas de core y domain.
 - `commit-msg` valida el formato Conventional Commits y elimina las líneas de atribución.
+
+La CI (`.github/workflows/ci.yml`) ejecuta en cada PR los pasos 1–5 de la §12 del plan.
 
 ## Probar
 
-Pendiente: tarea 0.2 (Vitest) y F0b (Playwright y Lighthouse).
+```sh
+pnpm test          # Vitest
+pnpm test:coverage # Vitest con cobertura (umbral en core y domain, ADR 0010)
+```
+
+Pendiente: Playwright y Lighthouse (F0b).
 
 ## Previsualizar y desplegar
 

@@ -11,7 +11,7 @@ prettier=node_modules/prettier/bin/prettier.cjs
 eslint=node_modules/eslint/bin/eslint.js
 vitest=node_modules/vitest/vitest.mjs
 
-if [ ! -f "$prettier" ] || [ ! -f "$eslint" ]; then
+if [ ! -f "$prettier" ] || [ ! -f "$eslint" ] || [ ! -f "$vitest" ]; then
   echo "pre-commit: faltan las dependencias; ejecuta 'pnpm install'." >&2
   exit 1
 fi
@@ -46,9 +46,7 @@ LIST
   fi
 fi
 
-# Pruebas de core y domain (entorno node de Vitest, §5.2).
-if [ -f "$vitest" ]; then
-  node "$vitest" run --passWithNoTests src/core/ /domain/
-else
-  echo "pre-commit: Vitest aún no está instalado (tarea 0.2a); se omiten las pruebas." >&2
-fi
+# Pruebas de core y domain (entorno node de Vitest, §5.2). Los filtros seleccionan
+# `src/core/` y `src/tools/*/domain/`; comprobado en la tarea 0.2a. En Windows, el sh
+# de Git convertiría `/domain/` en una ruta absoluta: MSYS_NO_PATHCONV lo evita.
+MSYS_NO_PATHCONV=1 node "$vitest" run --passWithNoTests src/core/ /domain/
