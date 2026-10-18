@@ -1,0 +1,22 @@
+# Dependencias
+node_modules/
+
+# Salidas de build y herramientas
+dist/
+.astro/
+.wrangler/
+coverage/
+
+# Entorno y secretos
+.env
+.env.*
+.dev.vars*
+
+# Registros
+*.log
+
+# Sistema y editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

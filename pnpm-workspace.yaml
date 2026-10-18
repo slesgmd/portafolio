@@ -1,0 +1,14 @@
+# Configuración de pnpm (ADR 0002). `.npmrc` solo se usa para autenticación y registro.
+
+# Edad mínima de publicación: 7 días, en minutos (§7, §11).
+minimumReleaseAge: 10080
+
+# Versiones exactas en package.json; Renovate las actualiza.
+savePrefix: ''
+
+# Falla si la versión de Node no cumple `engines`.
+engineStrict: true
+
+# Scripts de instalación: pnpm los bloquea por defecto (strictDepBuilds). La lista
+# blanca `allowBuilds` va aquí cuando una dependencia lo necesite, justificada en un ADR.
+# Hoy ninguna lo necesita.
