@@ -1,0 +1,9 @@
+# Generados
+dist/
+.astro/
+.wrangler/
+coverage/
+pnpm-lock.yaml
+
+# Markdown: se escribe a mano; Prettier realinearía las tablas del plan y los ADR.
+*.md

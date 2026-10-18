@@ -13,6 +13,7 @@ Sitio personal, estático y bilingüe (español e inglés) que funciona como caj
 
 ```sh
 pnpm install
+pnpm hooks:install # activa los hooks de .githooks/ (core.hooksPath)
 ```
 
 ## Desarrollar
@@ -26,10 +27,18 @@ La CSP no se aplica en `astro dev`; se comprueba sobre el build.
 ## Comprobar y construir
 
 ```sh
-pnpm check   # tipos (astro check)
-pnpm build   # genera dist/
-pnpm preview # sirve dist/ en local
+pnpm check        # tipos (astro check)
+pnpm lint         # ESLint, con las fronteras entre capas (ADR 0005)
+pnpm format       # aplica Prettier
+pnpm format:check # comprueba el formato sin cambiar archivos
+pnpm build        # genera dist/
+pnpm preview      # sirve dist/ en local
 ```
+
+Hooks de git:
+
+- `pre-commit` pasa Prettier y ESLint sobre los archivos preparados.
+- `commit-msg` valida el formato Conventional Commits y elimina las líneas de atribución.
 
 ## Probar
 

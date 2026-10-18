@@ -1,0 +1,76 @@
+#!/bin/sh
+# commit-msg (PLAN §12):
+#   1. elimina las líneas de atribución, coautoría y enlaces de sesión;
+#   2. valida el formato Conventional Commits del asunto;
+#   3. rechaza el mensaje si aún nombra al asistente de código o a su proveedor.
+#
+# Los términos se escriben con clases de caracteres, para que este archivo no los
+# contenga y no lo detecte la comprobación de procedencia (§12, paso 3). Deben
+# coincidir con los de scripts/check-provenance.ts.
+set -eu
+
+msg_file=$1
+names='[c]laude|[a]nthropic'
+types='build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test'
+max_subject=100
+
+# Carácter de comentario de git: "#" salvo que se haya configurado otro.
+cc=$(git config --get core.commentChar || true)
+case $cc in
+  ? ) ;;
+  * ) cc='#' ;;
+esac
+scissors="$cc ------------------------ >8 ------------------------"
+
+# 1. Elimina las líneas de atribución (trailers de coautoría, "Generated with/by")
+#    y las que enlazan al dominio del asistente o de su proveedor. Los comentarios
+#    y todo lo que sigue a la línea de tijera (`git commit -v`) se conservan: git
+#    los descarta después. Normaliza CRLF a LF.
+tmp="$msg_file.tmp.$$"
+awk -v names="$names" -v cc="$cc" -v scissors="$scissors" '
+  BEGIN { links = "(" names ")[.](ai|com)" }
+  { sub(/\r$/, "") }
+  cut || index($0, cc) == 1 { if ($0 == scissors) cut = 1; print; next }
+  {
+    low = tolower($0)
+    if (low ~ /^[[:space:]]*co-authored-by:/ ||
+        low ~ /^[^[:alnum:]]*generated (with|by)[[:space:]]/ ||
+        low ~ links) {
+      print "commit-msg: línea eliminada: " $0 > "/dev/stderr"
+      next
+    }
+    print
+  }
+' "$msg_file" > "$tmp"
+mv "$tmp" "$msg_file"
+
+# Mensaje efectivo: sin comentarios ni lo que sigue a la tijera.
+body=$(awk -v cc="$cc" -v scissors="$scissors" '
+  $0 == scissors { exit }
+  index($0, cc) == 1 { next }
+  { print }
+' "$msg_file")
+subject=$(printf '%s\n' "$body" | awk 'NF { print; exit }')
+
+# 2. Conventional Commits: `tipo(ámbito)!: descripción`. Se aceptan también los
+#    commits de autosquash (`fixup!`, `squash!`, `amend!`) y los de fusión.
+if ! printf '%s\n' "$subject" | grep -Eq "^(fixup|squash|amend)! |^Merge "; then
+  if ! printf '%s\n' "$subject" | grep -Eq "^($types)(\([a-z0-9][a-z0-9._/-]*\))?!?: [^ ]"; then
+    echo "commit-msg: el asunto no sigue Conventional Commits: '$subject'" >&2
+    echo "  Formato: tipo(ámbito opcional): descripción" >&2
+    echo "  Tipos: $(echo "$types" | sed 's/|/, /g')" >&2
+    exit 1
+  fi
+  length=$(printf '%s' "$subject" | awk '{ print length($0) }')
+  if [ "$length" -gt "$max_subject" ]; then
+    echo "commit-msg: el asunto tiene $length caracteres; el máximo es $max_subject." >&2
+    exit 1
+  fi
+fi
+
+# 3. Rechaza el mensaje si todavía nombra al asistente o a su proveedor.
+if printf '%s\n' "$body" | grep -iEq "$names"; then
+  echo "commit-msg: el mensaje nombra al asistente de código o a su proveedor (AGENTS.md):" >&2
+  printf '%s\n' "$body" | grep -inE "$names" >&2
+  exit 1
+fi

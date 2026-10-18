@@ -1,0 +1,54 @@
+#!/bin/sh
+# pre-commit (PLAN §12): Prettier y ESLint sobre los archivos preparados, y las
+# pruebas de core y domain.
+#
+# Revisa la copia de trabajo de cada archivo preparado, no la versión preparada:
+# si un archivo tiene además cambios sin preparar, también se revisan. La
+# compuerta que bloquea es el paso 3 de la CI.
+set -eu
+
+prettier=node_modules/prettier/bin/prettier.cjs
+eslint=node_modules/eslint/bin/eslint.js
+vitest=node_modules/vitest/vitest.mjs
+
+if [ ! -f "$prettier" ] || [ ! -f "$eslint" ]; then
+  echo "pre-commit: faltan las dependencias; ejecuta 'pnpm install'." >&2
+  exit 1
+fi
+
+# Archivos preparados: añadidos, copiados, modificados o renombrados.
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+
+if [ -n "$staged" ]; then
+  # Prettier: todos los archivos; ignora los que no sabe formatear.
+  set --
+  while IFS= read -r file; do
+    set -- "$@" "$file"
+  done <<LIST
+$staged
+LIST
+  if ! node "$prettier" --check --ignore-unknown --log-level warn "$@"; then
+    echo "pre-commit: hay archivos sin formatear; ejecuta 'pnpm format'." >&2
+    exit 1
+  fi
+
+  # ESLint: solo los archivos de código.
+  set --
+  while IFS= read -r file; do
+    case $file in
+      *.js | *.mjs | *.cjs | *.ts | *.astro) set -- "$@" "$file" ;;
+    esac
+  done <<LIST
+$staged
+LIST
+  if [ $# -gt 0 ]; then
+    node "$eslint" --max-warnings 0 --no-warn-ignored "$@"
+  fi
+fi
+
+# Pruebas de core y domain (entorno node de Vitest, §5.2).
+if [ -f "$vitest" ]; then
+  node "$vitest" run --passWithNoTests src/core/ /domain/
+else
+  echo "pre-commit: Vitest aún no está instalado (tarea 0.2a); se omiten las pruebas." >&2
+fi

@@ -12,3 +12,12 @@ engineStrict: true
 # Scripts de instalación: pnpm los bloquea por defecto (strictDepBuilds). La lista
 # blanca `allowBuilds` va aquí cuando una dependencia lo necesite, justificada en un ADR.
 # Hoy ninguna lo necesita.
+
+# Overrides (ADR 0005). Cada uno indica cuándo se retira.
+overrides:
+  # ESLint 10 eliminó `context.getPhysicalFilename()`; eslint-module-utils 2.12.1,
+  # fijada por eslint-plugin-boundaries 7.2.0, resuelve entonces los imports de los
+  # bloques `<script>` de `.astro` desde su ruta virtual. La 2.14.0 lee
+  # `context.physicalFilename`. Se retira cuando boundaries dependa de ella o de una
+  # posterior.
+  eslint-plugin-boundaries>eslint-module-utils: 2.14.0

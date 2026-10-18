@@ -8,20 +8,22 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 
 - **Fase:** F0a — Sitio en producción.
 - **Sesión 1:** cerrada (18/10/2026). Revisiones 1.3 y 1.4 del plan, entorno y tarea **0.1a**.
-- **Siguiente sesión:** 2 → tarea **0.1b** (ESLint, Prettier, hooks).
+- **Sesión 2:** cerrada (18/10/2026). Tarea **0.1b**, hecha de forma autónoma mientras el usuario estaba ausente. Las decisiones tomadas sin consultar están más abajo.
+- **Siguiente sesión:** 3 → tarea **0.2a** (repo en GitHub, `ci.yml` pasos 1–5, protección de `main`).
 
 ## Siguiente paso concreto
 
-1. Pedir al usuario la ruta local de Ontos para leer el esquema de sus hooks (I6).
-2. Plan breve de la 0.1b y esperar el ok. Incluye:
-   - ESLint 10 con eslint-plugin-astro (exige `eslint-plugin-jsx-a11y` como peer, V4) y eslint-plugin-boundaries; verificación de la §4 sobre `.astro` con `<script>` y paquetes por capa.
-   - Prettier con prettier-plugin-astro.
-   - Hooks `pre-commit` y `commit-msg` en `.githooks/`.
-   - ADR 0005 propuesto, con las fronteras.
-3. Todas las versiones deben cumplir los 7 días de edad mínima.
-4. El hook `commit-msg` también rechaza los mensajes que nombran al asistente de código o a su proveedor (rev. 1.4). Los términos se escriben con clases de caracteres.
-
-**Para la 0.2a** (rev. 1.4): `scripts/check-provenance.ts` en el paso 3, con `fetch-depth: 0`, y su prueba negativa en un repositorio git temporal (trailer `Co-authored-by`, mensaje, contenido y nombre de archivo; más un caso limpio). `ASTRO_TELEMETRY_DISABLED=1` en los workflows.
+1. Al volver el usuario:
+   - anotar las horas de la 0.1b;
+   - revisar con él las decisiones "decidido sin consultar" de la sesión 2;
+   - si quiere, comparar los hooks con los de Ontos (ver I6).
+2. Plan breve de la 0.2a y esperar el ok. Crear el repositorio en GitHub y proteger `main` toca la cuenta del usuario: requiere su ok explícito en el momento.
+3. **Para la 0.2a** (rev. 1.4):
+   - `scripts/check-provenance.ts` en el paso 3, con `fetch-depth: 0`, y su prueba negativa en un repositorio git temporal. Casos: trailer `Co-authored-by`, mensaje, contenido y nombre de archivo, más un caso limpio.
+   - `ASTRO_TELEMETRY_DISABLED=1` en los workflows.
+   - Los términos de `check-provenance.ts` deben ser los mismos que los de `.githooks/commit-msg` (`names`).
+   - El paso 3 de `ci.yml` ejecuta `pnpm lint` y `pnpm format:check`.
+   - Al instalar Vitest, comprobar que el filtro del `pre-commit` (`vitest run --passWithNoTests src/core/ /domain/`) selecciona solo las pruebas de core y domain, y ajustarlo si no.
 
 ## Tareas cerradas
 
@@ -30,6 +32,7 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 | Sesión 0 (revisión, sin tarea del plan) | — (sin repo) | 0,5 |
 | Revisiones 1.3 y 1.4 del plan | `docs: añade el plan (rev. 1.4) y el progreso` | 0,5 |
 | 0.1a Repositorio base | `chore: inicializa el repositorio con Astro y TypeScript` | 0,5 |
+| 0.1b ESLint, Prettier, hooks y ADR 0005 propuesto | `chore: configura ESLint, Prettier y los hooks de git` | pendiente (las da el usuario) |
 
 ## Decisiones tomadas
 
@@ -48,6 +51,24 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 | Excepciones a la edad mínima | Requieren un ADR (aprobado) | ADR 0002 |
 | Telemetría de Astro | Desactivada en local y en CI (aprobado) | 0.2a |
 | Neutralidad del repositorio | Ninguna mención al asistente de código ni a su proveedor en archivos, nombres, commits, PR ni contribuidores. Instrucciones en `AGENTS.md`; el archivo propio del asistente es local, con una importación de `AGENTS.md` | `AGENTS.md`, revisión 1.4 |
+
+### Decidido sin consultar (sesión 2, 0.1b; pendiente de revisión del usuario)
+
+El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción más conservadora y coherente con el plan, y anotarla aquí. Todo queda detallado en el ADR 0005 (propuesto).
+
+| # | Decisión | Motivo | Dónde queda |
+|---|---|---|---|
+| D1 | `eslint-plugin-jsx-a11y-x` 0.2.0 en lugar de `eslint-plugin-jsx-a11y` 6.10.2 (corrige V4) | La 6.10.2 solo admite ESLint ≤ 9. eslint-plugin-astro admite las dos; la bifurcación declara ESLint 10 | ADR 0005 |
+| D2 | Override `eslint-plugin-boundaries>eslint-module-utils: 2.14.0` | Con ESLint 10, la 2.12.1 resolvía los imports de los `<script>` desde la ruta virtual, y escapaban a las fronteras. Cambio compatible, revisado con un diff. Alternativas descartadas: resolver propio (más código) y `no-restricted-imports` (sin capturas por herramienta) | `pnpm-workspace.yaml`, ADR 0005 |
+| D3 | `checkAllOrigins: true` en `boundaries/dependencies` | Sin él, los paquetes externos no se revisaban (requisito de la §4) | `eslint.config.js` |
+| D4 | Versiones: ESLint 10.12.0, typescript-eslint 8.71.1 | Las 10.13.0 y 8.71.2 no cumplían los 7 días | ADR 0005 |
+| D5 | Reglas: `typescript-eslint` `strict` sin información de tipos; a11y `jsx-a11y-strict` | Lo más estricto que no exige tipado en el lint (más lento) | `eslint.config.js` |
+| D6 | Interpretaciones de la §5.2: `src/design/` es una capa propia (solo CSS) importable por páginas, layouts y componentes; `src/content/` sin políticas; las pruebas añaden `vitest`, `fast-check`, `@playwright/test` y `@axe-core/playwright`; el `e2e.spec.ts` de una herramienta importa de su `ui/` | La tabla no nombra `design` ni `content` ni los paquetes de prueba | ADR 0005 |
+| D7 | Prettier con comillas simples y 100 columnas; Markdown excluido | Coincide con el código existente. Prettier realinearía las tablas del plan y de los ADR | `.prettierrc`, `.prettierignore` |
+| D8 | `pre-commit` comprueba (`--check`) y no reescribe; revisa la copia de trabajo; omite Vitest, avisándolo, hasta la 0.2a | Reescribir archivos preparados en parte mezcla cambios. La CI es la compuerta real | `.githooks/pre-commit` |
+| D9 | `commit-msg`: 11 tipos de Conventional Commits, asunto ≤ 100 caracteres, acepta `fixup!`/`squash!`/`amend!`/`Merge`; elimina `Co-authored-by:`, "Generated with/by" y enlaces al dominio del asistente o del proveedor, e informa de cada línea eliminada; términos: nombre del asistente y del proveedor | §12; 100 es el límite habitual de commitlint | `.githooks/commit-msg` |
+| D10 | Hooks activados con `pnpm hooks:install` (y ya activados en este clon), no con un script `prepare` automático | Sin efectos laterales al instalar; CI no los necesita | `package.json`, README |
+| D11 | Hooks escritos desde cero sin mirar Ontos (instrucción del usuario) | — | I6 |
 
 ## División de la F0a en sesiones (aprobada)
 
@@ -103,7 +124,7 @@ Se resuelven en su tarea, sin cambiar el plan ahora:
 
 - **I3 (0.7):** el registro debe detectar si falta `ui/Tool.astro` sin importar `tools/*/ui/` (§5.2): comprobar solo la ruta.
 - **I4 (0.3):** cómo ejecutar wrangler "en la versión del lockfile" en un job que no instala el proyecto (§7).
-- **I6 (0.1b):** hooks según el esquema de Ontos; el usuario dará la ruta local en la 0.1b.
+- **I6 (0.1b):** hooks según el esquema de Ontos. **Cambio del usuario (sesión 2):** se escribieron desde cero según la §12, sin mirar Ontos. Si el usuario quiere, se comparan después con los de Ontos; necesita la ruta local.
 
 ## Entorno (18/10/2026)
 
@@ -113,10 +134,18 @@ Se resuelven en su tarea, sin cambiar el plan ahora:
 - winget registra el Node instalado como `OpenJS.NodeJS.22`: no usar `winget upgrade` para Node.
 - `gh` 2.97 con sesión como `slesgmd` (permisos `repo`, `workflow`). wrangler irá como dependencia de desarrollo.
 - Repositorio git en `main` desde la sesión 1; historial rehecho el 18/10/2026 para dejarlo neutro (aún sin publicar). Los archivos locales del asistente se ignoran en `.git/info/exclude`, no en `.gitignore`. El script `pnpm` para sh falla con rutas de Windows: usar pnpm desde PowerShell.
+- Los hooks invocan las herramientas con `node node_modules/<paquete>/...`, sin pnpm, por el punto anterior. `core.hooksPath=.githooks` ya está configurado en este clon.
+- En terminales abiertas antes de instalar pnpm, `pnpm` no está en el `Path`. Se usa `%LOCALAPPDATA%\pnpm\bin`.
 
 ## Pendientes y bloqueos
 
-- Ruta local de Ontos para leer sus hooks: la dará el usuario en la 0.1b.
+- Horas de la 0.1b: las da el usuario.
+- Revisión de las decisiones D1–D11 de la sesión 2.
+- Comparar los hooks con los de Ontos (opcional; necesita la ruta local).
+- `eslint-plugin-jsx-a11y-x` tiene un solo mantenedor visible. Volver a `eslint-plugin-jsx-a11y` cuando admita ESLint 10 (ADR 0005).
+- Retirar el override de `eslint-module-utils` cuando `eslint-plugin-boundaries` dependa de la 2.14.0 o de una posterior. Revisarlo en cada PR de Renovate que lo actualice.
+- La verificación de la §4 se hizo con fixtures temporales, no versionados. Los casos permanentes van en `tests/gates/` (0.2b y 0.7).
+- `ui/` no puede importar `astro` ni `astro:*`. Si `Tool.astro` necesita sus tipos, se decide en la 0.7.
 - `tsconfig.domain.json` falla con TS18003 mientras `core/` y `domain/` estén vacíos: conectarlo al paso 2 cuando tengan código (ADR 0002).
 - Telemetría de Astro: desactivada en local (18/10/2026). En CI, `ASTRO_TELEMETRY_DISABLED=1` en los workflows de la 0.2a.
 - Atribución desactivada en los ajustes de usuario del asistente (fuera del repositorio); el hook `commit-msg` de la 0.1b es la segunda barrera.
