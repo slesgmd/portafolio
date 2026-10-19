@@ -27,6 +27,13 @@ El trabajo se organiza en bloques de varias tareas. Los bloques de la F0a están
 - No nombrar al asistente de código ni a su proveedor en ningún archivo versionado, nombre de archivo, commit, etiqueta ni pull request. Los archivos de configuración propios de cada asistente son locales y no se versionan.
 - Nada de Ontos que no sea ya público, y nunca su código (principio 8).
 
+## Estilo del código y la documentación
+
+- Comentarios solo para un porqué que el código no muestra: una decisión, una restricción o una referencia (§, ADR). Nada de comentarios que repitan lo que hace el código.
+- Tono sobrio y directo, como el de un desarrollador que escribe para sí mismo: sin frases de relleno, sin emojis, sin encabezados decorativos, sin "Este archivo…" ni "Esta función…" y sin resúmenes al final.
+- Nombres claros en lugar de comentarios explicativos.
+- JSDoc solo en las API públicas de `core/` y `registry/`, y breve.
+
 ## Convenciones
 
 - Commits en Conventional Commits, con el tipo en inglés y la descripción en español. Ramas `tipo/descripcion-corta`.
