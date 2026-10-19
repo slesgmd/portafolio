@@ -12,6 +12,8 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 - **Sesión 3:** cerrada (18/10/2026). Tarea **0.2a**: repositorio público en GitHub, `ci.yml` con los pasos 1–5, protección de `main` y ADR 0010 propuesto. Las decisiones (S1–S8) están más abajo.
 - **Sesión 4:** en curso (18/10/2026). **Bloque 1** (0.2b). Desde esta sesión se trabaja por bloques. Pruebas negativas fusionadas (PR #2) y PR de Renovate abierta; el bloque 1 se cierra con las acciones del usuario en su cuenta.
 - **Protección de `main` comprobada (18/10/2026):** un push directo de prueba fue rechazado con GH006 ("Changes must be made through a pull request").
+- **Checks requeridos en `main` (18/10/2026):** `Pasos 1-5` y `Compuertas` (app de GitHub Actions), con la rama actualizada.
+- **Renovate instalado por el usuario (18/10/2026):** modo interactivo, solo en `portafolio`. Su primera ejecución abrió el issue #4 por un error de configuración, que corrige la PR `fix/renovate`.
 
 ## Bloques de la F0a (decisión del usuario, sesión 4)
 
@@ -38,8 +40,8 @@ Indicaciones del usuario por bloque:
 
 ## Siguiente paso concreto
 
-1. El usuario hace las acciones en su cuenta (ver Pendientes): el check `Compuertas` como requerido, la app de Renovate y el cambio de `AGENTS.md`.
-2. Revisar la PR de bienvenida de Renovate: confirma que `renovate.json` es válido y muestra las PR que abrirá. Si informa de errores de configuración, corregirlos en una PR `fix/renovate`.
+1. Fusionar `fix/renovate` y comprobar que Renovate cierra el issue #4 y abre el "Dependency Dashboard".
+2. Llevar a `AGENTS.md` el protocolo por bloques y la regla de no saltarse los hooks (autorizado por el usuario), en su PR.
 3. Después, **bloque 2** (0.3 y 0.4).
 
 ## Tareas cerradas
@@ -51,8 +53,8 @@ Indicaciones del usuario por bloque:
 | 0.1a Repositorio base | `chore: inicializa el repositorio con Astro y TypeScript` | 0,5 |
 | 0.1b ESLint, Prettier, hooks y ADR 0005 propuesto | `chore: configura ESLint, Prettier y los hooks de git` | 0,25 |
 | 0.2a GitHub, `ci.yml` pasos 1–5, protección de `main` y ADR 0010 propuesto | `ci: añade el pipeline mínimo con los pasos 1 a 5 y la comprobación de procedencia` (PR #1) | 0,25 |
-| 0.2b (1/2) Pruebas negativas de los pasos 1–5 y job `Compuertas` | `test: añade las pruebas negativas de las compuertas 1 a 5` (PR #2, `fd708c2`) | pendiente (las registra el usuario) |
-| 0.2b (2/2) Renovate | `chore: configura Renovate` (PR #3) | pendiente (las registra el usuario) |
+| 0.2b (1/2) Pruebas negativas de los pasos 1–5 y job `Compuertas` | `test: añade las pruebas negativas de las compuertas 1 a 5` (PR #2, `fd708c2`) | 0,1 |
+| 0.2b (2/2) Renovate | `chore: configura Renovate` (PR #3, `5481e3b`) | 0,15 |
 
 ## Decisiones tomadas
 
@@ -121,6 +123,7 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 | B12 | `eslint-plugin-boundaries` fuera del grupo y con una nota en la PR para revisar el override de `eslint-module-utils` | Pendiente del ADR 0005 | `renovate.json` |
 | B13 | Mensajes de commit `chore(deps): actualiza <dependencia> a <versión>` | Convención del repositorio: tipo en inglés y descripción en español | `renovate.json` |
 | B14 | `renovate.json` no se valida en local con `renovate-config-validator`: lo valida la PR de bienvenida de Renovate | El validador exige descargar Renovate, sin revisar ni cumplir la edad mínima | — |
+| B16 | Corrección de `renovate.json` (issue #4 de Renovate): `matchPackageNames` no admite `*` junto con otros patrones; se deja solo `!eslint-plugin-boundaries`, que coincide con todos los paquetes salvo ese | Error de configuración que Renovate informó en su primera ejecución | `renovate.json` |
 | B15 | Sin `lockFileMaintenance` | Opción conservadora. Las dependencias transitivas se renuevan con las directas; se reconsidera si quedan desfasadas | `renovate.json` |
 
 ## División de la F0a en sesiones (aprobada)
@@ -193,8 +196,6 @@ Se resuelven en su tarea, sin cambiar el plan ahora:
 ## Pendientes y bloqueos
 
 - **Acciones en la cuenta del usuario (bloque 1):**
-  - Añadir el check `Compuertas` como requerido en la protección de `main`, junto a `Pasos 1-5`.
-  - Instalar la app de Renovate (Mend) en `slesgmd/portafolio`: <https://github.com/apps/renovate> → *Configure* → *Only select repositories* → `portafolio`. Como `renovate.json` ya está en `main`, la PR de bienvenida lo usa tal cual.
   - Aplicar en `AGENTS.md` el protocolo por bloques (el texto está arriba). El permiso del asistente bloqueó ese commit por tratarse de su propio archivo de instrucciones; lo aplica el usuario o autoriza el permiso.
 
 - PLAN §12 dice que los hooks siguen "el mismo esquema que en Ontos"; ya no es así (I6). Ajustar el texto en la próxima revisión del plan, con ok del usuario.
