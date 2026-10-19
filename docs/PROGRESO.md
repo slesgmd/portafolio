@@ -36,7 +36,9 @@ Indicaciones del usuario por bloque:
 ## Siguiente paso concreto
 
 1. **Renovate (hecho):** PR #6 cerrada y `renovate.json` ajustado (R1–R3). Comprobar en la próxima ejecución de Renovate que cierra sola la PR #7 y que no vuelve a abrir la de `.nvmrc`.
-2. **Bloque 2** (0.3 y 0.4): Cloudflare, secretos, entorno `production`, `deploy.yml`, seguridad y `_redirects`. Necesitará acciones del usuario en Cloudflare y en GitHub (token y secretos).
+2. **0.3 (PR abierta, sin fusionar):** fusionarla solo cuando existan el entorno `production` (restringido a `main`) y sus dos secretos; si no, el primer `deploy.yml` falla y GitHub crea el entorno sin restricciones. Acciones del usuario pendientes: cuenta de Cloudflare con subdominio `workers.dev`, token, ID de la cuenta, entorno y secretos.
+3. **0.4:** `security.csp`, `_headers` completo (capas 2 y 3, §7), `_redirects` y ADR 0004.
+4. Las fusiones en `main` las bloquea el clasificador de permisos del asistente ("Production Deploy"): las hace el usuario o las autoriza.
 
 ## Tareas cerradas
 
@@ -129,6 +131,12 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 | R1 | PR #6 cerrada; regla `matchManagers: ["nvm"]` con `rangeStrategy: replace`: `.nvmrc` queda en `24` y solo cambiaría al salir del rango, que `node <25` impide (decisión del usuario) | Node 24 LTS sin fijar la versión exacta (ADR 0002). Además, la 24.22.0 no cumplía los 7 días | `renovate.json` |
 | R2 | `typescript` limitado a `<7` (decisión del usuario); Renovate cerrará la PR #7 sola | TypeScript 7 es incompatible con `@astrojs/check` 0.9.10 y `typescript-eslint` 8.71 (V1, ADR 0002) | `renovate.json` |
 | R3 | Acción de commit `fija` para `pin` y `pinDigest` (decidido sin consultar) | El título de la PR #6 decía "pin node.js": `commitMessageAction` de nivel superior no cubre esos tipos | `renovate.json` |
+| C1 | wrangler 4.149.0 (dev); `compatibility_date` 2026-10-06; Worker `portafolio` en `workers.dev` | La 4.150.0 y posteriores no cumplían los 7 días; fecha de la versión de workerd que trae | `wrangler.jsonc`, ADR 0003 |
+| C2 | `allowBuilds: false` para `esbuild` y `workerd` | Sus `postinstall` solo comprueban el binario del paquete de plataforma (ya en el lockfile) o lo descargan fuera de él. `wrangler deploy --dry-run` y `wrangler dev` funcionan sin ellos | `pnpm-workspace.yaml`, ADR 0003 |
+| C3 | I4 resuelto: el job de despliegue hace un checkout parcial (`package.json`, lockfile, `pnpm-workspace.yaml`, `.nvmrc`, `wrangler.jsonc`), instala con `--frozen-lockfile --ignore-scripts`, sin caché, y recibe `dist/` como artefacto | wrangler y sus dependencias en la versión del lockfile, sin código del proyecto. Simulado en local | `deploy.yml`, ADR 0003 |
+| C4 | `deploy.yml` reutiliza `ci.yml` (`workflow_call`); `ci.yml` sube `dist/` como artefacto (upload-artifact 7.0.2, download-artifact 8.0.2, fijadas por SHA, ≥ 7 días); en `main` la procedencia revisa todo el historial y la concurrencia no cancela | Repetir los pasos sin duplicar el workflow (§12) | `ci.yml`, `deploy.yml` |
+| C5 | Secretos `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` en el entorno `production` (no en el repositorio); token con `Workers Scripts: Edit` | Solo el job del entorno los recibe (§7) | ADR 0003 |
+| C6 | Telemetría de wrangler desactivada (`WRANGLER_SEND_METRICS=false` en los workflows; `wrangler telemetry disable` en este equipo) | Igual que la de Astro | workflows, README |
 
 ## División de la F0a en sesiones (aprobada)
 

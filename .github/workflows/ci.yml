@@ -1,21 +1,25 @@
 # Pipeline por PR (PLAN §12). Durante la F0a solo existen los pasos 1–5, y cada uno
 # bloquea la fusión; el job `Compuertas` verifica que cada uno falla cuando debe.
-# Las acciones se fijan por SHA de commit (§7).
+# Las acciones se fijan por SHA de commit (§7). `deploy.yml` lo reutiliza para repetir
+# los pasos al fusionar en `main` (§12).
 name: CI
 
 on:
   pull_request:
     branches: [main]
+  workflow_call:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  # En `main` no se cancela: cada fusión debe completar su despliegue.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   ASTRO_TELEMETRY_DISABLED: '1'
+  WRANGLER_SEND_METRICS: 'false'
 
 jobs:
   pasos:
@@ -51,13 +55,28 @@ jobs:
         run: |
           pnpm lint
           pnpm format:check
-          pnpm provenance "origin/$BASE_REF"
+          # En una PR, sus commits; al fusionar en `main`, todo el historial.
+          if [ -n "$BASE_REF" ]; then
+            pnpm provenance "origin/$BASE_REF"
+          else
+            pnpm provenance
+          fi
 
       - name: 4. Pruebas unitarias
         run: pnpm test:coverage
 
       - name: 5. Build
         run: pnpm build
+
+      # El job de despliegue recibe `dist/` como artefacto y no ejecuta código del
+      # proyecto (§7).
+      - name: Artefacto dist/
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7
 
   # Pruebas negativas (§12, principio 4): cada caso de `tests/gates/` debe hacer
   # fallar su compuerta. Corre en paralelo con los pasos 1-5.

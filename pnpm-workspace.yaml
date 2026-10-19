@@ -10,8 +10,13 @@ savePrefix: ''
 engineStrict: true
 
 # Scripts de instalación: pnpm los bloquea por defecto (strictDepBuilds). La lista
-# blanca `allowBuilds` va aquí cuando una dependencia lo necesite, justificada en un ADR.
-# Hoy ninguna lo necesita.
+# blanca `allowBuilds` admite solo los que justifique un ADR. Hoy ninguno se permite.
+allowBuilds:
+  # Dependencias de wrangler (ADR 0003). Su `postinstall` comprueba el binario del
+  # paquete de plataforma, que ya instala el lockfile, y si falta lo descarga fuera de
+  # él. Se deniegan de forma explícita para que strictDepBuilds no falle.
+  esbuild: false
+  workerd: false
 
 # Overrides (ADR 0005). Cada uno indica cuándo se retira.
 overrides:
