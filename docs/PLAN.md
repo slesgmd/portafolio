@@ -1,6 +1,6 @@
-# Portafolio — Plan de la v1 (revisión 1.4)
+# Portafolio — Plan de la v1 (revisión 1.5)
 
-**Fecha:** 18/10/2026
+**Fecha:** 19/10/2026
 
 **Nombre provisional del repositorio:** `portafolio`
 
@@ -10,11 +10,12 @@
 
 ---
 
-## Cambios respecto a la revisión 1.3
+## Cambios respecto a la revisión 1.4
 
-1. **Repositorio neutro.** Ningún archivo versionado, nombre de archivo, commit, etiqueta, pull request ni contribuidor nombra al asistente de código ni a su proveedor. Las instrucciones para asistentes pasan a `AGENTS.md`, un formato que leen varios asistentes; el archivo propio de cada uno, si lo necesita, es local y solo importa `AGENTS.md` (§5.1, §12, §14, §15).
-2. **Comprobación de procedencia en el paso 3.** Falla si algún commit de la PR tiene un trailer `Co-authored-by` o nombra al asistente o a su proveedor, o si algún archivo versionado o nombre de archivo los nombra. Tiene su prueba negativa y se crea en la tarea 0.2 (§12, §14).
-3. **Telemetría de Astro desactivada** en local y en los workflows (§12).
+1. **Recalibración tras la F0a.** La F0a llevó 6,55 h registradas, frente a 36–52 h estimadas. Las estimaciones de la F0b a la F4 se recalculan con mínimo × 0,2 y máximo × 0,5, y el límite de revisión de la F0b pasa a 25,5 h. Se recalibran otra vez al cerrar la F0b, con los datos de dos fases (§14).
+2. **Subtareas de la F0a.** La 0.2 se dividió en 0.2a y 0.2b (Renovate entró en la 0.2b), la 0.6 en 0.6a y 0.6b, y la 0.7 en 0.7a, 0.7b y 0.7c (§14).
+3. **ADR de la F0a.** Surgieron los ADR 0013, 0014 y 0015; la 0.9 y el criterio de aceptación de la F0a los incluyen, y los de la F3 y la F4 se numeran desde el 0016 (§14, §15).
+4. **Hooks.** Se escribieron desde cero según la §12, sin seguir el esquema de los de Ontos (§12).
 
 ---
 
@@ -426,7 +427,7 @@ La duración de las tareas del hilo principal se mide en Chromium, porque las AP
 - `main` está protegida: solo se integra por PR, con todas las compuertas en verde y la rama actualizada.
 - Las ramas se nombran `tipo/descripcion-corta`.
 - Los commits siguen Conventional Commits y se fusionan con squash.
-- Hooks en `.githooks/`, con el mismo esquema que en Ontos, activados con `git config core.hooksPath .githooks`:
+- Hooks en `.githooks/`, escritos para este repositorio, activados con `git config core.hooksPath .githooks`:
   - `pre-commit`: Prettier y ESLint sobre los archivos preparados, y las pruebas de `core` y `domain`.
   - `commit-msg`: valida el formato Conventional Commits, elimina las líneas de atribución, coautoría y enlaces de sesión, y rechaza los mensajes que nombran al asistente de código o a su proveedor. Es tooling genérico y vive en este repositorio como archivo propio (principio 8).
 - La telemetría de Astro se desactiva en local (`astro telemetry disable`) y en los workflows (`ASTRO_TELEMETRY_DISABLED=1`).
@@ -509,36 +510,42 @@ Durante la F0a solo existen los pasos 1–5, así que "todas las compuertas" sig
 
 ## 14. Fases
 
-Las estimaciones son horas de trabajo, no semanas, porque el sitio comparte tiempo con Ontos. Se recalibran al cerrar la F0a con la velocidad medida. Los límites de revisión son:
+Las estimaciones son horas de trabajo, no semanas, porque el sitio comparte tiempo con Ontos.
 
-- Si la F0a supera 1,5 veces su estimación superior (78 h), se revisa el alcance con un ADR antes de empezar la F0b.
-- La misma regla vale para la F0b, con un límite de 51 h.
+**Recalibración (revisión 1.5).** La F0a llevó 6,55 h registradas, frente a 36–52 h estimadas. Las horas registradas son las de las sesiones de trabajo; no incluyen el tiempo del usuario en sus cuentas ni sus revisiones. Una sola fase, y de andamiaje, no basta para reducir tanto las demás, así que las estimaciones de la F0b a la F4 se recalculan con mínimo × 0,2 y máximo × 0,5 sobre las de la revisión 1.4. Se recalibran de nuevo al cerrar la F0b, con los datos de dos fases.
+
+Los límites de revisión son:
+
+- La F0a no superó 1,5 veces su estimación superior (78 h).
+- Si la F0b supera 1,5 veces su estimación superior, es decir, 25,5 h, se revisa el alcance con un ADR antes de empezar la F1.
 
 | Fase | Contenido | Criterio de aceptación | Esfuerzo (h) |
 |---|---|---|---|
-| F0a | Sitio en producción (tareas 0.1–0.9) | Ver abajo | 36–52 |
-| F0b | Compuertas completas (tareas 0.10–0.12) | Ver abajo | 23–34 |
-| F1 | Visor de Markdown | §13 y criterios de la F1 | 23–35 |
-| F2 | Calculadora de horas | §13 y criterios de la F2 | 15–25 |
-| F3 | Uso sin conexión (PWA) | Criterios de la F3 | 10–15 |
-| F4 | JSON (4a), SHA-256 (4b), bases (4c), unidades (4d) | §13 para cada una | 25–40 en total |
+| F0a | Sitio en producción (tareas 0.1–0.9) | Ver abajo | 6,55 (medida; estimación 36–52) |
+| F0b | Compuertas completas (tareas 0.10–0.12) | Ver abajo | 4,5–17 |
+| F1 | Visor de Markdown | §13 y criterios de la F1 | 4,5–17,5 |
+| F2 | Calculadora de horas | §13 y criterios de la F2 | 3–12,5 |
+| F3 | Uso sin conexión (PWA) | Criterios de la F3 | 2–7,5 |
+| F4 | JSON (4a), SHA-256 (4b), bases (4c), unidades (4d) | §13 para cada una | 5–20 en total |
 | — | Ontos, proyectos, bitácora, CV | Se planifican cuando tengan contenido | — |
 
-**Total estimado:** de 132 a 201 horas.
+**Total estimado:** de unas 25,5 a 81 horas, con la F0a medida (de la F0b a la F4, de 19 a 74,5).
 
 ### F0a. Sitio en producción
 
 **Tareas:**
 
 - **0.1 Repositorio:** estructura, `LICENSE` y `LICENSE-CONTENT`, `.gitattributes` con saltos LF, `.editorconfig`, `pnpm-workspace.yaml`, TypeScript estricto, ESLint (incluidas las verificaciones de `.astro`, con sus bloques `<script>`, y de paquetes por capa de la §4), Prettier, hooks, `AGENTS.md`, `docs/IDEAS_FUTURAS.md` y el esqueleto del `README.md`. ADR 0001, 0002 y 0009; ADR 0005 propuesto, con las fronteras.
-- **0.2 Pipeline mínimo:** pasos 1–5, incluida la comprobación de procedencia del paso 3, y el job de `tests/gates/` con casos genéricos de los pasos 1 a 5 (§12). ADR 0010 propuesto, con Vitest.
+- **0.2 Pipeline mínimo**, en dos subtareas:
+  - **0.2a:** pasos 1–5, incluida la comprobación de procedencia del paso 3 (§12). ADR 0010 propuesto, con Vitest.
+  - **0.2b:** el job de `tests/gates/` con casos genéricos de los pasos 1 a 5, y Renovate (§7).
 - **0.3 Cloudflare:** Worker solo con assets; `wrangler.jsonc` con `not_found_handling: "404-page"`, `html_handling: "auto-trailing-slash"` y `preview_urls: true`; secretos; entorno `production`; `deploy.yml` con los pasos 1–5 y `wrangler deploy` en un job aislado (§7); y un `public/_headers` mínimo con `X-Robots-Tag: noindex` en `/*`, para que ningún despliegue quede indexable. ADR 0003 propuesto.
 - **0.4 Seguridad:** `security.csp` y `_headers` completo, con las capas 2 y 3 y las cabeceras de la §7. También `_redirects`. ADR 0004.
 - **0.5 i18n:** diccionarios tipados, rutas, mapa de segmentos, barra final, `hreflang`, sitemap y 404 por idioma, con la verificación del formato de salida de la §5.7, y los casos de `tests/gates/` que dependen de la i18n. ADR 0006.
-- **0.6 Diseño:** tokens, capas, tema sin parpadeo, layout y componentes base. ADR 0008.
-- **0.7 Arquitectura:** `core/`, `platform/`, registro puro con pruebas sobre módulos ficticios, índice de herramientas, ruta dinámica y los casos de `tests/gates/` que dependen de ellos. Elección del validador (ADR 0011) y decisión 6 sobre la interfaz de las herramientas, con la que se acepta el ADR 0005.
+- **0.6 Diseño:** **0.6a** tokens, capas y tema sin parpadeo (ADR 0008); **0.6b** layout y componentes base (ADR 0013).
+- **0.7 Arquitectura:** **0.7a** elección del validador (ADR 0011) y decisión 6 sobre la interfaz de las herramientas, con la que se acepta el ADR 0005; **0.7b** `core/` y `platform/`; **0.7c** registro puro con pruebas sobre módulos ficticios, índice de herramientas, ruta dinámica (ADR 0014) y los casos de `tests/gates/` que dependen de ellos.
 - **0.8 Contenido:** inicio y "sobre mí" en ambos idiomas.
-- **0.9 Cierre:** revisión de los ADR 0001–0011 y redacción de los que falten (el 0007 queda propuesto hasta la F1), entrada de la F0a en `CHANGELOG.md` y recalibración de las estimaciones.
+- **0.9 Cierre:** revisión de los ADR 0001–0015 y redacción de los que falten (el 0007 queda propuesto hasta la F1), entrada de la F0a en `CHANGELOG.md` y recalibración de las estimaciones.
 
 **Criterio de aceptación:**
 
@@ -546,7 +553,7 @@ Las estimaciones son horas de trabajo, no semanas, porque el sitio comparte tiem
 - Los pasos 1–5 bloquean la fusión, y cada uno tiene su prueba negativa.
 - Solo se despliega desde `main`, tras los pasos 1–5 y en el entorno `production`.
 - Las cabeceras, la redirección de `/` y las 404 por idioma están comprobadas a mano en producción.
-- Los ADR 0001–0011 están escritos. Están aceptados todos salvo el 0003, el 0007 y el 0010, que siguen propuestos hasta las tareas 0.12 y 0.11 y la F1.
+- Los ADR 0001–0011 y 0013–0015 están escritos. Están aceptados todos salvo el 0003, el 0007 y el 0010, que siguen propuestos hasta las tareas 0.12 y 0.11 y la F1.
 - Las estimaciones de las fases siguientes están recalibradas con la velocidad medida.
 
 ### F0b. Compuertas completas
@@ -687,7 +694,7 @@ Las estimaciones son horas de trabajo, no semanas, porque el sitio comparte tiem
 | 0011 | Validador en tiempo de ejecución (en la tarea 0.7) |
 | 0012 | Temporal: carga condicional y elección del polyfill (en la F2) |
 
-Los ADR que piden la F3 (precaché y actualización) y la F4 (parser de JSON, hash de archivos y precisión de unidades) se numeran desde el 0013 al crearlos.
+En la F0a surgieron el 0013 (orden de las capas CSS), el 0014 (registro de herramientas) y el 0015 (paleta ámbar y títulos monoespaciados). Los ADR que piden la F3 (precaché y actualización) y la F4 (parser de JSON, hash de archivos y precisión de unidades) se numeran desde el 0016 al crearlos.
 
 ## 16. Decisiones pendientes
 
@@ -703,7 +710,7 @@ Los ADR que piden la F3 (precaché y actualización) y la F4 (parser de JSON, ha
 ## 17. Riesgos
 
 1. **La F0 no se cierra nunca por exceso de rigor.**
-   Mitigación: la F0 se divide en F0a (sitio en producción) y F0b (compuertas completas). Hay recalibración al cerrar la F0a, límites de 78 h y 51 h con revisión por ADR, y todo lo no listado pasa a fases posteriores.
+   Mitigación: la F0 se divide en F0a (sitio en producción) y F0b (compuertas completas). Hay recalibraciones al cerrar la F0a y la F0b, límites de 78 h y 25,5 h (revisión 1.5) con revisión por ADR, y todo lo no listado pasa a fases posteriores.
 
 2. **El sitio compite con Ontos.**
    Mitigación: principio 9, con horas separadas.
