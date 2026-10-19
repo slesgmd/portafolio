@@ -1,0 +1,3 @@
+# Redirecciones de Cloudflare (PLAN §5.7, ADR 0004). Se aplican antes que `_headers`.
+# Sin detección de idioma: `/` lleva siempre al idioma por defecto.
+/ /es/ 302

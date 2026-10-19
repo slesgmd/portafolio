@@ -37,7 +37,7 @@ Indicaciones del usuario por bloque:
 
 1. **Renovate (hecho):** PR #6 cerrada y `renovate.json` ajustado (R1–R3). Comprobar en la próxima ejecución de Renovate que cierra sola la PR #7 y que no vuelve a abrir la de `.nvmrc`.
 2. **0.3 (PR abierta, sin fusionar):** fusionarla solo cuando existan el entorno `production` (restringido a `main`) y sus dos secretos; si no, el primer `deploy.yml` falla y GitHub crea el entorno sin restricciones. Acciones del usuario pendientes: cuenta de Cloudflare con subdominio `workers.dev`, token, ID de la cuenta, entorno y secretos.
-3. **0.4:** `security.csp`, `_headers` completo (capas 2 y 3, §7), `_redirects` y ADR 0004.
+3. **0.4 (PR abierta, encima de la de la 0.3):** `security.csp`, `_headers` completo, `_redirects` y ADR 0004 aceptado. Comprobado con `wrangler dev`; falta la comprobación a mano en producción tras el primer despliegue (criterio de la F0a).
 4. Las fusiones en `main` las bloquea el clasificador de permisos del asistente ("Production Deploy"): las hace el usuario o las autoriza.
 
 ## Tareas cerradas
@@ -52,6 +52,9 @@ Indicaciones del usuario por bloque:
 | 0.2b (1/2) Pruebas negativas de los pasos 1–5 y job `Compuertas` | `test: añade las pruebas negativas de las compuertas 1 a 5` (PR #2, `fd708c2`) | 0,1 |
 | Protocolo por bloques y regla de los hooks en `AGENTS.md` | `docs: adopta el protocolo de trabajo por bloques` | — (incluido en la 0.2b) |
 | 0.2b (2/2) Renovate | `chore: configura Renovate` (PR #3, `5481e3b`) | 0,15 |
+| Ajuste de Renovate (`.nvmrc`, TypeScript < 7) | `chore: ajusta Renovate para .nvmrc y TypeScript` (PR #10, sin fusionar) | 0,05 |
+| 0.3 Cloudflare, `deploy.yml` y ADR 0003 propuesto | `feat: despliega el sitio en Cloudflare Workers con assets estáticos` (PR #11, sin fusionar) | 0,3 |
+| 0.4 CSP, cabeceras, `_redirects` y ADR 0004 | `feat: añade la CSP, las cabeceras de seguridad y la redirección de la raíz` (PR #12, sin fusionar) | 0,2 |
 
 ## Decisiones tomadas
 
@@ -137,6 +140,9 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 | C4 | `deploy.yml` reutiliza `ci.yml` (`workflow_call`); `ci.yml` sube `dist/` como artefacto (upload-artifact 7.0.2, download-artifact 8.0.2, fijadas por SHA, ≥ 7 días); en `main` la procedencia revisa todo el historial y la concurrencia no cancela | Repetir los pasos sin duplicar el workflow (§12) | `ci.yml`, `deploy.yml` |
 | C5 | Secretos `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` en el entorno `production` (no en el repositorio); token con `Workers Scripts: Edit` | Solo el job del entorno los recibe (§7) | ADR 0003 |
 | C6 | Telemetría de wrangler desactivada (`WRANGLER_SEND_METRICS=false` en los workflows; `wrangler telemetry disable` en este equipo) | Igual que la de Astro | workflows, README |
+| G1 | Página provisional movida a `src/pages/es/index.astro` hasta la 0.5 | Sin ella, la redirección `/ → /es/` de la 0.4 llevaría a un 404 | ADR 0004 |
+| G2 | Comentarios dentro de `_headers` y `_redirects` explicando cada regla | Cloudflare ignora las líneas con `#`; comprobado con `wrangler dev` | `public/` |
+| G3 | Las pruebas de cabeceras (pasos 8 y 11) aceptarán la CSP doble como dos cabeceras o unida con coma | `wrangler dev` las envía separadas; la §7 describe la forma unida | ADR 0004 |
 
 ## División de la F0a en sesiones (aprobada)
 
