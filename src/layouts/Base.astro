@@ -1,0 +1,41 @@
+---
+// Documento base (PLAN §5.7): `<html lang>`, `canonical` y `hreflang`. Las 404 no
+// tienen ruta: no emiten `canonical` ni `hreflang`. El diseño llega en la tarea 0.6.
+import { alternatesFor, defaultLocale, locales, type Locale, type Route } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  route?: Route;
+}
+
+const { locale, title, description, route } = Astro.props;
+const site = Astro.site;
+if (site === undefined) throw new Error('Falta `site` en astro.config.ts');
+
+const alternates = route && alternatesFor(route);
+const absolute = (path: string): string => new URL(path, site).href;
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {alternates && (
+      <>
+        <link rel="canonical" href={absolute(alternates[locale])} />
+        {locales.map((other) => (
+          <link rel="alternate" hreflang={other} href={absolute(alternates[other])} />
+        ))}
+        <link rel="alternate" hreflang="x-default" href={absolute(alternates[defaultLocale])} />
+      </>
+    )}
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

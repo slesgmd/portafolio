@@ -4,8 +4,9 @@
 // comando de su paso tal como lo llama `ci.yml`. Debe fallar, y su salida debe
 // contener `expected`: así, un fallo por otro motivo no cuenta como acierto.
 //
-// Son los casos genéricos de los pasos 1 a 5 (tarea 0.2b). Los específicos de los
-// pasos 2, 3 y 5 llegan en las tareas 0.5 y 0.7; los de los pasos 6 a 11, con ellos.
+// Son los casos genéricos de los pasos 1 a 5 (tarea 0.2b) y los que dependen de la
+// i18n (tarea 0.5). Los que dependen del registro llegan en la 0.7; los de los pasos 6
+// a 11, con ellos.
 // El contenido de los archivos va aquí, como texto, para que ninguna compuerta del
 // propio repositorio lo revise.
 
@@ -35,6 +36,20 @@ const addDependency = (current: string): string => {
   return `${JSON.stringify(pkg, null, 2)}\n`;
 };
 
+// Sustituye un texto que debe estar en el archivo: si el archivo cambia y el texto
+// desaparece, el caso falla por ese motivo y no por otro.
+const replaceOnce =
+  (search: string, replacement: string) =>
+  (current: string): string => {
+    if (!current.includes(search)) throw new Error(`No se encontró: ${search}`);
+    return current.replace(search, replacement);
+  };
+
+// Una clave de `en.ts` que se quita o se añade (traducción faltante o sobrante).
+const enKey = "    name: 'English',\n";
+const withoutEnKey = replaceOnce(enKey, '');
+const withExtraEnKey = replaceOnce(enKey, `${enKey}    extra: 'Extra',\n`);
+
 export const cases: GateCase[] = [
   {
     step: 1,
@@ -50,6 +65,20 @@ export const cases: GateCase[] = [
     command: ['check'],
     files: { 'src/core/caso-tipos.ts': "export const n: number = 'texto';\n" },
     expected: /ts\(2322\)/,
+  },
+  {
+    step: 2,
+    name: 'traducción faltante (tipos)',
+    command: ['check'],
+    files: { 'src/i18n/en.ts': withoutEnKey },
+    expected: /Property 'name' is missing/,
+  },
+  {
+    step: 2,
+    name: 'traducción sobrante (tipos)',
+    command: ['check'],
+    files: { 'src/i18n/en.ts': withExtraEnKey },
+    expected: /'extra' does not exist/,
   },
   {
     step: 3,
@@ -68,6 +97,17 @@ export const cases: GateCase[] = [
         "import { ahora } from '../platform/reloj.ts';\n\nexport const t = ahora();\n",
     },
     expected: /boundaries\/dependencies/,
+  },
+  {
+    step: 3,
+    name: 'violación de fronteras (i18n importa core)',
+    command: ['lint'],
+    files: {
+      'src/core/texto.ts': "export const texto = 'x';\n",
+      'src/i18n/usa-core.ts':
+        "import { texto } from '../core/texto.ts';\n\nexport const t = texto;\n",
+    },
+    expected: /i18n no puede importar \.\.\/core\/texto\.ts/,
   },
   {
     step: 3,
@@ -107,6 +147,13 @@ export const cases: GateCase[] = [
         "---\nimport Falta from '../components/Falta.astro';\n---\n\n<Falta />\n",
     },
     expected: /Falta\.astro/,
+  },
+  {
+    step: 5,
+    name: 'traducción faltante (build)',
+    command: ['build'],
+    files: { 'src/i18n/en.ts': withoutEnKey },
+    expected: /faltan claves \[langSwitch\.name\]/,
   },
 ];
 

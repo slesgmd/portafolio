@@ -12,9 +12,10 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 - **Sesión 3:** cerrada (18/10/2026). Tarea **0.2a**: repositorio público en GitHub, `ci.yml` con los pasos 1–5, protección de `main` y ADR 0010 propuesto. Las decisiones (S1–S8) están más abajo.
 - **Sesión 4:** cerrada (18/10/2026). **Bloque 1** (0.2b): pruebas negativas (PR #2), Renovate (PR #3 y su corrección, PR #5) y protocolo por bloques en `AGENTS.md`. Desde esta sesión se trabaja por bloques.
 - **Sesión 5:** cerrada (18/10/2026). **Bloque 2** (0.3 y 0.4): ajuste de Renovate (PR #10), Cloudflare y `deploy.yml` (PR #11), CSP, cabeceras y `_redirects` (PR #12). Decisiones R1–R3, C1–C6 y G1–G3.
-- **Siguiente sesión:** 6 → **bloque 3** (0.5, 0.6a y 0.6b).
+- **Sesión 6:** en curso (18/10/2026). **Bloque 3** (0.5, 0.6a y 0.6b). Tarea **0.5** cerrada en su rama (`feat/i18n`). Decisiones T1–T9 más abajo.
 - **Producción (18/10/2026):** `https://portafolio.s-lesgmd.workers.dev`, desplegado por `deploy.yml` desde `main` (primer despliegue con la PR #11; versión `e6a65a86-704e-4c34-a499-526a7dd16425`). Entorno `production` de GitHub restringido a `main` (creado con `gh api`, autorizado por el usuario), con `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` cargados por el usuario.
 - **Comprobado a mano en producción tras la PR #12:** `/` → 302 a `/es/`; `/es/` → 200 con todas las cabeceras de `/*` y la `<meta>` CSP; `/es` → 307 a `/es/`; rutas inexistentes → 404 con las cabeceras. Faltan las 404 por idioma (0.5) y la capa 3 en una URL real (no hay archivos en `/_astro/` todavía).
+- **0.5 comprobada con `wrangler dev`:** URL con barra → 200 sin redirección; sin barra → 307; `/es/noexiste/` y `/en/nope/x/` → 404 en su idioma; `/noexiste/` → 404 bilingüe; `/sitemap.xml` → 200. Falta comprobarlo en producción tras la fusión.
 - **Protección de `main` comprobada (18/10/2026):** un push directo de prueba fue rechazado con GH006 ("Changes must be made through a pull request").
 - **Checks requeridos en `main` (18/10/2026):** `Pasos 1-5` y `Compuertas` (app de GitHub Actions), con la rama actualizada.
 - **Renovate instalado por el usuario (18/10/2026):** modo interactivo, solo en `portafolio`. Su primera ejecución abrió el issue #4 por un error de configuración, que corrige la PR #5.
@@ -25,7 +26,7 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 |---|---|---|
 | 1 | 0.2b (compuertas y Renovate) | cerrado |
 | 2 | 0.3 y 0.4 (Cloudflare y seguridad) | cerrado |
-| 3 | 0.5, 0.6a y 0.6b (i18n y diseño) | pendiente |
+| 3 | 0.5, 0.6a y 0.6b (i18n y diseño) | en curso (0.5 hecha) |
 | 4 | 0.7a, 0.7b y 0.7c (arquitectura) | pendiente |
 | 5 | 0.8 y 0.9 (contenido y cierre) | pendiente |
 
@@ -38,8 +39,9 @@ Indicaciones del usuario por bloque:
 
 ## Siguiente paso concreto
 
-1. **Bloque 3** (0.5, 0.6a y 0.6b): i18n (ADR 0006), tokens, capas y tema (ADR 0008), layout y componentes base. La 0.5 sustituye la página provisional de `src/pages/es/index.astro` y crea las 404 por idioma; al terminarla, comprobar en producción `/es/404.html`, `/en/404.html` y la 404 raíz bilingüe.
-2. Con el primer script en `/_astro/`, comprobar en producción que recibe la CSP de la capa 3 (§7).
+1. **Bloque 3, tarea 0.6a:** tokens, capas y tema sin parpadeo (ADR 0008). Después, la **0.6b**: layout y componentes base (`Header`, `Footer`, `ThemeToggle`; `LangSwitch` y `Base` ya existen desde la 0.5, sin estilos).
+2. Tras fusionar la 0.5: comprobar en producción `/es/noexiste/`, `/en/noexiste/` y `/noexiste/` (404 por idioma y bilingüe), las URL con barra sin redirección y `/sitemap.xml`.
+3. Con el primer script en `/_astro/` (el del tema, 0.6a), comprobar en producción que recibe la CSP de la capa 3 (§7).
 
 ## Tareas cerradas
 
@@ -56,6 +58,7 @@ Indicaciones del usuario por bloque:
 | Ajuste de Renovate (`.nvmrc`, TypeScript < 7) | `chore: ajusta Renovate para .nvmrc y TypeScript` (PR #10, `b539f77`) | 0,05 |
 | 0.3 Cloudflare, `deploy.yml` y ADR 0003 propuesto | `feat: despliega el sitio en Cloudflare Workers con assets estáticos` (PR #11, `ef5c28f`) | 0,3 |
 | 0.4 CSP, cabeceras, `_redirects` y ADR 0004 | `feat: añade la CSP, las cabeceras de seguridad y la redirección de la raíz` (PR #12, `b59b902`) | 0,2 |
+| 0.5 i18n, sitemap, 404 por idioma y ADR 0006 | `feat: añade la i18n con rutas localizadas, sitemap y 404 por idioma` (rama `feat/i18n`) | 0,3 |
 
 ## Decisiones tomadas
 
@@ -146,6 +149,20 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 | G3 | Las pruebas de cabeceras (pasos 8 y 11) aceptarán la CSP doble como dos cabeceras o unida con coma | `wrangler dev` las envía separadas; la §7 describe la forma unida | ADR 0004 |
 | G4 | Renovate: la PR #7 (TypeScript 7) quedó cerrada sola y no volvió la de `.nvmrc` | Comprobación de R1 y R2 | — |
 | G5 | Fusiones en `main` con permiso explícito del usuario en cada una; ramas apiladas actualizadas con `rebase` sobre `main` y `--force-with-lease` | El clasificador de permisos del asistente trata la fusión en `main` como despliegue a producción | — |
+
+### Decidido sin consultar (sesión 6, bloque 3)
+
+| # | Decisión | Motivo | Dónde queda |
+|---|---|---|---|
+| T1 | Rutas propias (`[lang]` con `getStaticPaths` y `src/i18n/routes.ts`), sin el enrutado `i18n` de Astro | El de Astro no traduce los segmentos de sección; la redirección de `/` ya está en `_redirects` | ADR 0006 |
+| T2 | Sitemap con un endpoint propio (`src/pages/sitemap.xml.ts`), sin `@astrojs/sitemap` | Unas treinta líneas frente a una dependencia nueva (principio 6) | ADR 0006 |
+| T3 | `build.format: 'preserve'` y páginas como `index.astro` en carpetas | Verificado: con `'directory'` el build emitía `es/404/index.html` (§5.7) | `astro.config.ts`, ADR 0006 |
+| T4 | `x-default` apunta a la versión en español de la misma página (en el inicio, `/es/`) | Lectura de "x-default → /es/" (§5.7) que no manda a otra página desde "sobre mí" | ADR 0006 |
+| T5 | `Dict` en `src/i18n/dict.ts` (fuera del árbol de la §5.1); `index.ts` compara las claves al cargarse y hace fallar el build | Evita un ciclo de imports; `astro build` no comprueba tipos y la §12 pide que el paso 5 falle con una traducción faltante | ADR 0006 |
+| T6 | `Base.astro` y `LangSwitch.astro` se crean en la 0.5, sin estilos | La 0.5 necesita `lang`, `canonical`, `hreflang` y el selector; el diseño es de la 0.6 | ADR 0006 |
+| T7 | `node_modules/**` en `boundaries/include` | Fallo latente de la 0.1b: ninguna prueba dentro de `src/` pasaba el lint (`vitest` contaba como archivo ignorado). Las políticas siguen revisando el origen externo | `eslint.config.js`, ADR 0005 |
+| T8 | Sin `public/robots.txt` | Está en el árbol de la §5.1 pero ninguna tarea lo pide; se decide en la 0.11 o con el dominio | ADR 0006 |
+| T9 | Las 404 no emiten `canonical` ni `hreflang` y no van al sitemap; la raíz es bilingüe con `lang="en"` en los textos en inglés | No son páginas indexables ni tienen equivalente | ADR 0006 |
 
 ## División de la F0a en sesiones (aprobada)
 

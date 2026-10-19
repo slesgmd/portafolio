@@ -146,7 +146,10 @@ export default defineConfig([
     plugins: { boundaries },
     settings: {
       'boundaries/root-path': import.meta.dirname,
-      'boundaries/include': ['src/**'],
+      // `node_modules` se incluye para que un paquete que el resolvedor encuentra (como
+      // `vitest`) no cuente como archivo ignorado: su origen externo lo revisan las
+      // políticas. Un import a un archivo del proyecto fuera de `src/` sigue fallando.
+      'boundaries/include': ['src/**', 'node_modules/**'],
       'boundaries/elements': elements,
       'boundaries/files': [{ category: 'test', pattern: '**/*.{test,spec}.ts' }],
       'boundaries/legacy-templates': false,
