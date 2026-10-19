@@ -15,10 +15,12 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 ## Siguiente paso concreto
 
 1. Plan breve de la 0.2b y esperar el ok. Todo cambio en `main` entra ya por PR, con el check `Pasos 1-5` en verde y la rama actualizada.
-2. **Para la 0.2b** (§12, pruebas negativas de las compuertas):
+2. **Al empezar la 0.2b (decisión del usuario):** comprobar la protección de `main` con un push directo de prueba, que debe ser rechazado. Si no lo es, revertir de inmediato y revisar la protección.
+3. **Para la 0.2b** (§12, pruebas negativas de las compuertas):
    - Casos genéricos de los pasos 1 a 5 sobre fixtures propios de `tests/gates/`: lockfile desactualizado (1); error de tipos (2); violación de ESLint, de formato y de procedencia (3); prueba que falla y cobertura bajo el umbral (4); build que falla (5). Los casos específicos de los pasos 2, 3 y 5 llegan en la 0.5 y la 0.7.
    - Un job en `ci.yml` que verifica que cada caso falla en su compuerta. Si es un job aparte, añadirlo como check requerido en la protección de `main`.
    - La prueba de procedencia ya cubre sus casos en `scripts/check-provenance.test.ts`. Decidir si `tests/gates/` la reutiliza o la duplica.
+4. **Renovate en la 0.2b (decisión del usuario):** `renovate.json` según la §7: edad mínima de 7 días, actualizaciones agrupadas y actualización de los SHA de las acciones. Incluir los pasos para que el usuario instale la app de Renovate en el repositorio; la instala él.
 
 ## Tareas cerradas
 
@@ -154,6 +156,6 @@ Se resuelven en su tarea, sin cambiar el plan ahora:
 - La verificación de la §4 se hizo con fixtures temporales, no versionados. Los casos permanentes van en `tests/gates/` (0.2b y 0.7).
 - `ui/` no puede importar `astro` ni `astro:*`. Si `Tool.astro` necesita sus tipos, se decide en la 0.7.
 - **Conectar `tsc -p tsconfig.domain.json` al paso 2 en cuanto haya archivos en `core/` (tarea 0.7b).** Hoy falla con TS18003 porque `core/` y `domain/` están vacíos (ADR 0002). Añadirlo al paso 2 de `ci.yml` y a `pnpm check`.
-- Renovate (`renovate.json`) no tiene tarea asignada en la §14, y los SHA de las acciones dependen de él (§7). Decidir su tarea con el usuario.
-- La protección de `main` se comprobó por la API, no con un push rechazado. Un push directo a `main` debe fallar; se verá en la 0.2b o al primer intento.
+- Renovate no tenía tarea en la §14; el usuario lo asignó a la 0.2b. Reflejarlo en la §14 en la próxima revisión del plan, con ok del usuario.
+- La protección de `main` se comprobó por la API, no con un push rechazado: se comprueba con un push de prueba al empezar la 0.2b.
 - Atribución desactivada en los ajustes de usuario del asistente (fuera del repositorio); el hook `commit-msg` de la 0.1b es la segunda barrera.
