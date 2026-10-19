@@ -2,10 +2,6 @@ import type { Dict } from './dict.ts';
 import type { es } from './es.ts';
 
 export const en = {
-  site: {
-    description:
-      'Tools that run in your browser without sending your data. No accounts, no analytics.',
-  },
   skipLink: 'Skip to content',
   nav: {
     label: 'Main',
@@ -24,9 +20,7 @@ export const en = {
     name: 'English',
   },
   home: {
-    lead: 'Tools that run entirely in your browser. Nothing you type or open leaves your device: no accounts, no analytics.',
     toolsLink: 'See the tools',
-    intro: "I'm Sebastián Lescano, a Computer Science student at UTEC.",
     aboutLink: 'More about me',
   },
   tools: {
@@ -39,13 +33,6 @@ export const en = {
   about: {
     title: 'About',
     heading: 'About',
-    intro:
-      "I'm Sebastián Lescano, a Computer Science student at UTEC in Peru. I'm interested in cybersecurity, web development, applied mathematics and machine learning, especially neural networks.",
-    motivation:
-      'I built this site because I wanted my own tools, ones that help me stay organized and that I can adapt as I see fit. I also wanted a personal project to show on GitHub.',
-    stack:
-      "It's built with TypeScript and Astro and deployed to Cloudflare Workers through GitHub Actions. I pick up whatever each project requires.",
-    code: 'My code is on GitHub:',
   },
   notFound: {
     title: 'Page not found',
