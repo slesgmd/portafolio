@@ -14,7 +14,7 @@
     {
       "description": "Las versiones no mayores, en una sola PR. Las mayores van cada una en la suya.",
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-      "matchPackageNames": ["*", "!eslint-plugin-boundaries"],
+      "matchPackageNames": ["!eslint-plugin-boundaries"],
       "groupName": "dependencias no mayores"
     },
     {
