@@ -10,14 +10,14 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 - **Sesión 1:** cerrada (18/10/2026). Revisiones 1.3 y 1.4 del plan, entorno y tarea **0.1a**.
 - **Sesión 2:** cerrada (18/10/2026). Tarea **0.1b**, hecha de forma autónoma mientras el usuario estaba ausente. Las decisiones tomadas sin consultar (D1–D11) están más abajo; el usuario aprobó D1–D10.
 - **Sesión 3:** cerrada (18/10/2026). Tarea **0.2a**: repositorio público en GitHub, `ci.yml` con los pasos 1–5, protección de `main` y ADR 0010 propuesto. Las decisiones (S1–S8) están más abajo.
-- **Sesión 4:** en curso (18/10/2026). **Bloque 1** (0.2b). Desde esta sesión se trabaja por bloques. La PR de pruebas negativas está lista; falta la de Renovate.
+- **Sesión 4:** en curso (18/10/2026). **Bloque 1** (0.2b). Desde esta sesión se trabaja por bloques. Pruebas negativas fusionadas (PR #2) y PR de Renovate abierta; el bloque 1 se cierra con las acciones del usuario en su cuenta.
 - **Protección de `main` comprobada (18/10/2026):** un push directo de prueba fue rechazado con GH006 ("Changes must be made through a pull request").
 
 ## Bloques de la F0a (decisión del usuario, sesión 4)
 
 | Bloque | Tareas | Estado |
 |---|---|---|
-| 1 | 0.2b (compuertas y Renovate) | en curso |
+| 1 | 0.2b (compuertas y Renovate) | hecho; faltan las acciones del usuario en su cuenta |
 | 2 | 0.3 y 0.4 (Cloudflare y seguridad) | pendiente |
 | 3 | 0.5, 0.6a y 0.6b (i18n y diseño) | pendiente |
 | 4 | 0.7a, 0.7b y 0.7c (arquitectura) | pendiente |
@@ -38,9 +38,9 @@ Indicaciones del usuario por bloque:
 
 ## Siguiente paso concreto
 
-1. Fusionar la PR de pruebas negativas de la 0.2b cuando la CI esté en verde.
-2. **Renovate** (PR `chore/renovate`): `renovate.json` según la §7, con edad mínima de 7 días, actualizaciones agrupadas y actualización de los SHA de las acciones. Incluir los pasos para que el usuario instale la app de Renovate en el repositorio; la instala él.
-3. Cerrar el bloque 1 con el resumen y pedir al usuario las acciones en su cuenta: añadir el check `Compuertas` como requerido en `main`, instalar Renovate y aplicar el cambio de `AGENTS.md`.
+1. El usuario hace las acciones en su cuenta (ver Pendientes): el check `Compuertas` como requerido, la app de Renovate y el cambio de `AGENTS.md`.
+2. Revisar la PR de bienvenida de Renovate: confirma que `renovate.json` es válido y muestra las PR que abrirá. Si informa de errores de configuración, corregirlos en una PR `fix/renovate`.
+3. Después, **bloque 2** (0.3 y 0.4).
 
 ## Tareas cerradas
 
@@ -51,7 +51,8 @@ Indicaciones del usuario por bloque:
 | 0.1a Repositorio base | `chore: inicializa el repositorio con Astro y TypeScript` | 0,5 |
 | 0.1b ESLint, Prettier, hooks y ADR 0005 propuesto | `chore: configura ESLint, Prettier y los hooks de git` | 0,25 |
 | 0.2a GitHub, `ci.yml` pasos 1–5, protección de `main` y ADR 0010 propuesto | `ci: añade el pipeline mínimo con los pasos 1 a 5 y la comprobación de procedencia` (PR #1) | 0,25 |
-| 0.2b (1/2) Pruebas negativas de los pasos 1–5 y job `Compuertas` | `test: añade las pruebas negativas de las compuertas 1 a 5` | pendiente (las registra el usuario) |
+| 0.2b (1/2) Pruebas negativas de los pasos 1–5 y job `Compuertas` | `test: añade las pruebas negativas de las compuertas 1 a 5` (PR #2, `fd708c2`) | pendiente (las registra el usuario) |
+| 0.2b (2/2) Renovate | `chore: configura Renovate` | pendiente (las registra el usuario) |
 
 ## Decisiones tomadas
 
@@ -114,6 +115,13 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 | B6 | `verifyDepsBeforeRun` desactivado en los procesos del ejecutor, y comprobación de los enlaces de `node_modules` tras cada caso | La instalación previa de pnpm 12 reescribió los enlaces del `node_modules` real a través del enlace de la copia (pasó en local y se reparó con `pnpm install --offline`) | ADR 0010 |
 | B7 | Job `Compuertas` aparte, en paralelo con `Pasos 1-5` | Plan §12 ("un job") | `ci.yml` |
 | B8 | Una sola PR (la de las pruebas negativas) lleva también los cambios de este archivo de la sesión 4 | El commit con `AGENTS.md` quedó bloqueado (ver Pendientes) | — |
+| B9 | `renovate.json`: `config:recommended`, `helpers:pinGitHubActionDigestsToSemver` (SHA con comentario `# vX.Y.Z`, como ya está en `ci.yml`), `schedule:weekly`, `minimumReleaseAge: 7 days` con `internalChecksFilter: strict` (la PR no se abre antes de tiempo) y `rangeStrategy: pin` | §7 y ADR 0002. Coincide con `minimumReleaseAge` y `savePrefix: ''` de pnpm | `renovate.json` |
+| B10 | Versiones no mayores (incluidos pin y digest) agrupadas en una PR; cada mayor en la suya | "Actualizaciones agrupadas" (§4). Una mayor puede romper, así que se revisa sola | `renovate.json` |
+| B11 | `node` y `@types/node` limitados a `<25`; `engines` sin actualizaciones automáticas | Node 24 LTS (ADR 0002) | `renovate.json` |
+| B12 | `eslint-plugin-boundaries` fuera del grupo y con una nota en la PR para revisar el override de `eslint-module-utils` | Pendiente del ADR 0005 | `renovate.json` |
+| B13 | Mensajes de commit `chore(deps): actualiza <dependencia> a <versión>` | Convención del repositorio: tipo en inglés y descripción en español | `renovate.json` |
+| B14 | `renovate.json` no se valida en local con `renovate-config-validator`: lo valida la PR de bienvenida de Renovate | El validador exige descargar Renovate, sin revisar ni cumplir la edad mínima | — |
+| B15 | Sin `lockFileMaintenance` | Opción conservadora. Las dependencias transitivas se renuevan con las directas; se reconsidera si quedan desfasadas | `renovate.json` |
 
 ## División de la F0a en sesiones (aprobada)
 
@@ -186,6 +194,7 @@ Se resuelven en su tarea, sin cambiar el plan ahora:
 
 - **Acciones en la cuenta del usuario (bloque 1):**
   - Añadir el check `Compuertas` como requerido en la protección de `main`, junto a `Pasos 1-5`.
+  - Instalar la app de Renovate (Mend) en `slesgmd/portafolio`: <https://github.com/apps/renovate> → *Configure* → *Only select repositories* → `portafolio`. Como `renovate.json` ya está en `main`, la PR de bienvenida lo usa tal cual.
   - Aplicar en `AGENTS.md` el protocolo por bloques (el texto está arriba). El permiso del asistente bloqueó ese commit por tratarse de su propio archivo de instrucciones; lo aplica el usuario o autoriza el permiso.
 
 - PLAN §12 dice que los hooks siguen "el mismo esquema que en Ontos"; ya no es así (I6). Ajustar el texto en la próxima revisión del plan, con ok del usuario.
@@ -195,4 +204,5 @@ Se resuelven en su tarea, sin cambiar el plan ahora:
 - `ui/` no puede importar `astro` ni `astro:*`. Si `Tool.astro` necesita sus tipos, se decide en la 0.7.
 - **Conectar `tsc -p tsconfig.domain.json` al paso 2 en cuanto haya archivos en `core/` (tarea 0.7b).** Hoy falla con TS18003 porque `core/` y `domain/` están vacíos (ADR 0002). Añadirlo al paso 2 de `ci.yml` y a `pnpm check`.
 - Renovate no tenía tarea en la §14; el usuario lo asignó a la 0.2b. Reflejarlo en la §14 en la próxima revisión del plan, con ok del usuario.
+- La §14 dice "0.2" para el pipeline mínimo y las compuertas; la sesión 3 lo dividió en 0.2a y 0.2b. Reflejarlo en la próxima revisión del plan, con ok del usuario.
 - Atribución desactivada en los ajustes de usuario del asistente (fuera del repositorio); el hook `commit-msg` de la 0.1b es la segunda barrera.

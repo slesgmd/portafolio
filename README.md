@@ -43,6 +43,10 @@ Hooks de git:
 
 La CI (`.github/workflows/ci.yml`) ejecuta en cada PR los pasos 1–5 de la §12 del plan y, en paralelo, sus pruebas negativas (`tests/gates/`).
 
+## Dependencias
+
+Renovate abre las PR de actualización según `renovate.json`: edad mínima de 7 días, versiones no mayores agrupadas en una PR, cada mayor por separado y los SHA de las acciones de GitHub al día (PLAN §7, ADR 0002).
+
 ## Probar
 
 ```sh
