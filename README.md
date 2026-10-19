@@ -59,7 +59,17 @@ Pendiente: Playwright y Lighthouse (F0b).
 
 ## Previsualizar y desplegar
 
-Pendiente: tareas 0.3 y 0.12 (Cloudflare Workers con assets estáticos, desplegado desde GitHub Actions).
+El sitio es un Worker de Cloudflare solo con assets estáticos (`wrangler.jsonc`, ADR 0003).
+
+```sh
+pnpm build
+pnpm exec wrangler telemetry disable # una vez por equipo
+pnpm exec wrangler dev               # sirve dist/ con _headers, _redirects y la 404, como en producción
+```
+
+Al fusionar en `main`, `.github/workflows/deploy.yml` repite los pasos de la CI y ejecuta `wrangler deploy` en el entorno `production` de GitHub, el único que tiene el token de Cloudflare. No se despliega a mano.
+
+Pendiente: vista previa por PR, prueba de humo y vuelta atrás (tarea 0.12).
 
 ## Arquitectura
 

@@ -1,0 +1,18 @@
+// Worker solo con assets estáticos, sin código de Worker (PLAN §4, ADR 0003).
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "portafolio",
+  // Fecha de la versión de workerd que trae la versión fijada de wrangler.
+  "compatibility_date": "2026-10-06",
+  "assets": {
+    "directory": "./dist",
+    // Sirve el `404.html` más cercano subiendo por la ruta (404 por idioma, §5.7).
+    "not_found_handling": "404-page",
+    // Es el valor por defecto; se fija de forma explícita (§5.7).
+    "html_handling": "auto-trailing-slash",
+  },
+  // Sin dominio propio, el sitio se sirve en `workers.dev` (§16, decisión 3).
+  "workers_dev": true,
+  // URL de versión para las vistas previas (pasos 10 y 11, F0b).
+  "preview_urls": true,
+}

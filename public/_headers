@@ -1,0 +1,4 @@
+# Cabeceras de Cloudflare (PLAN §7). Versión mínima de la tarea 0.3: ningún despliegue
+# queda indexable mientras no haya dominio propio (§16, decisión 3). La 0.4 la completa.
+/*
+  X-Robots-Tag: noindex
