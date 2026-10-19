@@ -28,6 +28,13 @@ export const en = {
     heading: 'Portfolio',
     body: 'Under construction.',
   },
+  tools: {
+    title: 'Tools',
+    heading: 'Tools',
+    description: 'Tools that run entirely in the browser.',
+    empty: 'No tools yet.',
+    beta: 'beta',
+  },
   about: {
     title: 'About',
     heading: 'About',

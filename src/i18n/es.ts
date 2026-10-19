@@ -28,6 +28,13 @@ export const es = {
     heading: 'Portafolio',
     body: 'En construcción.',
   },
+  tools: {
+    title: 'Herramientas',
+    heading: 'Herramientas',
+    description: 'Herramientas que se ejecutan por completo en el navegador.',
+    empty: 'Todavía no hay herramientas.',
+    beta: 'beta',
+  },
   about: {
     title: 'Sobre mí',
     heading: 'Sobre mí',

@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { compareKeys } from './dict.ts';
-import { alternatesFor, isLocale, locales, messages, pathFor, type Route } from './index.ts';
+import {
+  alternatesFor,
+  defineToolTexts,
+  isLocale,
+  locales,
+  messages,
+  pathFor,
+  type Route,
+} from './index.ts';
 
 describe('pathFor', () => {
   it('localiza los segmentos y termina en barra', () => {
@@ -50,5 +58,23 @@ describe('messages', () => {
   it('devuelve el diccionario de cada idioma', () => {
     expect(messages('es').site.name).toBe('Portafolio');
     expect(messages('en').site.name).toBe('Portfolio');
+  });
+});
+
+describe('defineToolTexts', () => {
+  it('devuelve los textos si los dos idiomas tienen las mismas claves', () => {
+    const texts = {
+      es: { name: 'Hora', description: 'Calcula horas.', units: { h: 'h' } },
+      en: { name: 'Time', description: 'Computes hours.', units: { h: 'h' } },
+    };
+    expect(defineToolTexts(texts)).toBe(texts);
+  });
+
+  it('falla al definirse si faltan o sobran claves', () => {
+    const es = { name: 'Hora', description: 'Calcula horas.', units: { h: 'h' } };
+    const en = { name: 'Time', description: 'Computes hours.', units: { m: 'm' } };
+    expect(() => defineToolTexts({ es, en: en as unknown as typeof es })).toThrow(
+      'Textos de herramienta en: faltan claves [units.h]; sobran claves [units.m]',
+    );
   });
 });

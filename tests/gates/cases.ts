@@ -49,6 +49,33 @@ const manyBranches =
   Array.from({ length: uncoveredBranches }, (_, i) => `  if (n === ${i}) total += 1;\n`).join('') +
   '  return total;\n};\n';
 
+interface FakeTool {
+  slug?: string;
+  hydration?: string;
+  en?: string;
+  withoutUi?: boolean;
+}
+
+const fakeTool = (folder: string, options: FakeTool = {}): Record<string, string> => {
+  const {
+    slug = folder,
+    hydration = 'load',
+    en = "{ name: 'Case', description: 'Case.' }",
+    withoutUi = false,
+  } = options;
+  const base = `src/tools/${folder}`;
+  return {
+    [`${base}/meta.ts`]:
+      "import { defineTool } from '../../registry/define-tool.ts';\n\nexport default defineTool({\n" +
+      `  slug: '${slug}',\n  status: 'beta',\n  hydration: '${hydration}',\n` +
+      '  tags: [],\n  persistence: null,\n});\n',
+    [`${base}/i18n.ts`]:
+      "import { defineToolTexts } from '../../i18n/tool-texts.ts';\n\n" +
+      `export const texts = defineToolTexts({\n  es: { name: 'Caso', description: 'Caso.' },\n  en: ${en},\n});\n`,
+    ...(withoutUi ? {} : { [`${base}/ui/Tool.astro`]: '<p>Caso</p>\n' }),
+  };
+};
+
 const enKey = "    name: 'English',\n";
 const withoutEnKey = replaceOnce(enKey, '');
 const withExtraEnKey = replaceOnce(enKey, `${enKey}    extra: 'Extra',\n`);
@@ -200,6 +227,41 @@ export const cases: GateCase[] = [
     command: ['build'],
     files: { 'src/i18n/en.ts': withoutEnKey },
     expected: /faltan claves \[langSwitch\.name\]/,
+  },
+  {
+    step: 2,
+    name: 'traducción faltante de una herramienta (tipos)',
+    command: ['check'],
+    files: fakeTool('caso', { en: "{ name: 'Case' }" }),
+    expected: /caso\/i18n\.ts.*Property 'description' is missing/,
+  },
+  {
+    step: 5,
+    name: 'traducción faltante de una herramienta (build)',
+    command: ['build'],
+    files: fakeTool('caso', { en: "{ name: 'Case' }" }),
+    expected: /Textos de herramienta en: faltan claves \[description\]/,
+  },
+  {
+    step: 5,
+    name: 'meta.ts inválido',
+    command: ['build'],
+    files: fakeTool('caso', { hydration: 'idle' }),
+    expected: /tools\/caso\/meta\.ts no es válido: hydration: /,
+  },
+  {
+    step: 5,
+    name: 'slug duplicado',
+    command: ['build'],
+    files: { ...fakeTool('caso'), ...fakeTool('otro', { slug: 'caso' }) },
+    expected: /el slug "caso" está repetido/,
+  },
+  {
+    step: 5,
+    name: 'falta ui/Tool.astro',
+    command: ['build'],
+    files: fakeTool('caso', { withoutUi: true }),
+    expected: /tools\/caso: falta ui\/Tool\.astro/,
   },
 ];
 

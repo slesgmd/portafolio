@@ -73,11 +73,79 @@ Pendiente: vista previa por PR, prueba de humo y vuelta atrás (tarea 0.12).
 
 ## Arquitectura
 
-Pendiente: se resume aquí al cerrar la tarea 0.7. Mientras tanto, ver PLAN §5.
+Detalle en PLAN §5 y en los ADR 0005, 0011 y 0014.
+
+| Capa | Carpeta | Contenido |
+|---|---|---|
+| core | `src/core/` | `Result`, puertos (almacenamiento, hash, reloj) y persistencia versionada. TypeScript puro |
+| platform | `src/platform/` | Implementaciones de los puertos con APIs del navegador y la carga diferida de la interfaz |
+| i18n | `src/i18n/` | Diccionarios `es`/`en`, rutas localizadas y `defineToolTexts` |
+| registry | `src/registry/` | `defineTool`, validación de los `meta.ts` (Valibot) e índice de herramientas |
+| herramientas | `src/tools/<slug>/` | `domain/` puro, `ui/` de navegador, `i18n.ts`, `meta.ts` y `e2e.spec.ts` |
+| páginas | `src/pages/`, `src/layouts/`, `src/components/` | Sitio estático generado por Astro |
+| diseño | `src/design/` | Tokens y capas CSS |
+
+ESLint impone qué capa importa qué y qué paquetes externos puede usar cada una; `tsc -p tsconfig.domain.json` impide las APIs del navegador en `core` y `domain`. Una herramienta no importa de otra.
+
+El registro descubre las herramientas con `import.meta.glob` y el build falla si una no es válida. Cada herramienta tiene una página por idioma (`/es/herramientas/<slug>/`, `/en/tools/<slug>/`), y su interfaz se carga con `import()` al cargar la página o al entrar en pantalla, según su `meta.ts`. No hay framework de UI: cada `Tool.astro` lleva un `<script>` de Astro.
 
 ## Agregar una herramienta
 
-Pendiente: tarea 0.7. Mientras tanto, ver PLAN §5.3.
+Se crea `src/tools/<slug>/`, con el slug en kebab-case y en inglés (PLAN §5.7), sin tocar ningún otro archivo:
+
+1. `meta.ts`:
+
+   ```ts
+   import { defineTool } from '../../registry/define-tool.ts';
+
+   export default defineTool({
+     slug: '<slug>', // igual al nombre de la carpeta
+     status: 'beta',
+     hydration: 'visible', // o 'load'
+     tags: [],
+     persistence: null, // o { version: 1 }
+   });
+   ```
+
+2. `i18n.ts`, con todos los textos de la herramienta; `name` y `description` son obligatorios:
+
+   ```ts
+   import { defineToolTexts } from '../../i18n/tool-texts.ts';
+
+   export const texts = defineToolTexts({
+     es: { name: '…', description: '…' },
+     en: { name: '…', description: '…' },
+   });
+   ```
+
+3. `domain/`, con la lógica pura y sus pruebas (`*.test.ts`). Solo puede importar `core` y el validador.
+4. `ui/Tool.astro`, que recibe `locale` y no importa `astro`. Su `<script>` carga el resto de la interfaz con `hydrate` de `src/platform/hydration.ts`:
+
+   ```astro
+   ---
+   import type { Locale } from '../../../i18n';
+   import { texts } from '../i18n.ts';
+
+   interface Props {
+     locale: Locale;
+   }
+
+   const t = texts[Astro.props.locale];
+   ---
+
+   <section aria-label={t.name}>…</section>
+
+   <script>
+     import { hydrate } from '../../../platform/hydration.ts';
+
+     const root = document.querySelector<HTMLElement>('[data-tool="<slug>"]');
+     if (root) hydrate(root, () => import('./main.ts').then(({ start }) => start(root)));
+   </script>
+   ```
+
+5. `e2e.spec.ts`, con sus pruebas E2E (desde la F0b).
+
+`pnpm check`, `pnpm lint`, `pnpm test` y `pnpm build` deben pasar. Quitar una herramienta es borrar su carpeta.
 
 ## Licencias
 
