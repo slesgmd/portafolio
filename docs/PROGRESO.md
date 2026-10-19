@@ -41,7 +41,7 @@ Indicaciones del usuario por bloque:
 
 ## Siguiente paso concreto
 
-1. **Bloque 4**, tras la 0.7a (PR #20): **0.7b** `core/` (puertos y `versioned-store.ts`) y `platform/` (`local-store.ts`, `web-crypto.ts`, `clock.ts` y la carga de la interfaz de la decisión 6), con el caso de `tests/gates/` de `domain` → `platform` (pasos 2 y 3); después **0.7c**, registro, índice de herramientas y ruta dinámica. Al crear el índice, añadir su enlace a `Header.astro` y sus rutas al sitemap.
+1. **Bloque 4**, tras la 0.7b (PR #21): **0.7c**, registro (`build-registry.ts` e `index.ts`), índice de herramientas y ruta dinámica, con los casos de `tests/gates/` del registro (paso 5: `meta.ts` inválido y `slug` duplicado). Al crear el índice, añadir su enlace a `Header.astro` y sus rutas al sitemap; la página de cada herramienta envuelve `Tool.astro` en un elemento con `data-hydration` (A7). Completar las secciones "Arquitectura" y "Agregar una herramienta" del README.
 2. Los scripts siguen inline (Astro inserta en línea el del interruptor), así que la comprobación de la capa 3 sobre un script real de `/_astro/` queda para el primero que se emita, como tarde con los workers de la F1. La regla ya se comprobó en producción sobre la hoja de estilos de `/_astro/`.
 3. **Revisión manual pendiente (usuario):** en un navegador real, que el tema no parpadea al recargar con `Claro` u `Oscuro` elegido, que el interruptor funciona con teclado, y el reflujo a 320 px con zoom al 200 % (§9). En esta sesión no hubo navegador disponible.
 
@@ -65,7 +65,8 @@ Indicaciones del usuario por bloque:
 | 0.6b Layout, cabecera, pie, interruptor de tema y ADR 0013 | `feat: añade el layout con cabecera, pie e interruptor de tema` (PR #16, `7a7c321`) | 0,25 |
 | Regla de estilo en `AGENTS.md` (sin tarea del plan) | `docs: añade la regla de estilo de comentarios y documentación` (PR #18, `e92b03d`) | 0,05 |
 | Limpieza de comentarios según la regla (sin tarea del plan) | `refactor: limpia los comentarios según la regla de estilo` (PR #19, `0cd1d17`) | 0,2 |
-| 0.7a Validador (ADR 0011), decisión 6 y aceptación del ADR 0005 | `feat: elige Valibot como validador y fija la interfaz sin framework` (PR #20) | 0,4 |
+| 0.7a Validador (ADR 0011), decisión 6 y aceptación del ADR 0005 | `feat: elige Valibot como validador y fija la interfaz sin framework` (PR #20, `a010eec`) | 0,4 |
+| 0.7b `core/` (puertos y persistencia versionada) y `platform/` | `feat: añade los puertos de core, la persistencia versionada y platform` (PR #21) | 0,4 |
 
 ## Decisiones tomadas
 
@@ -193,6 +194,16 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 | A6 | Casos nuevos de `tests/gates/`: una API del navegador en `core` (paso 2) y `core` importa el validador (paso 3) | El paso 2 ya incluye `tsc` de las capas puras, y ningún caso probaba aún un paquete externo prohibido por capa | `cases.ts` |
 | A7 | Decisión 6: scripts de Astro sin framework. La página envuelve `Tool.astro` en un elemento con `data-hydration`; su `<script>` pasa un `import()` a una función de `platform/` (0.7b) que lo carga al instante o con `IntersectionObserver` | Recomendación del plan (indicación del usuario). `ui/` no importa `meta.ts`, así que la estrategia llega por el HTML. La `<meta>` CSP lleva `script-src 'self'` y admite los chunks del `import()` | ADR 0005 |
 | A8 | `Tool.astro` no importa `astro`: declara `Props` y usa el global `Astro` | Cierra el pendiente de la 0.1b sin tocar la tabla de la §5.2 | ADR 0005 |
+| A9 | `platform/files.ts` se aplaza a la F1 | La §6 no define su puerto y ninguna herramienta lo usa todavía; la F1 es la primera que abre y descarga archivos | — |
+| A10 | Límite de persistencia: `maxStoredBytes = 1_000_000` (1 MB decimal) | Lectura más conservadora de "1 MB" (§11) | `versioned-store.ts` |
+| A11 | El valor guardado es `{ version, data }`. `load` migra paso a paso con `migrations[n]` (n → n + 1); una versión futura o sin migración da `unsupported_version`; un valor inválido se borra y se devuelve el error | §5.6: "un valor inválido se descarta, se informa en la interfaz y la herramienta arranca vacía". Borrarlo evita repetir el aviso en cada visita | `versioned-store.ts` |
+| A12 | `utf8ByteLength` propia en `core`, con 3 bytes por sustituto suelto | `core` no puede usar `TextEncoder` (§5.2); `JSON.stringify` escapa los sustitutos sueltos, así que el caso es teórico | `versioned-store.ts` |
+| A13 | `createLocalStore` lee `localStorage` en cada operación; los errores de cuota (también el nombre antiguo de Firefox) dan `quota_exceeded` y cualquier otro, `unavailable` | Acceder a `localStorage` lanza si el navegador lo bloquea | `local-store.ts` |
+| A14 | `createWebCryptoHasher` copia las vistas sobre `SharedArrayBuffer` | Web Crypto no las admite, y el tipo de TypeScript 6 lo refleja | `web-crypto.ts` |
+| A15 | `platform/hydration.ts` (A7): sin `data-hydration` o sin `IntersectionObserver`, carga al instante | Cargar de más es preferible a no cargar la interfaz | `hydration.ts` |
+| A16 | Las pruebas de `platform/` corren en el entorno `node` con dobles (`Storage`, `IntersectionObserver`) y el Web Crypto de Node; sin umbral de cobertura | §11 fija el umbral solo en `core` y `domain`; el comportamiento real en los navegadores lo cubren las E2E (F0b) | `src/platform/*.test.ts` |
+| A17 | Casos nuevos de `tests/gates/`: `domain` importa `platform` (pasos 2 y 3) | Ejemplo de la §12 | `cases.ts` |
+| A18 | El caso de cobertura de `tests/gates/` usa un archivo con 500 ramas sin cubrir y una firma sin porcentaje fijo | Con las ramas cubiertas de `versioned-store.ts`, el 50 % de un solo archivo ya no bajaba del 90 % el umbral global, y el caso dejó de fallar (CI de la PR #21). Se mantiene el umbral global de la §11 | `cases.ts` |
 
 ## División de la F0a en sesiones (aprobada)
 
