@@ -1,6 +1,10 @@
 ---
-// Documento base (PLAN §5.7): `<html lang>`, `canonical` y `hreflang`. Las 404 no
-// tienen ruta: no emiten `canonical` ni `hreflang`. El diseño llega en la tarea 0.6.
+// Documento base: `<html lang>`, `canonical` y `hreflang` (PLAN §5.7); CSS global y
+// script de tema (§10). Las 404 no tienen ruta: no emiten `canonical` ni `hreflang`.
+import { themeScript } from '../components/theme.ts';
+import '../design/reset.css';
+import '../design/tokens.css';
+import '../design/base.css';
 import { alternatesFor, defaultLocale, locales, type Locale, type Route } from '../i18n';
 
 interface Props {
@@ -23,6 +27,8 @@ const absolute = (path: string): string => new URL(path, site).href;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <script is:inline set:html={themeScript} />
     <title>{title}</title>
     <meta name="description" content={description} />
     {alternates && (

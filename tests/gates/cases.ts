@@ -139,6 +139,18 @@ export const cases: GateCase[] = [
     expected: /Coverage for branches \(50%\) does not meet global threshold \(90%\)/,
   },
   {
+    step: 4,
+    name: 'color con contraste insuficiente',
+    command: ['test:coverage'],
+    files: {
+      'src/design/tokens.css': replaceOnce(
+        '--color-text-muted: light-dark(oklch(45% ',
+        '--color-text-muted: light-dark(oklch(80% ',
+      ),
+    },
+    expected: /color-text-muted sobre color-bg \(light\)/,
+  },
+  {
     step: 5,
     name: 'build que falla',
     command: ['build'],
