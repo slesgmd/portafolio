@@ -65,6 +65,9 @@ const pairs: readonly [foreground: string, background: string, minRatio: number]
   ['color-danger', 'color-surface', 4.5],
   ['color-border-strong', 'color-bg', 3],
   ['color-border-strong', 'color-surface', 3],
+  ['color-on-accent', 'color-accent', 4.5],
+  ['color-focus', 'color-bg', 3],
+  ['color-focus', 'color-surface', 3],
 ];
 
 describe('tokens de color', () => {

@@ -14,8 +14,9 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 - **Sesión 5:** cerrada (18/10/2026). **Bloque 2** (0.3 y 0.4): ajuste de Renovate (PR #10), Cloudflare y `deploy.yml` (PR #11), CSP, cabeceras y `_redirects` (PR #12). Decisiones R1–R3, C1–C6 y G1–G3.
 - **Sesión 6:** cerrada (18/10/2026). **Bloque 3** (0.5, 0.6a y 0.6b): i18n (PR #14), tokens, capas y tema (PR #15), layout y componentes (PR #16). Decisiones T1–T19, tomadas sin consultar, más abajo.
 - **Sesión 7:** cerrada (18/10/2026). Regla de estilo de `AGENTS.md` (PR #18) y limpieza de comentarios (PR #19), pedidas por el usuario. **Bloque 4** (0.7a, 0.7b y 0.7c): validador y decisión 6 (PR #20), `core/` y `platform/` (PR #21), registro, índice y ruta dinámica (PR #22). Decisiones A1–A26, tomadas sin consultar, más abajo.
-- **Siguiente sesión:** 8 → **bloque 5** (0.8 y 0.9).
+- **Sesión 8:** en curso (19/10/2026). **Bloque 5** (0.8 y 0.9): entrevista al usuario para los textos y la dirección de diseño.
 - **0.7c comprobada en producción (18/10/2026, tras la PR #22):** `/es/herramientas/` y `/en/tools/` → 200 con las cabeceras de `/*`; el índice indica que no hay herramientas; la cabecera enlaza a él y el sitemap lo incluye.
+- **Revisión manual en navegador (usuario, 19/10/2026):** el tema no parpadea al recargar con `Claro` u `Oscuro` elegido, el interruptor funciona con teclado y no hay desplazamiento horizontal a 320 px (§9, §10).
 - **Producción (18/10/2026):** `https://portafolio.s-lesgmd.workers.dev`, desplegado por `deploy.yml` desde `main` (primer despliegue con la PR #11; versión `e6a65a86-704e-4c34-a499-526a7dd16425`). Entorno `production` de GitHub restringido a `main` (creado con `gh api`, autorizado por el usuario), con `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` cargados por el usuario.
 - **Comprobado a mano en producción tras la PR #12:** `/` → 302 a `/es/`; `/es/` → 200 con todas las cabeceras de `/*` y la `<meta>` CSP; `/es` → 307 a `/es/`; rutas inexistentes → 404 con las cabeceras. Faltan las 404 por idioma (0.5) y la capa 3 en una URL real (no hay archivos en `/_astro/` todavía).
 - **0.6b comprobada en producción (18/10/2026, tras la PR #16):** `/_astro/Base.*.css` recibe la CSP de la capa 3 (`default-src 'self'; connect-src 'none'`, además de la de `/*`) y `Cache-Control: public, max-age=31536000, immutable`; el `<style>` del orden de capas va en `<head>`; las páginas y las 404 por idioma responden como antes.
@@ -40,12 +41,13 @@ Indicaciones del usuario por bloque:
 
 - **Bloque 1:** dos PR (pruebas negativas y Renovate). `tests/gates/` reutiliza `scripts/check-provenance.test.ts` en lugar de duplicarlo. Renovate no lleva ADR: ya lo deciden el ADR 0002 y la §7, y `renovate.json` solo lo implementa.
 - **Bloque 4:** en la decisión 6 se aplica la recomendación del plan. Como validador se elige el de menor peso medido que cubra lo necesario.
+- **Bloque 5 (entrevista, sesión 8):** estudiante de Computer Science en UTEC (Perú), textos en primera persona. Público: el propio usuario y otros desarrolladores que usen las herramientas; en segundo plano, reclutadores o empresas para prácticas. El inicio dice primero qué es el sitio (herramientas en el navegador que no envían datos) y luego, en una línea, quién es. Sin mencionar Ontos. Fuentes del sistema (prioridad a la velocidad). Si cambia la paleta, se escribe su ADR. Los textos y los tokens se enseñan antes de fusionar. Textos de "sobre mí" redactados por el usuario (en `es.ts` y `en.ts`). Diseño aprobado: técnico y sobrio, títulos en la monoespaciada del sistema (con Cascadia Mono), acento ámbar, grises cálidos, oscuro como tema principal (ADR 0015); pares nuevos de texto sobre el acento y de foco (≥ 3:1) en `contrast.test.ts`. Textos de inicio y `meta description` redactados por el usuario; el inicio no anuncia herramientas futuras: lista las publicadas y enlaza al índice. Verificado antes de publicar la frase de privacidad: sin analítica (ni script de terceros en la página de producción ni código de Worker; la CSP de documento es `default-src 'self'`) y el plan solo prevé Web Workers del navegador (§5.8), ninguna herramienta envía datos.
 
 ## Siguiente paso concreto
 
-1. **Bloque 5** (0.8 y 0.9): textos de inicio y "sobre mí" en los dos idiomas (los aporta el usuario), revisión de los ADR 0001–0014 y redacción de los que falten (0007 propuesto), entrada de la F0a en `CHANGELOG.md` y recalibración de las estimaciones.
-2. La capa 3 sobre un script real de `/_astro/` ya se comprobó con `wrangler dev` y una herramienta temporal (ADR 0014). En producción queda para la primera herramienta real (F1).
-3. **Revisión manual pendiente (usuario):** en un navegador real, que el tema no parpadea al recargar con `Claro` u `Oscuro` elegido, que el interruptor funciona con teclado, y el reflujo a 320 px con zoom al 200 % (§9). En esta sesión no hubo navegador disponible.
+1. **0.8:** PR `feat/contenido-inicio-sobre-mi` abierta, a la espera de que el usuario revise los textos y los tokens antes de fusionar. Después, comprobar en producción `/es/`, `/en/`, `/es/sobre-mi/` y `/en/about/`.
+2. **0.9:** revisión de los ADR 0001–0015 y redacción de los que falten (0007 propuesto), entrada de la F0a en `CHANGELOG.md` y recalibración de las estimaciones.
+3. La capa 3 sobre un script real de `/_astro/` ya se comprobó con `wrangler dev` y una herramienta temporal (ADR 0014). En producción queda para la primera herramienta real (F1).
 
 ## Tareas cerradas
 
@@ -70,6 +72,7 @@ Indicaciones del usuario por bloque:
 | 0.7a Validador (ADR 0011), decisión 6 y aceptación del ADR 0005 | `feat: elige Valibot como validador y fija la interfaz sin framework` (PR #20, `a010eec`) | 0,4 |
 | 0.7b `core/` (puertos y persistencia versionada) y `platform/` | `feat: añade los puertos de core, la persistencia versionada y platform` (PR #21, `58cb6af`) | 0,4 |
 | 0.7c Registro, índice de herramientas, ruta dinámica y ADR 0014 | `feat: añade el registro, el índice de herramientas y su ruta dinámica` (PR #22, `15a211e`) | 0,5 |
+| 0.8 Textos de inicio y "sobre mí", paleta ámbar y ADR 0015 | `feat: añade los textos de inicio y sobre mí y la paleta ámbar` (PR pendiente de fusionar) | 0,75 |
 
 ## Decisiones tomadas
 
@@ -216,6 +219,23 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 | A25 | Casos nuevos de `tests/gates/`: `meta.ts` inválido, slug duplicado y falta `ui/Tool.astro` (paso 5); texto de herramienta que falta (pasos 2 y 5) | Ejemplos de la §12 para el registro y la i18n de las herramientas | `cases.ts` |
 | A26 | README: secciones "Arquitectura" y "Agregar una herramienta" | §15 | `README.md` |
 
+### Decidido sin consultar (sesión 8, bloque 5)
+
+| # | Decisión | Motivo | Dónde queda |
+|---|---|---|---|
+| E1 | El nombre del sitio es una sola constante, `siteName` en `src/i18n/site.ts`, y no se traduce: la versión en inglés pasa de "Portfolio" a "Portafolio". Se eliminan `site.name`, `home.title` y `home.heading` de los diccionarios | Indicación del usuario: una sola constante. Es un nombre propio | `src/i18n/site.ts` |
+| E2 | `ToolList.astro` compartido por el inicio y el índice de herramientas; sin herramientas no pinta nada | El registro ya da `tools` y `textsFor`; evita duplicar la lista | `src/components/ToolList.astro` |
+| E3 | `::selection` con el acento de fondo y `--color-on-accent` | Sin esto, el navegador pinta la selección en su azul por defecto, que el usuario descartó. Es el único uso del acento como fondo | `base.css`, ADR 0015 |
+| E4 | `--color-focus` como token propio, con el mismo valor que el acento | El par de 3:1 del foco se comprueba aunque el acento cambie | `tokens.css`, ADR 0015 |
+| E5 | Botón activo del interruptor de tema: superficie y texto en el acento, como en la vista previa aprobada | Sustituye la inversión de texto y fondo | `ThemeToggle.astro` |
+| E6 | Los nombres de herramienta de la lista van en `--font-heading` | Coherencia con los títulos | `ToolList.astro` |
+| E7 | "Sobre mí" usa la `meta description` del sitio | El usuario no dio una propia | `[about]/index.astro` |
+| E8 | La prueba de `messages` compara `tools.title` en lugar de `site.name` | `site.name` ya no existe | `i18n.test.ts` |
+
+## Textos provisionales
+
+- Nombre del sitio: "Portafolio" (`siteName`, decisión del usuario en la sesión 8).
+
 ## División de la F0a en sesiones (aprobada)
 
 **Regla de los ADR (ajuste del usuario):** cada ADR se escribe en la sesión donde se toma su decisión, no todos en la 0.9. Si un ADR reúne decisiones de varias sesiones, queda "propuesto" y se acepta en la última sesión que lo completa. La 0.9 queda para revisar y completar los ADR que falten, el `CHANGELOG.md` y la recalibración.
@@ -295,3 +315,4 @@ Se resuelven en su tarea, sin cambiar el plan ahora:
 - Atribución desactivada en los ajustes de usuario del asistente (fuera del repositorio); el hook `commit-msg` de la 0.1b es la segunda barrera.
 - La `<meta>` CSP que inserta Astro queda detrás de los elementos de `<head>` del layout, y una CSP en `<meta>` solo rige lo que viene después (ADR 0013). Hoy solo hay contenido estático propio delante. Tenerlo en cuenta en `verify-dist.ts` (0.10).
 - `public/robots.txt` no existe (T8): decidir en la 0.11 o al fijar el dominio.
+- Revisión en navegador del reflujo a 320 px con los títulos monoespaciados (ADR 0015), al revisar la PR de la 0.8.

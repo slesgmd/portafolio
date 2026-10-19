@@ -56,8 +56,8 @@ describe('compareKeys', () => {
 
 describe('messages', () => {
   it('devuelve el diccionario de cada idioma', () => {
-    expect(messages('es').site.name).toBe('Portafolio');
-    expect(messages('en').site.name).toBe('Portfolio');
+    expect(messages('es').tools.title).toBe('Herramientas');
+    expect(messages('en').tools.title).toBe('Tools');
   });
 });
 

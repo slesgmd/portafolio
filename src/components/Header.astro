@@ -1,5 +1,5 @@
 ---
-import { messages, pathFor, type Locale, type Route } from '../i18n';
+import { messages, pathFor, siteName, type Locale, type Route } from '../i18n';
 import LangSwitch from './LangSwitch.astro';
 import ThemeToggle from './ThemeToggle.astro';
 
@@ -23,7 +23,7 @@ const current = (target: Route) => (route?.kind === target.kind ? 'page' : undef
     href={pathFor(locale, { kind: 'home' })}
     aria-current={current({ kind: 'home' })}
   >
-    {t.site.name}
+    {siteName}
   </a>
   <nav aria-label={t.nav.label}>
     <ul>
@@ -56,7 +56,8 @@ const current = (target: Route) => (route?.kind === target.kind ? 'page' : undef
 
     .brand {
       color: var(--color-text);
-      font-weight: 700;
+      font-family: var(--font-heading);
+      font-weight: 600;
       text-decoration: none;
     }
 

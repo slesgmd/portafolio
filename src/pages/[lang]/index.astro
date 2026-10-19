@@ -1,6 +1,7 @@
 ---
 import type { GetStaticPaths } from 'astro';
-import { locales, messages, type Locale, type Route } from '../../i18n';
+import ToolList from '../../components/ToolList.astro';
+import { locales, messages, pathFor, siteName, type Locale, type Route } from '../../i18n';
 import Base from '../../layouts/Base.astro';
 
 export const getStaticPaths = (() =>
@@ -11,7 +12,14 @@ const t = messages(locale);
 const route: Route = { kind: 'home' };
 ---
 
-<Base locale={locale} title={t.site.name} description={t.site.description} route={route}>
-  <h1>{t.home.heading}</h1>
-  <p>{t.home.body}</p>
+<Base locale={locale} title={siteName} description={t.site.description} route={route}>
+  <h1>{siteName}</h1>
+  <p>{t.home.lead}</p>
+  <ToolList locale={locale} />
+  <p>
+    <a href={pathFor(locale, { kind: 'tools' })}>{t.home.toolsLink}</a>
+  </p>
+  <p>
+    {t.home.intro} <a href={pathFor(locale, { kind: 'about' })}>{t.home.aboutLink}</a>.
+  </p>
 </Base>
