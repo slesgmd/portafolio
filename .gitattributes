@@ -1,8 +1,6 @@
-# Saltos de línea LF en el repositorio y en la copia de trabajo,
-# independientemente de core.autocrlf.
+# LF también en la copia de trabajo, con cualquier valor de core.autocrlf.
 * text=auto eol=lf
 
-# Binarios
 *.png binary
 *.jpg binary
 *.jpeg binary

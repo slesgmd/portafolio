@@ -1,5 +1,5 @@
-// Prueba de scripts/check-provenance.ts (PLAN §12, paso 3): lo ejecuta en
-// repositorios git temporales, aislados de la configuración global y del sistema.
+// Repositorios temporales sin la configuración global ni la del sistema, para que el
+// resultado no dependa del equipo.
 import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -40,7 +40,6 @@ function createRepo() {
   git('init', '-q', '-b', 'main');
 
   return {
-    // Escribe los archivos y crea un commit con ellos; devuelve su hash.
     commit(message: string[], files: Record<string, string> = {}) {
       for (const [path, content] of Object.entries(files)) {
         mkdirSync(dirname(join(repo, path)), { recursive: true });

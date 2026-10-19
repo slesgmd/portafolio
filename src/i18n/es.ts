@@ -1,5 +1,4 @@
-// Textos de interfaz en español: fuente de verdad de las claves (PLAN §5.7).
-// `en.ts` debe tener exactamente las mismas.
+// Fuente de verdad de las claves (§5.7).
 
 export const es = {
   site: {
@@ -21,7 +20,7 @@ export const es = {
   },
   langSwitch: {
     label: 'Idioma',
-    // Nombre de este idioma, escrito en él: el selector lo muestra en los demás.
+    // Escrito en este idioma: el selector lo muestra en los demás.
     name: 'Español',
   },
   home: {

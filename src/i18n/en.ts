@@ -1,5 +1,3 @@
-// Textos de interfaz en inglés. `satisfies` hace que una clave faltante o sobrante
-// sea un error de compilación (PLAN §5.7).
 import type { Dict } from './dict.ts';
 import type { es } from './es.ts';
 

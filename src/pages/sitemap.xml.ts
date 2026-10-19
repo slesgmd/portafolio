@@ -1,6 +1,4 @@
-// Sitemap con alternativas por idioma (PLAN §5.7, ADR 0006). Cada página aparece una
-// vez por idioma, con un `xhtml:link` por cada idioma y `x-default`. Las páginas de
-// herramientas se añaden con el registro (tarea 0.7).
+// Endpoint propio en lugar de `@astrojs/sitemap` (ADR 0006).
 import type { APIRoute } from 'astro';
 import { alternatesFor, defaultLocale, locales, type Route } from '../i18n';
 

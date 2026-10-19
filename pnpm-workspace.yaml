@@ -1,16 +1,14 @@
-# Configuración de pnpm (ADR 0002). `.npmrc` solo se usa para autenticación y registro.
+# ADR 0002. pnpm 12 solo lee de `.npmrc` la autenticación y el registro.
 
-# Edad mínima de publicación: 7 días, en minutos (§7, §11).
+# 7 días, en minutos (§11).
 minimumReleaseAge: 10080
 
-# Versiones exactas en package.json; Renovate las actualiza.
+# Versiones exactas; Renovate las actualiza.
 savePrefix: ''
 
-# Falla si la versión de Node no cumple `engines`.
 engineStrict: true
 
-# Scripts de instalación: pnpm los bloquea por defecto (strictDepBuilds). La lista
-# blanca `allowBuilds` admite solo los que justifique un ADR. Hoy ninguno se permite.
+# Cada script de instalación permitido requiere un ADR.
 allowBuilds:
   # Dependencias de wrangler (ADR 0003). Su `postinstall` comprueba el binario del
   # paquete de plataforma, que ya instala el lockfile, y si falta lo descarga fuera de
@@ -18,7 +16,7 @@ allowBuilds:
   esbuild: false
   workerd: false
 
-# Overrides (ADR 0005). Cada uno indica cuándo se retira.
+# Cada override indica cuándo se retira (ADR 0005).
 overrides:
   # ESLint 10 eliminó `context.getPhysicalFilename()`; eslint-module-utils 2.12.1,
   # fijada por eslint-plugin-boundaries 7.2.0, resuelve entonces los imports de los

@@ -1,7 +1,5 @@
-# Pipeline por PR (PLAN §12). Durante la F0a solo existen los pasos 1–5, y cada uno
-# bloquea la fusión; el job `Compuertas` verifica que cada uno falla cuando debe.
-# Las acciones se fijan por SHA de commit (§7). `deploy.yml` lo reutiliza para repetir
-# los pasos al fusionar en `main` (§12).
+# PLAN §12. Las acciones se fijan por SHA de commit (§7). `deploy.yml` lo reutiliza para
+# repetir los pasos al fusionar en `main`.
 name: CI
 
 on:
@@ -78,8 +76,7 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-  # Pruebas negativas (§12, principio 4): cada caso de `tests/gates/` debe hacer
-  # fallar su compuerta. Corre en paralelo con los pasos 1-5.
+  # Pruebas negativas (principio 4).
   compuertas:
     name: Compuertas
     runs-on: ubuntu-24.04

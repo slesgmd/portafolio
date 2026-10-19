@@ -1,17 +1,8 @@
-// Pruebas negativas de las compuertas (PLAN §12, principio 4).
-//
-// Para cada caso de `cases.ts`: copia los archivos versionados a un directorio
-// temporal, enlaza `node_modules` (salvo en el paso 1), escribe los archivos del
-// caso y ejecuta el comando de su paso. El caso pasa si el comando falla y su
-// salida contiene la firma esperada. Antes comprueba que `ci.yml` llama a cada
-// comando, para que los casos prueben las mismas compuertas que la CI.
-//
-// Las pruebas reutilizadas (`reusedTests`) se ejecutan en el propio repositorio y
-// deben pasar.
+// Principio 4 y PLAN §12 (ADR 0010).
 //
 // Uso: node tests/gates/run-gates.ts [filtro]
 //   El filtro selecciona los casos cuyo nombre lo contiene. Los casos corren uno
-//   detrás de otro: comparten las cachés de `node_modules`.
+//   detrás de otro porque comparten las cachés de `node_modules`.
 import { spawnSync } from 'node:child_process';
 import {
   cpSync,
@@ -62,9 +53,8 @@ const pnpm = (args: string[], cwd: string) => {
   return { status: result.status, output };
 };
 
-// Enlaces del primer nivel de `node_modules` (y de sus ámbitos `@x/`) con su
-// destino. Si un caso los cambia, algo escribió en el `node_modules` real a través
-// del enlace de la copia, y el ejecutor se detiene.
+// Si un caso cambia estos enlaces, algo escribió en el `node_modules` real a través
+// del enlace de la copia, y el ejecutor se detiene (ADR 0010).
 const nodeModulesLinks = (): string => {
   const base = join(root, 'node_modules');
   const entries = (dir: string): string[] =>
@@ -83,8 +73,7 @@ const tracked = (): string[] => {
   return result.stdout.split('\0').filter(Boolean);
 };
 
-// Copia de trabajo de los archivos versionados.
-const copyRepo = (dir: string) => {
+const copyTrackedFiles = (dir: string) => {
   for (const file of tracked()) {
     const source = join(root, file);
     if (!existsSync(source)) continue; // Borrado en la copia de trabajo y aún versionado.
@@ -97,7 +86,7 @@ const runCase = (gate: GateCase): string[] => {
   const dir = mkdtempSync(join(tmpdir(), 'gates-'));
   const link = join(dir, 'node_modules');
   try {
-    copyRepo(dir);
+    copyTrackedFiles(dir);
     if (!gate.withoutNodeModules) symlinkSync(join(root, 'node_modules'), link, 'junction');
     for (const [file, content] of Object.entries(gate.files)) {
       const path = join(dir, file);

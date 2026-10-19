@@ -1,4 +1,3 @@
-// Configuración de Vitest (ADR 0010).
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({

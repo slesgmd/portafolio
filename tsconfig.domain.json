@@ -1,5 +1,5 @@
 {
-  // Capas puras (§5.2): sin tipos del DOM ni de Node. Usar `document`, `window`,
+  // Capas puras (§5.2): sin tipos del DOM ni de Node, así que usar `document`,
   // `localStorage`, `crypto` o `TextEncoder` en ellas es un error de tipos.
   "extends": "astro/tsconfigs/strictest",
   "compilerOptions": {
