@@ -1,5 +1,6 @@
 # Pipeline por PR (PLAN §12). Durante la F0a solo existen los pasos 1–5, y cada uno
-# bloquea la fusión. Las acciones se fijan por SHA de commit (§7).
+# bloquea la fusión; el job `Compuertas` verifica que cada uno falla cuando debe.
+# Las acciones se fijan por SHA de commit (§7).
 name: CI
 
 on:
@@ -57,3 +58,30 @@ jobs:
 
       - name: 5. Build
         run: pnpm build
+
+  # Pruebas negativas (§12, principio 4): cada caso de `tests/gates/` debe hacer
+  # fallar su compuerta. Corre en paralelo con los pasos 1-5.
+  compuertas:
+    name: Compuertas
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: pnpm (versión de packageManager)
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - name: Node (versión de .nvmrc)
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Instalación
+        run: pnpm install --frozen-lockfile
+
+      - name: Pruebas negativas de los pasos 1-5
+        run: pnpm gates
