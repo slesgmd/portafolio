@@ -1,6 +1,6 @@
 # Progreso
 
-Memoria entre sesiones. Al empezar, leer este archivo y la sección del plan de la tarea actual.
+Memoria entre sesiones. Al empezar, leer este archivo y las secciones del plan de las tareas del bloque actual. Se trabaja por bloques (protocolo más abajo).
 
 Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores están en `C:\dev\Portafolio-historico\`.
 
@@ -10,17 +10,37 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 - **Sesión 1:** cerrada (18/10/2026). Revisiones 1.3 y 1.4 del plan, entorno y tarea **0.1a**.
 - **Sesión 2:** cerrada (18/10/2026). Tarea **0.1b**, hecha de forma autónoma mientras el usuario estaba ausente. Las decisiones tomadas sin consultar (D1–D11) están más abajo; el usuario aprobó D1–D10.
 - **Sesión 3:** cerrada (18/10/2026). Tarea **0.2a**: repositorio público en GitHub, `ci.yml` con los pasos 1–5, protección de `main` y ADR 0010 propuesto. Las decisiones (S1–S8) están más abajo.
-- **Siguiente sesión:** 4 → tarea **0.2b** (`tests/gates/` y job de pruebas negativas).
+- **Sesión 4:** en curso (18/10/2026). **Bloque 1** (0.2b). Desde esta sesión se trabaja por bloques. La PR de pruebas negativas está lista; falta la de Renovate.
+- **Protección de `main` comprobada (18/10/2026):** un push directo de prueba fue rechazado con GH006 ("Changes must be made through a pull request").
+
+## Bloques de la F0a (decisión del usuario, sesión 4)
+
+| Bloque | Tareas | Estado |
+|---|---|---|
+| 1 | 0.2b (compuertas y Renovate) | en curso |
+| 2 | 0.3 y 0.4 (Cloudflare y seguridad) | pendiente |
+| 3 | 0.5, 0.6a y 0.6b (i18n y diseño) | pendiente |
+| 4 | 0.7a, 0.7b y 0.7c (arquitectura) | pendiente |
+| 5 | 0.8 y 0.9 (contenido y cierre) | pendiente |
+
+Protocolo (decisión del usuario, sesión 4). **Pendiente de llevarlo a `AGENTS.md`:** el permiso del asistente bloqueó ese commit (ver Pendientes). Mientras tanto, rige el texto de aquí:
+
+1. Al empezar cada sesión, leer este archivo y las secciones del plan de las tareas del bloque actual.
+2. Dentro de un bloque no se pide ok por tarea. Cada tarea va en su rama y con su PR, y se fusiona con squash cuando la CI está en verde. Después se sigue con la siguiente.
+3. Solo se detiene el trabajo para acciones en las cuentas del usuario (GitHub, Cloudflare, Renovate), decisiones irreversibles o algo que contradiga el plan. Para lo demás se elige la opción más conservadora coherente con el plan, y se anota aquí como "decidido sin consultar".
+4. Al cerrar cada tarea, y antes de seguir, actualizar este archivo: estado, siguiente paso, tarea cerrada con su commit y sus horas, decisiones y pendientes.
+5. Al terminar el bloque, entregar un resumen con lo hecho, lo decidido sin consultar y las horas pendientes, y terminar con la línea "Listo para /clear".
+
+Indicaciones del usuario por bloque:
+
+- **Bloque 1:** dos PR (pruebas negativas y Renovate). `tests/gates/` reutiliza `scripts/check-provenance.test.ts` en lugar de duplicarlo. Renovate no lleva ADR: ya lo deciden el ADR 0002 y la §7, y `renovate.json` solo lo implementa.
+- **Bloque 4:** en la decisión 6 se aplica la recomendación del plan. Como validador se elige el de menor peso medido que cubra lo necesario.
 
 ## Siguiente paso concreto
 
-1. Plan breve de la 0.2b y esperar el ok. Todo cambio en `main` entra ya por PR, con el check `Pasos 1-5` en verde y la rama actualizada.
-2. **Al empezar la 0.2b (decisión del usuario):** comprobar la protección de `main` con un push directo de prueba, que debe ser rechazado. Si no lo es, revertir de inmediato y revisar la protección.
-3. **Para la 0.2b** (§12, pruebas negativas de las compuertas):
-   - Casos genéricos de los pasos 1 a 5 sobre fixtures propios de `tests/gates/`: lockfile desactualizado (1); error de tipos (2); violación de ESLint, de formato y de procedencia (3); prueba que falla y cobertura bajo el umbral (4); build que falla (5). Los casos específicos de los pasos 2, 3 y 5 llegan en la 0.5 y la 0.7.
-   - Un job en `ci.yml` que verifica que cada caso falla en su compuerta. Si es un job aparte, añadirlo como check requerido en la protección de `main`.
-   - La prueba de procedencia ya cubre sus casos en `scripts/check-provenance.test.ts`. Decidir si `tests/gates/` la reutiliza o la duplica.
-4. **Renovate en la 0.2b (decisión del usuario):** `renovate.json` según la §7: edad mínima de 7 días, actualizaciones agrupadas y actualización de los SHA de las acciones. Incluir los pasos para que el usuario instale la app de Renovate en el repositorio; la instala él.
+1. Fusionar la PR de pruebas negativas de la 0.2b cuando la CI esté en verde.
+2. **Renovate** (PR `chore/renovate`): `renovate.json` según la §7, con edad mínima de 7 días, actualizaciones agrupadas y actualización de los SHA de las acciones. Incluir los pasos para que el usuario instale la app de Renovate en el repositorio; la instala él.
+3. Cerrar el bloque 1 con el resumen y pedir al usuario las acciones en su cuenta: añadir el check `Compuertas` como requerido en `main`, instalar Renovate y aplicar el cambio de `AGENTS.md`.
 
 ## Tareas cerradas
 
@@ -31,6 +51,7 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 | 0.1a Repositorio base | `chore: inicializa el repositorio con Astro y TypeScript` | 0,5 |
 | 0.1b ESLint, Prettier, hooks y ADR 0005 propuesto | `chore: configura ESLint, Prettier y los hooks de git` | 0,25 |
 | 0.2a GitHub, `ci.yml` pasos 1–5, protección de `main` y ADR 0010 propuesto | `ci: añade el pipeline mínimo con los pasos 1 a 5 y la comprobación de procedencia` (PR #1) | 0,25 |
+| 0.2b (1/2) Pruebas negativas de los pasos 1–5 y job `Compuertas` | `test: añade las pruebas negativas de las compuertas 1 a 5` | pendiente (las registra el usuario) |
 
 ## Decisiones tomadas
 
@@ -80,6 +101,19 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 | S6 | `pre-commit`: Vitest obligatorio y `MSYS_NO_PATHCONV=1` | El sh de Git en Windows convertía `/domain/` en `C:/Program Files/Git/domain/` y el filtro no seleccionaba nada | `.githooks/pre-commit`, ADR 0010 |
 | S7 | `ci.yml`: un solo job (`Pasos 1-5`) con los cinco pasos en orden; acciones fijadas por SHA (checkout 7.0.1, setup-node 7.1.0, pnpm/action-setup 6.1.0, todas con ≥ 7 días); `contents: read`; `persist-credentials: false` | Una instalación para todos los pasos; cualquier fallo bloquea la fusión | `.github/workflows/ci.yml` |
 | S8 | Protección de `main`: solo por PR (0 aprobaciones), check `Pasos 1-5` requerido (app de GitHub Actions) con la rama actualizada, también para administradores, sin push forzado ni borrado. Solo squash, con borrado automático de la rama | Aprobado por el usuario | GitHub |
+
+### Decidido sin consultar (sesión 4, bloque 1)
+
+| # | Decisión | Motivo | Dónde queda |
+|---|---|---|---|
+| B1 | Ejecutor `tests/gates/run-gates.ts` (`pnpm gates`): copia los archivos versionados a un directorio temporal, enlaza `node_modules` (salvo en el paso 1), escribe los archivos del caso y ejecuta el comando de `ci.yml`. Pasa si falla **y** la salida contiene la firma esperada | Prueba la configuración real de cada compuerta; la firma evita contar como acierto un fallo por otro motivo | ADR 0010 |
+| B2 | Casos en `tests/gates/cases.ts`, con el contenido de los archivos como texto | Sin fixtures sueltos que excluir de ESLint, Prettier, `astro check` y Vitest | ADR 0010 |
+| B3 | Script y no `*.test.ts` | Como prueba, el paso 4 lo ejecutaría y su caso del paso 4 lo relanzaría de forma recursiva | ADR 0010 |
+| B4 | El ejecutor comprueba que `ci.yml` contiene `pnpm <comando>` de cada caso | Los casos deben probar las mismas compuertas que la CI | `run-gates.ts` |
+| B5 | Caso extra del paso 3: `core` importa `platform` (fronteras) | Es genérico y barato. El de `domain` → `platform` (pasos 2 y 3) sigue en la 0.7 | `cases.ts` |
+| B6 | `verifyDepsBeforeRun` desactivado en los procesos del ejecutor, y comprobación de los enlaces de `node_modules` tras cada caso | La instalación previa de pnpm 12 reescribió los enlaces del `node_modules` real a través del enlace de la copia (pasó en local y se reparó con `pnpm install --offline`) | ADR 0010 |
+| B7 | Job `Compuertas` aparte, en paralelo con `Pasos 1-5` | Plan §12 ("un job") | `ci.yml` |
+| B8 | Una sola PR (la de las pruebas negativas) lleva también los cambios de este archivo de la sesión 4 | El commit con `AGENTS.md` quedó bloqueado (ver Pendientes) | — |
 
 ## División de la F0a en sesiones (aprobada)
 
@@ -150,6 +184,10 @@ Se resuelven en su tarea, sin cambiar el plan ahora:
 
 ## Pendientes y bloqueos
 
+- **Acciones en la cuenta del usuario (bloque 1):**
+  - Añadir el check `Compuertas` como requerido en la protección de `main`, junto a `Pasos 1-5`.
+  - Aplicar en `AGENTS.md` el protocolo por bloques (el texto está arriba). El permiso del asistente bloqueó ese commit por tratarse de su propio archivo de instrucciones; lo aplica el usuario o autoriza el permiso.
+
 - PLAN §12 dice que los hooks siguen "el mismo esquema que en Ontos"; ya no es así (I6). Ajustar el texto en la próxima revisión del plan, con ok del usuario.
 - `eslint-plugin-jsx-a11y-x` tiene un solo mantenedor visible. Volver a `eslint-plugin-jsx-a11y` cuando admita ESLint 10 (ADR 0005).
 - Retirar el override de `eslint-module-utils` cuando `eslint-plugin-boundaries` dependa de la 2.14.0 o de una posterior. Revisarlo en cada PR de Renovate que lo actualice.
@@ -157,5 +195,4 @@ Se resuelven en su tarea, sin cambiar el plan ahora:
 - `ui/` no puede importar `astro` ni `astro:*`. Si `Tool.astro` necesita sus tipos, se decide en la 0.7.
 - **Conectar `tsc -p tsconfig.domain.json` al paso 2 en cuanto haya archivos en `core/` (tarea 0.7b).** Hoy falla con TS18003 porque `core/` y `domain/` están vacíos (ADR 0002). Añadirlo al paso 2 de `ci.yml` y a `pnpm check`.
 - Renovate no tenía tarea en la §14; el usuario lo asignó a la 0.2b. Reflejarlo en la §14 en la próxima revisión del plan, con ok del usuario.
-- La protección de `main` se comprobó por la API, no con un push rechazado: se comprueba con un push de prueba al empezar la 0.2b.
 - Atribución desactivada en los ajustes de usuario del asistente (fuera del repositorio); el hook `commit-msg` de la 0.1b es la segunda barrera.

@@ -18,6 +18,7 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "provenance": "node scripts/check-provenance.ts",
+    "gates": "node tests/gates/run-gates.ts",
     "hooks:install": "git config core.hooksPath .githooks"
   },
   "dependencies": {

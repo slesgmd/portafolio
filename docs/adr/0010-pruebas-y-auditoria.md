@@ -1,8 +1,8 @@
 # ADR 0010: Pruebas y auditoría
 
-- **Estado:** propuesto. Recoge las pruebas unitarias y la comprobación de procedencia (tarea 0.2a); se acepta en la tarea 0.11, con Playwright, axe y Lighthouse CI.
+- **Estado:** propuesto. Recoge las pruebas unitarias y la comprobación de procedencia (tarea 0.2a) y las pruebas negativas de las compuertas (tarea 0.2b); se acepta en la tarea 0.11, con Playwright, axe y Lighthouse CI.
 - **Fecha:** 18/10/2026
-- **Tarea:** 0.2a (Vitest, cobertura y procedencia); 0.11 (E2E y Lighthouse)
+- **Tarea:** 0.2a (Vitest, cobertura y procedencia); 0.2b (pruebas negativas de los pasos 1–5); 0.11 (E2E y Lighthouse)
 
 ## Contexto
 
@@ -44,6 +44,12 @@ Versiones verificadas el 18/10/2026 en npm; todas cumplen la edad mínima de 7 d
   - Falla si un mensaje tiene un trailer `Co-authored-by` o nombra al asistente de código o a su proveedor, o si un archivo versionado los nombra en su nombre o en su contenido. Omite el contenido de los archivos binarios (los que contienen un byte NUL).
   - Usa los mismos términos que `.githooks/commit-msg`, escritos con clases de caracteres, sin distinguir mayúsculas.
   - Su prueba (`scripts/check-provenance.test.ts`) ejecuta el script en repositorios git temporales, aislados de la configuración global y del sistema (`GIT_CONFIG_NOSYSTEM`, `GIT_CONFIG_GLOBAL`) y con fechas fijas. Casos: un repositorio limpio, un trailer `Co-authored-by`, un mensaje que nombra los términos (con distintas mayúsculas), el contenido de un archivo, el nombre de un archivo, los límites del rango y un archivo binario. Es la "prueba real" que el paso 4 necesita mientras `core/` y `domain/` estén vacíos.
+- **Pruebas negativas de las compuertas** (`tests/gates/`, tarea 0.2b):
+  - `tests/gates/cases.ts` declara los casos y `tests/gates/run-gates.ts` (`pnpm gates`) los ejecuta. El contenido de los archivos de cada caso va en `cases.ts` como texto: ninguna compuerta del propio repositorio lo revisa, y no hace falta excluirlo de ESLint, Prettier, `astro check` ni Vitest.
+  - Por cada caso, el ejecutor copia los archivos versionados a un directorio temporal, enlaza `node_modules`, escribe los archivos del caso y ejecuta el comando de su paso con pnpm, igual que `ci.yml`. El caso pasa solo si el comando falla **y** su salida contiene la firma esperada (`ERR_PNPM_OUTDATED_LOCKFILE`, `ts(2322)`, el id de la regla, el mensaje del umbral…). Así, un fallo por otro motivo no cuenta como acierto. Antes de cada caso comprueba que `ci.yml` llama a ese comando.
+  - Es un script y no un `*.test.ts`: si lo fuera, el paso 4 lo ejecutaría, y su propio caso del paso 4 volvería a lanzarlo de forma recursiva.
+  - Casos genéricos: lockfile desactualizado (1); error de tipos (2); violación de ESLint, violación de fronteras (`core` importa `platform`) y archivo sin formatear (3); prueba que falla y cobertura de ramas bajo el umbral (4); build que falla (5). La comprobación de procedencia (3) reutiliza `scripts/check-provenance.test.ts`, que el ejecutor lanza y que debe pasar, en lugar de duplicar sus casos (decisión del usuario). Los casos específicos de los pasos 2, 3 y 5 llegan en las tareas 0.5 y 0.7.
+  - El job `Compuertas` de `ci.yml` los ejecuta en paralelo con `Pasos 1-5`.
 - Playwright, `@axe-core/playwright`, fast-check y Lighthouse CI se deciden en sus tareas (F1 para fast-check, 0.11 para el resto) y completan este ADR.
 
 ## Consecuencias
@@ -51,4 +57,5 @@ Versiones verificadas el 18/10/2026 en npm; todas cumplen la edad mínima de 7 d
 - `@types/node` declara sus globales para todo el programa de `tsconfig.json`, incluidas `ui/` y `platform/`: allí, `process` o `Buffer` no darían un error de tipos. Las capas puras no se ven afectadas, porque `tsconfig.domain.json` usa `types: []` (§5.2). En el código de navegador, el error aparecería en el build o en el E2E.
 - El hook `pre-commit` ejecuta `vitest run --passWithNoTests src/core/ /domain/`. Se comprobó con archivos temporales que esos filtros seleccionan solo las pruebas de `src/core/` y de `src/tools/*/domain/`, no las de `ui/` ni las de `scripts/`. En Windows, el `sh` de Git convertía `/domain/` en una ruta absoluta (`C:/Program Files/Git/domain/`) y el filtro no seleccionaba nada; el hook lo evita con `MSYS_NO_PATHCONV=1`.
 - La prueba de la comprobación de procedencia crea repositorios git, así que necesita `git` en el `PATH` y tarda unos segundos.
-- Los casos de `tests/gates/` que verifican que el paso 4 falla (una prueba que falla, una cobertura bajo el umbral) llegan en la tarea 0.2b.
+- pnpm 12 lanza una instalación antes de cada script (`verifyDepsBeforeRun`). En una copia cuyo `node_modules` es un enlace, esa instalación rehízo los enlaces del `node_modules` real para que apuntaran a la copia, y al borrarla quedaron rotos (se comprobó en la tarea 0.2b). El ejecutor la desactiva en sus procesos (`pnpm_config_verify_deps_before_run=false`). Además compara los enlaces de `node_modules` antes y después de cada caso y se detiene si cambian, con la instrucción para repararlos (`pnpm install --frozen-lockfile`).
+- Los casos comparten las cachés de `node_modules` (`.vite`, `.astro`), así que corren uno detrás de otro. La ejecución completa tarda unos 25 s en local.

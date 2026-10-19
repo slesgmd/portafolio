@@ -41,13 +41,14 @@ Hooks de git:
 - `pre-commit` pasa Prettier y ESLint sobre los archivos preparados, y las pruebas de core y domain.
 - `commit-msg` valida el formato Conventional Commits y elimina las líneas de atribución.
 
-La CI (`.github/workflows/ci.yml`) ejecuta en cada PR los pasos 1–5 de la §12 del plan.
+La CI (`.github/workflows/ci.yml`) ejecuta en cada PR los pasos 1–5 de la §12 del plan y, en paralelo, sus pruebas negativas (`tests/gates/`).
 
 ## Probar
 
 ```sh
 pnpm test          # Vitest
 pnpm test:coverage # Vitest con cobertura (umbral en core y domain, ADR 0010)
+pnpm gates         # pruebas negativas: cada caso de tests/gates/ debe hacer fallar su compuerta
 ```
 
 Pendiente: Playwright y Lighthouse (F0b).
