@@ -11,6 +11,7 @@ interface Props {
 const { locale, route } = Astro.props;
 const t = messages(locale);
 const links: { route: Route; label: string }[] = [
+  { route: { kind: 'tools' }, label: t.tools.title },
   { route: { kind: 'about' }, label: t.about.title },
 ];
 const current = (target: Route) => (route?.kind === target.kind ? 'page' : undefined);

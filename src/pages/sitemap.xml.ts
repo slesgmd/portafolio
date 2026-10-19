@@ -1,8 +1,14 @@
 // Endpoint propio en lugar de `@astrojs/sitemap` (ADR 0006).
 import type { APIRoute } from 'astro';
 import { alternatesFor, defaultLocale, locales, type Route } from '../i18n';
+import { tools } from '../registry';
 
-const routes: readonly Route[] = [{ kind: 'home' }, { kind: 'about' }];
+const routes: readonly Route[] = [
+  { kind: 'home' },
+  { kind: 'tools' },
+  ...tools.map((entry): Route => ({ kind: 'tool', slug: entry.meta.slug })),
+  { kind: 'about' },
+];
 
 export const GET: APIRoute = ({ site }) => {
   if (site === undefined) throw new Error('Falta `site` en astro.config.ts');

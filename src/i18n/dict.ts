@@ -34,3 +34,13 @@ export const compareKeys = (
   }
   return { missing, extra };
 };
+
+// Al cargar el módulo, para que falle el build (ADR 0006).
+export const assertSameKeys = (label: string, reference: object, candidate: object): void => {
+  const { missing, extra } = compareKeys(reference as Tree, candidate as Tree);
+  if (missing.length > 0 || extra.length > 0) {
+    throw new Error(
+      `${label}: faltan claves [${missing.join(', ')}]; sobran claves [${extra.join(', ')}]`,
+    );
+  }
+};

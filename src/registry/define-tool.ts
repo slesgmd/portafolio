@@ -26,15 +26,16 @@ const toolMetaSchema: v.GenericSchema<unknown, ToolMeta> = v.strictObject({
 /** Solo tipa el `meta.ts`; la validación la hace el registro en el build (ADR 0011). */
 export const defineTool = (meta: ToolMeta): ToolMeta => meta;
 
-/** Errores como `ruta: mensaje`, o `mensaje` en la raíz. */
+/** Cada error como `ruta: mensaje`, o `mensaje` en la raíz. */
+export const formatIssues = (issues: readonly v.BaseIssue<unknown>[]): string[] =>
+  issues.map((issue) => {
+    const path = v.getDotPath(issue);
+    return path === null ? issue.message : `${path}: ${issue.message}`;
+  });
+
 export const parseToolMeta = (raw: unknown): Result<ToolMeta, readonly string[]> => {
   const result = v.safeParse(toolMetaSchema, raw);
-  if (result.success) return { ok: true, value: result.output };
-  return {
-    ok: false,
-    error: result.issues.map((issue) => {
-      const path = v.getDotPath(issue);
-      return path === null ? issue.message : `${path}: ${issue.message}`;
-    }),
-  };
+  return result.success
+    ? { ok: true, value: result.output }
+    : { ok: false, error: formatIssues(result.issues) };
 };

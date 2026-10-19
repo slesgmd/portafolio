@@ -41,8 +41,8 @@ Indicaciones del usuario por bloque:
 
 ## Siguiente paso concreto
 
-1. **Bloque 4**, tras la 0.7b (PR #21): **0.7c**, registro (`build-registry.ts` e `index.ts`), índice de herramientas y ruta dinámica, con los casos de `tests/gates/` del registro (paso 5: `meta.ts` inválido y `slug` duplicado). Al crear el índice, añadir su enlace a `Header.astro` y sus rutas al sitemap; la página de cada herramienta envuelve `Tool.astro` en un elemento con `data-hydration` (A7). Completar las secciones "Arquitectura" y "Agregar una herramienta" del README.
-2. Los scripts siguen inline (Astro inserta en línea el del interruptor), así que la comprobación de la capa 3 sobre un script real de `/_astro/` queda para el primero que se emita, como tarde con los workers de la F1. La regla ya se comprobó en producción sobre la hoja de estilos de `/_astro/`.
+1. **Bloque 4:** fusionar la 0.7c (PR #22) y cerrar el bloque en este archivo (commit de la 0.7c, siguiente sesión). Después, **bloque 5** (0.8 y 0.9).
+2. La capa 3 sobre un script real de `/_astro/` ya se comprobó con `wrangler dev` y una herramienta temporal (ADR 0014). En producción queda para la primera herramienta real (F1).
 3. **Revisión manual pendiente (usuario):** en un navegador real, que el tema no parpadea al recargar con `Claro` u `Oscuro` elegido, que el interruptor funciona con teclado, y el reflujo a 320 px con zoom al 200 % (§9). En esta sesión no hubo navegador disponible.
 
 ## Tareas cerradas
@@ -66,7 +66,8 @@ Indicaciones del usuario por bloque:
 | Regla de estilo en `AGENTS.md` (sin tarea del plan) | `docs: añade la regla de estilo de comentarios y documentación` (PR #18, `e92b03d`) | 0,05 |
 | Limpieza de comentarios según la regla (sin tarea del plan) | `refactor: limpia los comentarios según la regla de estilo` (PR #19, `0cd1d17`) | 0,2 |
 | 0.7a Validador (ADR 0011), decisión 6 y aceptación del ADR 0005 | `feat: elige Valibot como validador y fija la interfaz sin framework` (PR #20, `a010eec`) | 0,4 |
-| 0.7b `core/` (puertos y persistencia versionada) y `platform/` | `feat: añade los puertos de core, la persistencia versionada y platform` (PR #21) | 0,4 |
+| 0.7b `core/` (puertos y persistencia versionada) y `platform/` | `feat: añade los puertos de core, la persistencia versionada y platform` (PR #21, `58cb6af`) | 0,4 |
+| 0.7c Registro, índice de herramientas, ruta dinámica y ADR 0014 | `feat: añade el registro, el índice de herramientas y su ruta dinámica` (PR #22) | 0,5 |
 
 ## Decisiones tomadas
 
@@ -204,6 +205,14 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 | A16 | Las pruebas de `platform/` corren en el entorno `node` con dobles (`Storage`, `IntersectionObserver`) y el Web Crypto de Node; sin umbral de cobertura | §11 fija el umbral solo en `core` y `domain`; el comportamiento real en los navegadores lo cubren las E2E (F0b) | `src/platform/*.test.ts` |
 | A17 | Casos nuevos de `tests/gates/`: `domain` importa `platform` (pasos 2 y 3) | Ejemplo de la §12 | `cases.ts` |
 | A18 | El caso de cobertura de `tests/gates/` usa un archivo con 500 ramas sin cubrir y una firma sin porcentaje fijo | Con las ramas cubiertas de `versioned-store.ts`, el 50 % de un solo archivo ya no bajaba del 90 % el umbral global, y el caso dejó de fallar (CI de la PR #21). Se mantiene el umbral global de la §11 | `cases.ts` |
+| A19 | El registro recibe solo las claves de un `import.meta.glob` perezoso de `ui/Tool.astro`; la página de la herramienta lo importa con su propio glob | I3: comprobar la ruta sin importar `ui/` (§5.2) | ADR 0014 |
+| A20 | `i18n.ts` exporta `texts = defineToolTexts({ es, en })`, en `src/i18n/tool-texts.ts`, con `name` y `description` obligatorios; `en` se tipa con `NoInfer<Dict<T>>` y las claves se comparan al cargarse (`assertSameKeys`, compartida con el diccionario del sitio) | §5.7 para las herramientas, con el paso 2 y el 5. El registro no puede importar `i18n`, así que valida la forma con Valibot sin conocer los idiomas, y las páginas usan `textsFor` | ADR 0014 |
+| A21 | `RegistryError` suma `missing_meta` e `invalid_i18n` | Sin ellos, una carpeta sin `meta.ts` se ignoraría y un `i18n.ts` mal formado fallaría más tarde sin contexto. Amplía la §6 sin cambiar los casos existentes | ADR 0014 |
+| A22 | `meta.ts` con export por defecto; errores ordenados por carpeta y entradas por slug; el build falla con una línea por error | Mensajes deterministas para las firmas de `tests/gates/` | `build-registry.ts` |
+| A23 | El índice de herramientas muestra "Todavía no hay herramientas" mientras no haya ninguna, y una etiqueta `beta` según `status`; la cabecera enlaza al índice antes que a "sobre mí" | T17 dejó el enlace para cuando existiera el índice | `[tools]/index.astro`, `Header.astro` |
+| A24 | ADR 0014 nuevo, aceptado | El contrato de la §6 se amplía y aparece un patrón nuevo (textos por herramienta); el ADR 0005 ya está aceptado y no se edita | ADR 0014 |
+| A25 | Casos nuevos de `tests/gates/`: `meta.ts` inválido, slug duplicado y falta `ui/Tool.astro` (paso 5); texto de herramienta que falta (pasos 2 y 5) | Ejemplos de la §12 para el registro y la i18n de las herramientas | `cases.ts` |
+| A26 | README: secciones "Arquitectura" y "Agregar una herramienta" | §15 | `README.md` |
 
 ## División de la F0a en sesiones (aprobada)
 
