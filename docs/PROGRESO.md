@@ -14,7 +14,8 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 - **Sesión 5:** cerrada (18/10/2026). **Bloque 2** (0.3 y 0.4): ajuste de Renovate (PR #10), Cloudflare y `deploy.yml` (PR #11), CSP, cabeceras y `_redirects` (PR #12). Decisiones R1–R3, C1–C6 y G1–G3.
 - **Sesión 6:** cerrada (18/10/2026). **Bloque 3** (0.5, 0.6a y 0.6b): i18n (PR #14), tokens, capas y tema (PR #15), layout y componentes (PR #16). Decisiones T1–T19, tomadas sin consultar, más abajo.
 - **Sesión 7:** cerrada (18/10/2026). Regla de estilo de `AGENTS.md` (PR #18) y limpieza de comentarios (PR #19), pedidas por el usuario. **Bloque 4** (0.7a, 0.7b y 0.7c): validador y decisión 6 (PR #20), `core/` y `platform/` (PR #21), registro, índice y ruta dinámica (PR #22). Decisiones A1–A26, tomadas sin consultar, más abajo.
-- **Sesión 8:** en curso (19/10/2026). **Bloque 5** (0.8 y 0.9): entrevista al usuario para los textos y la dirección de diseño.
+- **Sesión 8:** cerrada (19/10/2026). **Bloque 5** (0.8 y 0.9): textos y diseño con entrevista al usuario (PR #24), separación del contenido editorial (PR #25) y cierre de la F0a (PR de la 0.9). Decisiones E1–E14. La recalibración está propuesta y espera el ok del usuario para pasar al plan (revisión 1.5).
+- **Siguiente sesión:** 9 → ok de la revisión 1.5 del plan (recalibración y correcciones pendientes) y empezar la **F0b** (0.10–0.12).
 - **0.7c comprobada en producción (18/10/2026, tras la PR #22):** `/es/herramientas/` y `/en/tools/` → 200 con las cabeceras de `/*`; el índice indica que no hay herramientas; la cabecera enlaza a él y el sitemap lo incluye.
 - **0.8 revisada y comprobada (19/10/2026):** el usuario revisó la PR #24 en navegador a 320 px, en los dos idiomas y los dos temas (sin desbordamiento horizontal; los títulos se parten bien) y aprobó los textos, los tokens y E1, E3 y E5. Tras la fusión, `/es/`, `/en/`, `/es/sobre-mi/` y `/en/about/` → 200 en producción, con sus títulos, `meta description`, textos, enlaces y cabeceras; la hoja de `/_astro/` lleva la paleta ámbar, `--color-focus`, `::selection` y Cascadia Mono.
 - **Revisión manual en navegador (usuario, 19/10/2026):** el tema no parpadea al recargar con `Claro` u `Oscuro` elegido, el interruptor funciona con teclado y no hay desplazamiento horizontal a 320 px (§9, §10).
@@ -34,7 +35,7 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 | 2 | 0.3 y 0.4 (Cloudflare y seguridad) | cerrado |
 | 3 | 0.5, 0.6a y 0.6b (i18n y diseño) | cerrado |
 | 4 | 0.7a, 0.7b y 0.7c (arquitectura) | cerrado |
-| 5 | 0.8 y 0.9 (contenido y cierre) | pendiente |
+| 5 | 0.8 y 0.9 (contenido y cierre) | cerrado; la recalibración espera el ok del usuario |
 
 Protocolo de trabajo por bloques (decisión del usuario, sesión 4): en `AGENTS.md`.
 
@@ -46,8 +47,9 @@ Indicaciones del usuario por bloque:
 
 ## Siguiente paso concreto
 
-1. **0.9:** revisión de los ADR 0001–0015 y redacción de los que falten (0007 propuesto), entrada de la F0a en `CHANGELOG.md` y recalibración de las estimaciones.
-2. La capa 3 sobre un script real de `/_astro/` ya se comprobó con `wrangler dev` y una herramienta temporal (ADR 0014). En producción queda para la primera herramienta real (F1).
+1. **Revisión 1.5 del plan (con ok del usuario):** aplicar la recalibración de la §14 (abajo) y las correcciones de texto de "Pendientes y bloqueos". Con eso se cumple el último punto del criterio de aceptación de la F0a.
+2. **F0b:** tareas 0.10 a 0.12; organizar sus bloques con el usuario.
+3. La capa 3 sobre un script real de `/_astro/` ya se comprobó con `wrangler dev` y una herramienta temporal (ADR 0014). En producción queda para la primera herramienta real (F1).
 
 ## Tareas cerradas
 
@@ -73,7 +75,8 @@ Indicaciones del usuario por bloque:
 | 0.7b `core/` (puertos y persistencia versionada) y `platform/` | `feat: añade los puertos de core, la persistencia versionada y platform` (PR #21, `58cb6af`) | 0,4 |
 | 0.7c Registro, índice de herramientas, ruta dinámica y ADR 0014 | `feat: añade el registro, el índice de herramientas y su ruta dinámica` (PR #22, `15a211e`) | 0,5 |
 | 0.8 Textos de inicio y "sobre mí", paleta ámbar y ADR 0015 | `feat: añade los textos de inicio y sobre mí y la paleta ámbar` (PR #24, `903459e`) | 0,75 |
-| 0.8 Separación del contenido editorial (ADR 0009) | `fix: separa el contenido editorial de los textos de interfaz` | 0,15 |
+| 0.8 Separación del contenido editorial (ADR 0009) | `fix: separa el contenido editorial de los textos de interfaz` (PR #25, `062e561`) | 0,15 |
+| 0.9 Revisión de los ADR, ADR 0007 propuesto, `CHANGELOG.md` y propuesta de recalibración | `docs: cierra la F0a con el changelog, el ADR 0007 y la recalibración` | 0,5 |
 
 ## Decisiones tomadas
 
@@ -233,6 +236,30 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 | E7 | "Sobre mí" usa la `meta description` del sitio | El usuario no dio una propia | `[about]/index.astro` |
 | E8 | La prueba de `messages` compara `tools.title` en lugar de `site.name` | `site.name` ya no existe | `i18n.test.ts` |
 | E9 | El contenido editorial (descripción, textos de inicio y de "sobre mí") pasa de `es.ts`/`en.ts` a `src/i18n/editorial.ts`, con su licencia en la cabecera y sus claves comparadas al cargarse; `es.ts` y `en.ts` quedan solo con textos de interfaz (MIT) | El ADR 0009 pedía revisar en la 0.8 la frontera entre contenido y textos de interfaz, y separar los archivos que mezclaran ambos. Se detectó al revisar los ADR en la 0.9 | `editorial.ts`, README |
+| E10 | ADR 0007 escrito como propuesto, con las opciones y la decisión de la §4 y la §7; las versiones, el peso y los riesgos 15 y 16 quedan para la F1 | §14, 0.9: "el 0007 queda propuesto hasta la F1" | ADR 0007 |
+| E11 | En el ADR 0008 solo cambia la línea de estado, para indicar qué partes sustituyen el 0013 y el 0015 | La §15 prevé el estado "sustituido por NNNN"; el resto del 0008 sigue vigente | ADR 0008 |
+| E12 | El ADR 0012 (Temporal) no se escribe en la F0a | Su decisión es de la F2, y el criterio de la F0a pide los ADR 0001–0011 | — |
+| E13 | La recalibración se propone aquí y no se aplica a la §14 | Cambiar el plan exige una revisión con ok del usuario | "Recalibración" |
+| E14 | Revisión de los ADR 0001–0015: sin más cambios. El 0002 y el 0005 dicen que `allowBuilds` está vacío (el 0003 añadió `esbuild` y `workerd` denegados) y el 0005 deja pendiente comparar los hooks con los de Ontos (cerrado por el usuario, I6). Son aceptados y no se editan; quedan anotados aquí | §15 | — |
+
+## Recalibración de las estimaciones (propuesta, sesión 8)
+
+Horas registradas en la F0a: **6,55 h** (tabla de tareas cerradas, incluidas la sesión 0, las revisiones del plan y esta 0.9), frente a una estimación de 36–52 h (punto medio 44 h). La razón medida es **0,15** del punto medio. No se superó el límite de 78 h.
+
+Qué miden: el tiempo de trabajo de cada sesión, con un asistente de código. No incluyen el tiempo del usuario en sus cuentas (GitHub, Cloudflare, Renovate) ni sus revisiones en navegador. Las estimaciones del plan suponían trabajo manual.
+
+Método propuesto: mínimo = estimación mínima × 0,15 (la razón medida); máximo = estimación máxima × 0,35 (más del doble de margen, porque la F0b trae E2E en tres motores, Lighthouse CI y vistas previas, con más depuración que la F0a, y por el tiempo del usuario que no se registra). Redondeo a 0,5 h.
+
+| Fase | Estimación actual (h) | Propuesta (h) |
+|---|---|---|
+| F0b | 23–34 | 3,5–12 |
+| F1 | 23–35 | 3,5–12,5 |
+| F2 | 15–25 | 2,5–9 |
+| F3 | 10–15 | 1,5–5,5 |
+| F4 | 25–40 | 4–14 |
+| **Resto del proyecto** | 96–149 | **15–53** |
+
+Límite de revisión de la F0b: 1,5 × 12 = **18 h** (hoy, 51 h). El total del proyecto pasaría de 132–201 h a unas 21,5–59,5 h, con la F0a ya medida.
 
 ## Textos provisionales
 
@@ -312,6 +339,7 @@ Se resuelven en su tarea, sin cambiar el plan ahora:
 - Retirar el override de `eslint-module-utils` cuando `eslint-plugin-boundaries` dependa de la 2.14.0 o de una posterior. Revisarlo en cada PR de Renovate que lo actualice.
 - La verificación de la §4 se hizo con fixtures temporales, no versionados. Los casos permanentes van en `tests/gates/` (0.2b y 0.7).
 - `deploy.yml` muestra un aviso `DEP0005` (`Buffer()`) de una dependencia de wrangler. No afecta; revisar si persiste al actualizar wrangler.
+- Revisión 1.5 del plan (con ok del usuario): recalibración de la §14 (arriba); en la 0.9, "ADR 0001–0011" pasa a 0001–0015; la nota de la §15 sobre la numeración desde el 0013 (se usaron el 0013, el 0014 y el 0015 para el CSS, el registro y la paleta); y las correcciones de las tres líneas siguientes.
 - Renovate no tenía tarea en la §14; el usuario lo asignó a la 0.2b. Reflejarlo en la §14 en la próxima revisión del plan, con ok del usuario.
 - La §14 dice "0.2" para el pipeline mínimo y las compuertas; la sesión 3 lo dividió en 0.2a y 0.2b. Reflejarlo en la próxima revisión del plan, con ok del usuario.
 - Atribución desactivada en los ajustes de usuario del asistente (fuera del repositorio); el hook `commit-msg` de la 0.1b es la segunda barrera.
