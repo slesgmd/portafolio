@@ -13,7 +13,9 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 - **Sesión 4:** cerrada (18/10/2026). **Bloque 1** (0.2b): pruebas negativas (PR #2), Renovate (PR #3 y su corrección, PR #5) y protocolo por bloques en `AGENTS.md`. Desde esta sesión se trabaja por bloques.
 - **Sesión 5:** cerrada (18/10/2026). **Bloque 2** (0.3 y 0.4): ajuste de Renovate (PR #10), Cloudflare y `deploy.yml` (PR #11), CSP, cabeceras y `_redirects` (PR #12). Decisiones R1–R3, C1–C6 y G1–G3.
 - **Sesión 6:** cerrada (18/10/2026). **Bloque 3** (0.5, 0.6a y 0.6b): i18n (PR #14), tokens, capas y tema (PR #15), layout y componentes (PR #16). Decisiones T1–T19, tomadas sin consultar, más abajo.
-- **Sesión 7:** en curso (18/10/2026). **Bloque 4** (0.7a, 0.7b y 0.7c), precedido por la regla de estilo de `AGENTS.md` (PR #18) y la limpieza de comentarios (PR #19), ambas pedidas por el usuario. Decisiones A1 y siguientes, más abajo.
+- **Sesión 7:** cerrada (18/10/2026). Regla de estilo de `AGENTS.md` (PR #18) y limpieza de comentarios (PR #19), pedidas por el usuario. **Bloque 4** (0.7a, 0.7b y 0.7c): validador y decisión 6 (PR #20), `core/` y `platform/` (PR #21), registro, índice y ruta dinámica (PR #22). Decisiones A1–A26, tomadas sin consultar, más abajo.
+- **Siguiente sesión:** 8 → **bloque 5** (0.8 y 0.9).
+- **0.7c comprobada en producción (18/10/2026, tras la PR #22):** `/es/herramientas/` y `/en/tools/` → 200 con las cabeceras de `/*`; el índice indica que no hay herramientas; la cabecera enlaza a él y el sitemap lo incluye.
 - **Producción (18/10/2026):** `https://portafolio.s-lesgmd.workers.dev`, desplegado por `deploy.yml` desde `main` (primer despliegue con la PR #11; versión `e6a65a86-704e-4c34-a499-526a7dd16425`). Entorno `production` de GitHub restringido a `main` (creado con `gh api`, autorizado por el usuario), con `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` cargados por el usuario.
 - **Comprobado a mano en producción tras la PR #12:** `/` → 302 a `/es/`; `/es/` → 200 con todas las cabeceras de `/*` y la `<meta>` CSP; `/es` → 307 a `/es/`; rutas inexistentes → 404 con las cabeceras. Faltan las 404 por idioma (0.5) y la capa 3 en una URL real (no hay archivos en `/_astro/` todavía).
 - **0.6b comprobada en producción (18/10/2026, tras la PR #16):** `/_astro/Base.*.css` recibe la CSP de la capa 3 (`default-src 'self'; connect-src 'none'`, además de la de `/*`) y `Cache-Control: public, max-age=31536000, immutable`; el `<style>` del orden de capas va en `<head>`; las páginas y las 404 por idioma responden como antes.
@@ -29,7 +31,7 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 | 1 | 0.2b (compuertas y Renovate) | cerrado |
 | 2 | 0.3 y 0.4 (Cloudflare y seguridad) | cerrado |
 | 3 | 0.5, 0.6a y 0.6b (i18n y diseño) | cerrado |
-| 4 | 0.7a, 0.7b y 0.7c (arquitectura) | en curso |
+| 4 | 0.7a, 0.7b y 0.7c (arquitectura) | cerrado |
 | 5 | 0.8 y 0.9 (contenido y cierre) | pendiente |
 
 Protocolo de trabajo por bloques (decisión del usuario, sesión 4): en `AGENTS.md`.
@@ -41,7 +43,7 @@ Indicaciones del usuario por bloque:
 
 ## Siguiente paso concreto
 
-1. **Bloque 4:** fusionar la 0.7c (PR #22) y cerrar el bloque en este archivo (commit de la 0.7c, siguiente sesión). Después, **bloque 5** (0.8 y 0.9).
+1. **Bloque 5** (0.8 y 0.9): textos de inicio y "sobre mí" en los dos idiomas (los aporta el usuario), revisión de los ADR 0001–0014 y redacción de los que falten (0007 propuesto), entrada de la F0a en `CHANGELOG.md` y recalibración de las estimaciones.
 2. La capa 3 sobre un script real de `/_astro/` ya se comprobó con `wrangler dev` y una herramienta temporal (ADR 0014). En producción queda para la primera herramienta real (F1).
 3. **Revisión manual pendiente (usuario):** en un navegador real, que el tema no parpadea al recargar con `Claro` u `Oscuro` elegido, que el interruptor funciona con teclado, y el reflujo a 320 px con zoom al 200 % (§9). En esta sesión no hubo navegador disponible.
 
@@ -67,7 +69,7 @@ Indicaciones del usuario por bloque:
 | Limpieza de comentarios según la regla (sin tarea del plan) | `refactor: limpia los comentarios según la regla de estilo` (PR #19, `0cd1d17`) | 0,2 |
 | 0.7a Validador (ADR 0011), decisión 6 y aceptación del ADR 0005 | `feat: elige Valibot como validador y fija la interfaz sin framework` (PR #20, `a010eec`) | 0,4 |
 | 0.7b `core/` (puertos y persistencia versionada) y `platform/` | `feat: añade los puertos de core, la persistencia versionada y platform` (PR #21, `58cb6af`) | 0,4 |
-| 0.7c Registro, índice de herramientas, ruta dinámica y ADR 0014 | `feat: añade el registro, el índice de herramientas y su ruta dinámica` (PR #22) | 0,5 |
+| 0.7c Registro, índice de herramientas, ruta dinámica y ADR 0014 | `feat: añade el registro, el índice de herramientas y su ruta dinámica` (PR #22, `15a211e`) | 0,5 |
 
 ## Decisiones tomadas
 
