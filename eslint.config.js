@@ -34,15 +34,20 @@ const external = (source) => ({ module: { origin: 'external', source } });
 // Cada paquete permitido se justifica en un ADR.
 const pagePackages = ['astro', 'astro:*', '@astrojs/*'];
 const testPackages = ['vitest', 'fast-check', '@playwright/test', '@axe-core/playwright'];
+const validator = external('valibot');
 
 const policies = [
   { from: layer('core'), allow: { to: layer('core') } },
   { from: layer('i18n'), allow: { to: layer('i18n') } },
-  // Los paquetes puros llegan con su ADR.
+  // unified y los tipos de Temporal llegan con sus ADR.
   {
     from: layer('tool-domain'),
     allow: {
-      to: [{ element: { type: 'tool-domain', captured: { tool: sameTool } } }, layer('core')],
+      to: [
+        { element: { type: 'tool-domain', captured: { tool: sameTool } } },
+        layer('core'),
+        validator,
+      ],
     },
   },
   { from: layer('platform'), allow: { to: [layer('platform'), layer('core')] } },
@@ -51,7 +56,7 @@ const policies = [
     allow: { to: { element: { type: 'registry', fileInternalPath: 'define-tool.ts' } } },
   },
   { from: toolFile('i18n.ts'), allow: { to: layer('i18n') } },
-  // Los paquetes (polyfill de Temporal, framework de la decisión 6) llegan con su ADR.
+  // Sin framework (decisión 6, ADR 0005). El polyfill de Temporal llega con su ADR.
   {
     from: layer('tool-ui'),
     allow: {
@@ -66,11 +71,10 @@ const policies = [
       ],
     },
   },
-  // El validador llega con el ADR 0011.
   {
     from: layer('registry'),
     allow: {
-      to: [layer('registry'), layer('core'), toolFile('meta.ts'), toolFile('i18n.ts')],
+      to: [layer('registry'), layer('core'), toolFile('meta.ts'), toolFile('i18n.ts'), validator],
     },
   },
   {
