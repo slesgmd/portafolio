@@ -1,6 +1,6 @@
 # ADR 0008: CSS propio con tokens, capas y fuentes del sistema
 
-- **Estado:** aceptado
+- **Estado:** aceptado. La paleta y las pilas de fuentes, sustituidas por el ADR 0015; el lugar del orden de las capas, por el ADR 0013.
 - **Fecha:** 18/10/2026
 - **Tarea:** 0.6a
 
