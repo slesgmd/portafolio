@@ -1,7 +1,6 @@
 ---
-// Interruptor de tema (PLAN §10, ADR 0008): claro, oscuro o el del sistema. Guarda la
-// elección en `localStorage`. Sin JavaScript no se muestra: lo revela `data-js`, que
-// marca el script de tema antes del primer pintado, sin desplazar el contenido.
+// Sin JavaScript no se muestra (§10): lo revela `data-js`, que el script de tema marca
+// antes del primer pintado, así que no desplaza el contenido.
 import { messages, type Locale } from '../i18n';
 import { themes } from './theme.ts';
 
@@ -26,8 +25,8 @@ const t = messages(Astro.props.locale);
   const root = document.documentElement;
   const isTheme = (value: unknown): value is Theme => themes.some((theme) => theme === value);
 
-  // `localStorage` puede lanzar al acceder (bloqueado por el navegador): la elección
-  // se aplica igual, solo que no se recuerda.
+  // `localStorage` lanza si el navegador lo bloquea: la elección se aplica igual, solo
+  // que no se recuerda.
   const read = (): Theme => {
     try {
       const value = localStorage.getItem(themeStorageKey);
@@ -53,7 +52,7 @@ const t = messages(Astro.props.locale);
     try {
       localStorage.setItem(themeStorageKey, theme);
     } catch {
-      // Sin almacenamiento: el tema dura hasta recargar.
+      // El tema dura hasta recargar.
     }
     show(theme);
   };

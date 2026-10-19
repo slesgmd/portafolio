@@ -1,6 +1,6 @@
-/* Reset mínimo (PLAN §10, ADR 0008). El orden de las capas se declara en
-   `src/layouts/layer-order.ts`. Los estilos de los componentes van dentro de
-   `@layer components`: un estilo sin capa ganaría a todas. */
+/* El orden de las capas se declara en `src/layouts/layer-order.ts` (ADR 0013). Los
+   estilos de los componentes van dentro de `@layer components`: un estilo sin capa
+   ganaría a todas. */
 @layer reset {
   *,
   *::before,

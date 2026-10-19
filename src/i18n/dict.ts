@@ -1,16 +1,14 @@
-// Forma de los diccionarios (PLAN §5.7). Va aparte de `index.ts` para que `en.ts` y
-// el `i18n.ts` de cada herramienta la importen sin crear un ciclo.
+// Aparte de `index.ts` para que `en.ts` y el `i18n.ts` de cada herramienta lo importen
+// sin crear un ciclo.
 
-// Las mismas claves que `T`, con cualquier texto como valor.
 export type Dict<T> = {
   readonly [K in keyof T]: T[K] extends string ? string : Dict<T[K]>;
 };
 
 type Tree = { readonly [key: string]: string | Tree };
 
-// Claves de `reference` que faltan en `candidate` y claves de `candidate` que sobran,
-// como rutas con puntos. Repite en el build la comprobación de `satisfies Dict`, que
-// `astro build` no hace porque no comprueba tipos (paso 5).
+// Repite en el build la comprobación de `satisfies Dict`: `astro build` no comprueba
+// tipos, y el paso 5 debe fallar con una traducción faltante (§12).
 export const compareKeys = (
   reference: Tree,
   candidate: Tree,

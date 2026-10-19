@@ -13,7 +13,7 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 - **Sesión 4:** cerrada (18/10/2026). **Bloque 1** (0.2b): pruebas negativas (PR #2), Renovate (PR #3 y su corrección, PR #5) y protocolo por bloques en `AGENTS.md`. Desde esta sesión se trabaja por bloques.
 - **Sesión 5:** cerrada (18/10/2026). **Bloque 2** (0.3 y 0.4): ajuste de Renovate (PR #10), Cloudflare y `deploy.yml` (PR #11), CSP, cabeceras y `_redirects` (PR #12). Decisiones R1–R3, C1–C6 y G1–G3.
 - **Sesión 6:** cerrada (18/10/2026). **Bloque 3** (0.5, 0.6a y 0.6b): i18n (PR #14), tokens, capas y tema (PR #15), layout y componentes (PR #16). Decisiones T1–T19, tomadas sin consultar, más abajo.
-- **Siguiente sesión:** 7 → **bloque 4** (0.7a, 0.7b y 0.7c).
+- **Sesión 7:** en curso (18/10/2026). **Bloque 4** (0.7a, 0.7b y 0.7c), precedido por la regla de estilo de `AGENTS.md` (PR #18) y la limpieza de comentarios (PR #19), ambas pedidas por el usuario. Decisiones A1 y siguientes, más abajo.
 - **Producción (18/10/2026):** `https://portafolio.s-lesgmd.workers.dev`, desplegado por `deploy.yml` desde `main` (primer despliegue con la PR #11; versión `e6a65a86-704e-4c34-a499-526a7dd16425`). Entorno `production` de GitHub restringido a `main` (creado con `gh api`, autorizado por el usuario), con `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` cargados por el usuario.
 - **Comprobado a mano en producción tras la PR #12:** `/` → 302 a `/es/`; `/es/` → 200 con todas las cabeceras de `/*` y la `<meta>` CSP; `/es` → 307 a `/es/`; rutas inexistentes → 404 con las cabeceras. Faltan las 404 por idioma (0.5) y la capa 3 en una URL real (no hay archivos en `/_astro/` todavía).
 - **0.6b comprobada en producción (18/10/2026, tras la PR #16):** `/_astro/Base.*.css` recibe la CSP de la capa 3 (`default-src 'self'; connect-src 'none'`, además de la de `/*`) y `Cache-Control: public, max-age=31536000, immutable`; el `<style>` del orden de capas va en `<head>`; las páginas y las 404 por idioma responden como antes.
@@ -41,7 +41,7 @@ Indicaciones del usuario por bloque:
 
 ## Siguiente paso concreto
 
-1. **Bloque 4** (0.7a, 0.7b y 0.7c): validador (ADR 0011) y decisión 6 (acepta el ADR 0005), `core/` y `platform/`, registro, índice de herramientas y ruta dinámica. Al crear el índice, añadir su enlace a `Header.astro` y sus rutas al sitemap.
+1. **Bloque 4** (0.7a, 0.7b y 0.7c), tras la PR #19: validador (ADR 0011) y decisión 6 (acepta el ADR 0005), `core/` y `platform/`, registro, índice de herramientas y ruta dinámica. Al crear el índice, añadir su enlace a `Header.astro` y sus rutas al sitemap.
 2. Los scripts siguen inline (Astro inserta en línea el del interruptor), así que la comprobación de la capa 3 sobre un script real de `/_astro/` queda para el primero que se emita, como tarde con los workers de la F1. La regla ya se comprobó en producción sobre la hoja de estilos de `/_astro/`.
 3. **Revisión manual pendiente (usuario):** en un navegador real, que el tema no parpadea al recargar con `Claro` u `Oscuro` elegido, que el interruptor funciona con teclado, y el reflujo a 320 px con zoom al 200 % (§9). En esta sesión no hubo navegador disponible.
 
@@ -63,6 +63,8 @@ Indicaciones del usuario por bloque:
 | 0.5 i18n, sitemap, 404 por idioma y ADR 0006 | `feat: añade la i18n con rutas localizadas, sitemap y 404 por idioma` (PR #14, `9f9f6a6`) | 0,3 |
 | 0.6a Tokens, capas, tema sin parpadeo y ADR 0008 | `feat: añade los tokens de diseño, las capas CSS y el script de tema` (PR #15, `b063711`) | 0,25 |
 | 0.6b Layout, cabecera, pie, interruptor de tema y ADR 0013 | `feat: añade el layout con cabecera, pie e interruptor de tema` (PR #16, `7a7c321`) | 0,25 |
+| Regla de estilo en `AGENTS.md` (sin tarea del plan) | `docs: añade la regla de estilo de comentarios y documentación` (PR #18, `e92b03d`) | 0,05 |
+| Limpieza de comentarios según la regla (sin tarea del plan) | `refactor: limpia los comentarios según la regla de estilo` (PR #19) | 0,2 |
 
 ## Decisiones tomadas
 
@@ -177,6 +179,13 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 | T17 | La cabecera enlaza solo a inicio y "sobre mí"; el enlace a las herramientas llega con su índice (0.7) | Un enlace a una página inexistente sería un enlace roto (paso 6) | `Header.astro` |
 | T18 | Pie con autoría y enlace al repositorio, sin año | El año exigiría una fecha del build o actualizarlo a mano | `Footer.astro` |
 | T19 | Enlace para saltar al contenido, `<main id="main">` en el layout y ancho máximo `--page-max: 60rem` como token | Accesibilidad con teclado (§9); el `<main>` sale de las páginas para que no se anide | `Base.astro`, `tokens.css` |
+
+### Decidido sin consultar (sesión 7, bloque 4)
+
+| # | Decisión | Motivo | Dónde queda |
+|---|---|---|---|
+| A1 | Limpieza de comentarios: se quitan los que describen el archivo o repiten el código, y los encabezados de sección; se conservan los que explican un porqué o una restricción, acortados, con su referencia (§ o ADR) y sin los identificadores de este archivo (D3, T7). Dos nombres sustituyen comentarios (`cspHash`, `copyTrackedFiles`) y una tupla con nombres el de `pairs` | Regla de estilo de `AGENTS.md` (PR #18) | PR #19 |
+| A2 | La limpieza no toca `docs/PLAN.md`, los ADR ni este archivo, ni las etiquetas de sección de `.gitignore` ni las `description` de `renovate.json` | Los ADR aceptados no se editan (§15) y el plan cambia por revisiones con ok; las etiquetas y las descripciones son parte del formato de esos archivos | — |
 
 ## División de la F0a en sesiones (aprobada)
 

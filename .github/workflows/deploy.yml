@@ -1,6 +1,5 @@
-# Despliegue a producción al fusionar en `main` (PLAN §12). Durante la F0a repite los
-# pasos 1-5 y ejecuta `wrangler deploy`; la prueba de humo y la vuelta atrás llegan en
-# la F0b (tarea 0.12). Las acciones se fijan por SHA de commit (§7).
+# PLAN §12. La prueba de humo y la vuelta atrás llegan en la tarea 0.12. Las acciones se
+# fijan por SHA de commit (§7).
 name: Despliegue
 
 on:
@@ -30,7 +29,7 @@ jobs:
     needs: ci
     runs-on: ubuntu-24.04
     timeout-minutes: 10
-    # Entorno restringido a `main`; guarda el token y el ID de la cuenta.
+    # Restringido a `main`; solo él tiene el token (ADR 0003).
     environment: production
     steps:
       - name: Checkout (solo manifiestos y configuración de wrangler)

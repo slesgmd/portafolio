@@ -1,7 +1,5 @@
 ---
-// Documento base: `<html lang>`, `canonical` y `hreflang` (PLAN §5.7); CSS global,
-// script de tema y estructura de la página con cabecera y pie (§10). Las 404 no tienen
-// ruta: no emiten `canonical` ni `hreflang`.
+// Las 404 no tienen ruta: no emiten `canonical` ni `hreflang` (ADR 0006).
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { themeScript } from '../components/theme-script.ts';
@@ -79,7 +77,6 @@ const absolute = (path: string): string => new URL(path, site).href;
       margin-block-start: var(--space-s);
     }
 
-    /* Enlace para saltar al contenido: fuera de la pantalla hasta recibir el foco. */
     .skip-link {
       position: absolute;
       inset-inline-start: var(--space-s);

@@ -1,7 +1,6 @@
-# Cabeceras de Cloudflare (PLAN §7, ADR 0004). Cloudflare suma las reglas que coinciden
-# con una petición y une con coma los valores de una cabecera repetida.
+# PLAN §7, ADR 0004. Cloudflare suma las reglas que coinciden con una petición y une con
+# coma los valores de una cabecera repetida.
 
-# Todas las rutas.
 /*
   # Capa 2: solo `frame-ancestors`, que una CSP en `<meta>` ignora. Sin directivas de
   # recursos: bloquearían los scripts que la `<meta>` autoriza por hash.
@@ -16,7 +15,7 @@
   # Sin `Cache-Control`: el HTML usa el valor por defecto de Cloudflare, y uno aquí se
   # uniría con coma al de `/_astro/*`.
 
-# Carpeta de `build.assets`, donde Astro emite los scripts con hash.
+# Carpeta de `build.assets`.
 /_astro/*
   # Capa 3: los workers dedicados y el service worker aplican la CSP de la respuesta de
   # su script, no la del documento. En los demás scripts no tiene efecto.

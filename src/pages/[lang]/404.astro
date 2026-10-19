@@ -1,6 +1,6 @@
 ---
-// 404 por idioma (PLAN §5.7): Cloudflare sirve el `404.html` más cercano subiendo por
-// la ruta (`not_found_handling: "404-page"`).
+// Cloudflare sirve el `404.html` más cercano subiendo por la ruta
+// (`not_found_handling: "404-page"`, §5.7).
 import type { GetStaticPaths } from 'astro';
 import { locales, messages, pathFor, type Locale } from '../../i18n';
 import Base from '../../layouts/Base.astro';

@@ -1,29 +1,19 @@
-// Casos de las pruebas negativas de las compuertas (PLAN §12, principio 4).
-//
-// Cada caso escribe sus archivos sobre una copia del repositorio y ejecuta el
-// comando de su paso tal como lo llama `ci.yml`. Debe fallar, y su salida debe
-// contener `expected`: así, un fallo por otro motivo no cuenta como acierto.
-//
-// Son los casos genéricos de los pasos 1 a 5 (tarea 0.2b) y los que dependen de la
-// i18n (tarea 0.5). Los que dependen del registro llegan en la 0.7; los de los pasos 6
-// a 11, con ellos.
-// El contenido de los archivos va aquí, como texto, para que ninguna compuerta del
-// propio repositorio lo revise.
+// Principio 4 y PLAN §12. La salida de cada caso debe contener `expected`, para que un
+// fallo por otro motivo no cuente como acierto. El contenido de los archivos va aquí,
+// como texto, para que ninguna compuerta del propio repositorio lo revise (ADR 0010).
 
 export interface GateCase {
   step: 1 | 2 | 3 | 4 | 5;
   name: string;
-  // Argumentos de pnpm; `ci.yml` debe contener `pnpm <command>`.
+  // `ci.yml` debe contener `pnpm <command>`.
   command: string[];
-  // Archivos que se escriben en la copia, o una función que recibe el contenido
-  // actual del archivo y devuelve el nuevo.
   files: Record<string, string | ((current: string) => string)>;
   expected: RegExp;
-  // Sin `node_modules` (paso 1): la instalación no debe poder tocar el real.
+  // Paso 1: la instalación no debe poder tocar el `node_modules` real.
   withoutNodeModules?: boolean;
 }
 
-// Una prueba existente que cubre los casos de una compuerta y debe pasar.
+// Debe pasar: ya contiene los casos negativos de su compuerta.
 export interface ReusedTest {
   step: 1 | 2 | 3 | 4 | 5;
   name: string;
@@ -45,7 +35,6 @@ const replaceOnce =
     return current.replace(search, replacement);
   };
 
-// Una clave de `en.ts` que se quita o se añade (traducción faltante o sobrante).
 const enKey = "    name: 'English',\n";
 const withoutEnKey = replaceOnce(enKey, '');
 const withExtraEnKey = replaceOnce(enKey, `${enKey}    extra: 'Extra',\n`);
@@ -169,8 +158,7 @@ export const cases: GateCase[] = [
   },
 ];
 
-// La comprobación de procedencia (paso 3) ya tiene sus casos negativos en su
-// prueba; se reutiliza en lugar de duplicarlos (decisión del usuario, tarea 0.2b).
+// Se reutiliza en lugar de duplicar sus casos (decisión del usuario, tarea 0.2b).
 export const reusedTests: ReusedTest[] = [
   { step: 3, name: 'comprobación de procedencia', file: 'scripts/check-provenance.test.ts' },
 ];

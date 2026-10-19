@@ -1,5 +1,4 @@
-// Contraste de los pares de color de `src/design/tokens.css` (PLAN §11, ADR 0008):
-// ≥ 4,5:1 para texto normal y ≥ 3:1 para componentes de interfaz, en los dos temas.
+// Umbrales de contraste de la §11.
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
@@ -44,7 +43,7 @@ const toLinearSrgb = ([l, c, h]: Oklch): Rgb => {
   ];
 };
 
-// Luminancia relativa de WCAG, sobre los componentes lineales.
+// Luminancia relativa de WCAG.
 const luminance = (color: Oklch): number => {
   const [r, g, b] = toLinearSrgb(color);
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
@@ -55,8 +54,7 @@ const contrast = (a: Oklch, b: Oklch): number => {
   return (hi + 0.05) / (lo + 0.05);
 };
 
-// Primer plano, fondo y mínimo exigido.
-const pairs: readonly [string, string, number][] = [
+const pairs: readonly [foreground: string, background: string, minRatio: number][] = [
   ['color-text', 'color-bg', 4.5],
   ['color-text', 'color-surface', 4.5],
   ['color-text-muted', 'color-bg', 4.5],

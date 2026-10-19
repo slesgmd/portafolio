@@ -1,9 +1,6 @@
 #!/bin/sh
-# pre-commit (PLAN §12): Prettier y ESLint sobre los archivos preparados, y las
-# pruebas de core y domain.
-#
-# Revisa la copia de trabajo de cada archivo preparado, no la versión preparada:
-# si un archivo tiene además cambios sin preparar, también se revisan. La
+# PLAN §12, ADR 0005. Revisa la copia de trabajo de cada archivo preparado, no la
+# versión preparada: reescribir archivos preparados en parte mezclaría cambios. La
 # compuerta que bloquea es el paso 3 de la CI.
 set -eu
 
@@ -16,11 +13,9 @@ if [ ! -f "$prettier" ] || [ ! -f "$eslint" ] || [ ! -f "$vitest" ]; then
   exit 1
 fi
 
-# Archivos preparados: añadidos, copiados, modificados o renombrados.
 staged=$(git diff --cached --name-only --diff-filter=ACMR)
 
 if [ -n "$staged" ]; then
-  # Prettier: todos los archivos; ignora los que no sabe formatear.
   set --
   while IFS= read -r file; do
     set -- "$@" "$file"
@@ -32,7 +27,6 @@ LIST
     exit 1
   fi
 
-  # ESLint: solo los archivos de código.
   set --
   while IFS= read -r file; do
     case $file in
@@ -46,7 +40,5 @@ LIST
   fi
 fi
 
-# Pruebas de core y domain (entorno node de Vitest, §5.2). Los filtros seleccionan
-# `src/core/` y `src/tools/*/domain/`; comprobado en la tarea 0.2a. En Windows, el sh
-# de Git convertiría `/domain/` en una ruta absoluta: MSYS_NO_PATHCONV lo evita.
+# En Windows, el sh de Git convertiría `/domain/` en una ruta absoluta.
 MSYS_NO_PATHCONV=1 node "$vitest" run --passWithNoTests src/core/ /domain/
