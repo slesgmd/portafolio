@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { defineConfig } from 'astro/config';
-import { themeScript } from './src/components/theme.ts';
+import { themeScript } from './src/components/theme-script.ts';
+import { layerOrder } from './src/layouts/layer-order.ts';
 
 // Hash de un script inline para la CSP, en el formato de `security.csp`.
 const sha256 = (source: string): `sha256-${string}` =>
@@ -31,9 +32,11 @@ export default defineConfig({
         "form-action 'none'",
         "worker-src 'self'",
       ],
-      // Astro no calcula el hash de los scripts `is:inline`. El del tema se calcula
-      // aquí a partir de su fuente, así que no se desincroniza (§7, ADR 0008).
+      // Astro no calcula el hash de los scripts y estilos `is:inline`. Los del script de
+      // tema y del orden de las capas se calculan aquí a partir de su fuente, así que no
+      // se desincronizan (§7, ADR 0008).
       scriptDirective: { hashes: [sha256(themeScript)] },
+      styleDirective: { hashes: [sha256(layerOrder)] },
     },
   },
 });

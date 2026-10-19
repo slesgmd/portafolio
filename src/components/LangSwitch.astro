@@ -5,7 +5,7 @@ import { alternatesFor, locales, messages, type Locale, type Route } from '../i1
 
 interface Props {
   locale: Locale;
-  route?: Route;
+  route?: Route | undefined;
 }
 
 const { locale, route } = Astro.props;

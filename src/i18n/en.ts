@@ -8,6 +8,19 @@ export const en = {
     name: 'Portfolio',
     description: 'Personal toolbox that runs in the browser.',
   },
+  skipLink: 'Skip to content',
+  nav: {
+    label: 'Main',
+  },
+  theme: {
+    label: 'Theme',
+    light: 'Light',
+    dark: 'Dark',
+    system: 'System',
+  },
+  footer: {
+    source: 'Source code',
+  },
   langSwitch: {
     label: 'Language',
     name: 'English',

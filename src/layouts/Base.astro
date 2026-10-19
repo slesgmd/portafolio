@@ -1,11 +1,15 @@
 ---
-// Documento base: `<html lang>`, `canonical` y `hreflang` (PLAN §5.7); CSS global y
-// script de tema (§10). Las 404 no tienen ruta: no emiten `canonical` ni `hreflang`.
-import { themeScript } from '../components/theme.ts';
+// Documento base: `<html lang>`, `canonical` y `hreflang` (PLAN §5.7); CSS global,
+// script de tema y estructura de la página con cabecera y pie (§10). Las 404 no tienen
+// ruta: no emiten `canonical` ni `hreflang`.
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { themeScript } from '../components/theme-script.ts';
+import { layerOrder } from './layer-order.ts';
 import '../design/reset.css';
 import '../design/tokens.css';
 import '../design/base.css';
-import { alternatesFor, defaultLocale, locales, type Locale, type Route } from '../i18n';
+import { alternatesFor, defaultLocale, locales, messages, type Locale, type Route } from '../i18n';
 
 interface Props {
   locale: Locale;
@@ -18,6 +22,7 @@ const { locale, title, description, route } = Astro.props;
 const site = Astro.site;
 if (site === undefined) throw new Error('Falta `site` en astro.config.ts');
 
+const t = messages(locale);
 const alternates = route && alternatesFor(route);
 const absolute = (path: string): string => new URL(path, site).href;
 ---
@@ -28,6 +33,7 @@ const absolute = (path: string): string => new URL(path, site).href;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
+    <style is:inline set:html={layerOrder} />
     <script is:inline set:html={themeScript} />
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -42,6 +48,50 @@ const absolute = (path: string): string => new URL(path, site).href;
     )}
   </head>
   <body>
-    <slot />
+    <a class="skip-link" href="#main">
+      {t.skipLink}
+    </a>
+    <Header locale={locale} route={route} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer locale={locale} />
   </body>
 </html>
+
+<style>
+  @layer layout {
+    body {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    main {
+      padding-block: var(--space-xl);
+      padding-inline: max(var(--space-s), (100% - var(--page-max)) / 2);
+    }
+
+    main > :global(*) {
+      max-inline-size: var(--measure);
+    }
+
+    main > :global(* + *) {
+      margin-block-start: var(--space-s);
+    }
+
+    /* Enlace para saltar al contenido: fuera de la pantalla hasta recibir el foco. */
+    .skip-link {
+      position: absolute;
+      inset-inline-start: var(--space-s);
+      inset-block-start: var(--space-s);
+      padding: var(--space-2xs) var(--space-s);
+      border-radius: var(--radius-s);
+      background-color: var(--color-bg);
+      transform: translateY(-200%);
+    }
+
+    .skip-link:focus {
+      transform: none;
+    }
+  }
+</style>

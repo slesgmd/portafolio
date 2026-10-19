@@ -12,7 +12,7 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 - **Sesión 3:** cerrada (18/10/2026). Tarea **0.2a**: repositorio público en GitHub, `ci.yml` con los pasos 1–5, protección de `main` y ADR 0010 propuesto. Las decisiones (S1–S8) están más abajo.
 - **Sesión 4:** cerrada (18/10/2026). **Bloque 1** (0.2b): pruebas negativas (PR #2), Renovate (PR #3 y su corrección, PR #5) y protocolo por bloques en `AGENTS.md`. Desde esta sesión se trabaja por bloques.
 - **Sesión 5:** cerrada (18/10/2026). **Bloque 2** (0.3 y 0.4): ajuste de Renovate (PR #10), Cloudflare y `deploy.yml` (PR #11), CSP, cabeceras y `_redirects` (PR #12). Decisiones R1–R3, C1–C6 y G1–G3.
-- **Sesión 6:** en curso (18/10/2026). **Bloque 3** (0.5, 0.6a y 0.6b). Tarea **0.5** fusionada (PR #14) y comprobada en producción. Tarea **0.6a** cerrada en su rama (`feat/design-tokens`). Decisiones T1–T14 más abajo.
+- **Sesión 6:** en curso (18/10/2026). **Bloque 3** (0.5, 0.6a y 0.6b). Tarea **0.5** fusionada (PR #14) y comprobada en producción. Tarea **0.6a** fusionada (PR #15). Tarea **0.6b** cerrada en su rama (`feat/layout-componentes`). Decisiones T1–T19 más abajo.
 - **Producción (18/10/2026):** `https://portafolio.s-lesgmd.workers.dev`, desplegado por `deploy.yml` desde `main` (primer despliegue con la PR #11; versión `e6a65a86-704e-4c34-a499-526a7dd16425`). Entorno `production` de GitHub restringido a `main` (creado con `gh api`, autorizado por el usuario), con `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` cargados por el usuario.
 - **Comprobado a mano en producción tras la PR #12:** `/` → 302 a `/es/`; `/es/` → 200 con todas las cabeceras de `/*` y la `<meta>` CSP; `/es` → 307 a `/es/`; rutas inexistentes → 404 con las cabeceras. Faltan las 404 por idioma (0.5) y la capa 3 en una URL real (no hay archivos en `/_astro/` todavía).
 - **0.5 comprobada a mano en producción (18/10/2026, tras la PR #14):** `/es/`, `/en/`, `/es/sobre-mi/` y `/en/about/` → 200 sin redirección; `/es/sobre-mi` → 307 a la URL con barra; `/es/noexiste/` y `/en/noexiste/` → 404 en su idioma; `/noexiste/` → 404 bilingüe; `/sitemap.xml` → 200; todas con las cabeceras de `/*`. Con esto quedan comprobadas las 404 por idioma del criterio de aceptación de la F0a.
@@ -26,7 +26,7 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 |---|---|---|
 | 1 | 0.2b (compuertas y Renovate) | cerrado |
 | 2 | 0.3 y 0.4 (Cloudflare y seguridad) | cerrado |
-| 3 | 0.5, 0.6a y 0.6b (i18n y diseño) | en curso (0.5 y 0.6a hechas) |
+| 3 | 0.5, 0.6a y 0.6b (i18n y diseño) | cerrado al fusionar la PR de la 0.6b |
 | 4 | 0.7a, 0.7b y 0.7c (arquitectura) | pendiente |
 | 5 | 0.8 y 0.9 (contenido y cierre) | pendiente |
 
@@ -39,9 +39,9 @@ Indicaciones del usuario por bloque:
 
 ## Siguiente paso concreto
 
-1. **Bloque 3, tarea 0.6b:** layout y componentes base (`Header`, `Footer`, `ThemeToggle`; `LangSwitch` y `Base` ya existen desde la 0.5). Comprobar en el build que los estilos de los componentes (`@layer components`) quedan detrás del CSS global (ADR 0008).
-2. Con el primer script en `/_astro/` (el del interruptor de tema, 0.6b), comprobar en producción que recibe la CSP de la capa 3 (§7). El script de tema de la 0.6a es inline, no va a `/_astro/`.
-3. Revisar en un navegador real que el tema no parpadea al recargar con `light` o `dark` guardado (la 0.6b añade el interruptor que lo guarda).
+1. **Bloque 4** (0.7a, 0.7b y 0.7c): validador (ADR 0011) y decisión 6 (acepta el ADR 0005), `core/` y `platform/`, registro, índice de herramientas y ruta dinámica. Al crear el índice, añadir su enlace a `Header.astro` y sus rutas al sitemap.
+2. Tras fusionar la 0.6b: comprobar en producción que `/_astro/*.css` recibe la CSP de la capa 3 y la caché inmutable (ya comprobado con `wrangler dev`). Los scripts siguen inline (Astro inserta en línea el del interruptor), así que la comprobación sobre un script real de `/_astro/` queda para el primero que se emita, como tarde con los workers de la F1.
+3. **Revisión manual pendiente (usuario):** en un navegador real, que el tema no parpadea al recargar con `Claro` u `Oscuro` elegido, que el interruptor funciona con teclado, y el reflujo a 320 px con zoom al 200 % (§9). En esta sesión no hubo navegador disponible.
 
 ## Tareas cerradas
 
@@ -59,7 +59,8 @@ Indicaciones del usuario por bloque:
 | 0.3 Cloudflare, `deploy.yml` y ADR 0003 propuesto | `feat: despliega el sitio en Cloudflare Workers con assets estáticos` (PR #11, `ef5c28f`) | 0,3 |
 | 0.4 CSP, cabeceras, `_redirects` y ADR 0004 | `feat: añade la CSP, las cabeceras de seguridad y la redirección de la raíz` (PR #12, `b59b902`) | 0,2 |
 | 0.5 i18n, sitemap, 404 por idioma y ADR 0006 | `feat: añade la i18n con rutas localizadas, sitemap y 404 por idioma` (PR #14, `9f9f6a6`) | 0,3 |
-| 0.6a Tokens, capas, tema sin parpadeo y ADR 0008 | `feat: añade los tokens de diseño, las capas CSS y el script de tema` (rama `feat/design-tokens`) | 0,25 |
+| 0.6a Tokens, capas, tema sin parpadeo y ADR 0008 | `feat: añade los tokens de diseño, las capas CSS y el script de tema` (PR #15, `b063711`) | 0,25 |
+| 0.6b Layout, cabecera, pie, interruptor de tema y ADR 0013 | `feat: añade el layout con cabecera, pie e interruptor de tema` (rama `feat/layout-componentes`) | 0,25 |
 
 ## Decisiones tomadas
 
@@ -169,6 +170,11 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 | T12 | Script de tema en `src/components/theme.ts`; su hash se calcula en `astro.config.ts` (`scriptDirective.hashes`) | Astro no calcula el hash de los scripts `is:inline` (comprobado en su código). Calcularlo desde la fuente evita que se desincronice | `astro.config.ts`, ADR 0008 |
 | T13 | Prueba de contraste de los tokens (`tests/design/contrast.test.ts`, paso 4) y su caso negativo | Principio 4: el contraste de la §11 se verifica de forma automática desde ahora, no solo con axe en la F0b | ADR 0008 |
 | T14 | Duraciones de animación a `0ms` salvo con `prefers-reduced-motion: no-preference` | Las animaciones que usan los tokens se desactivan solas (§10) | `tokens.css` |
+| T15 | El orden de las capas va en un `<style is:inline>` al principio de `<head>`, con su hash calculado en `astro.config.ts`. ADR 0013 nuevo, porque el 0008 ya estaba aceptado | Comprobado en el build: Astro pone los estilos de los componentes antes que el CSS global, y `components` quedaba con la prioridad más baja | ADR 0013 |
+| T16 | Interruptor de tema con tres botones `aria-pressed` (`Claro`, `Oscuro`, `Sistema`) en un `role="group"`; se muestra con `data-js`, que marca el script de tema antes del primer pintado; guarda también `system` | Texto en lugar de iconos (sin SVG ni traducciones de `title`); sin desplazamiento del contenido al aparecer; la §10 pide guardar los tres valores | `ThemeToggle.astro`, `theme-script.ts` |
+| T17 | La cabecera enlaza solo a inicio y "sobre mí"; el enlace a las herramientas llega con su índice (0.7) | Un enlace a una página inexistente sería un enlace roto (paso 6) | `Header.astro` |
+| T18 | Pie con autoría y enlace al repositorio, sin año | El año exigiría una fecha del build o actualizarlo a mano | `Footer.astro` |
+| T19 | Enlace para saltar al contenido, `<main id="main">` en el layout y ancho máximo `--page-max: 60rem` como token | Accesibilidad con teclado (§9); el `<main>` sale de las páginas para que no se anide | `Base.astro`, `tokens.css` |
 
 ## División de la F0a en sesiones (aprobada)
 
@@ -249,3 +255,5 @@ Se resuelven en su tarea, sin cambiar el plan ahora:
 - Renovate no tenía tarea en la §14; el usuario lo asignó a la 0.2b. Reflejarlo en la §14 en la próxima revisión del plan, con ok del usuario.
 - La §14 dice "0.2" para el pipeline mínimo y las compuertas; la sesión 3 lo dividió en 0.2a y 0.2b. Reflejarlo en la próxima revisión del plan, con ok del usuario.
 - Atribución desactivada en los ajustes de usuario del asistente (fuera del repositorio); el hook `commit-msg` de la 0.1b es la segunda barrera.
+- La `<meta>` CSP que inserta Astro queda detrás de los elementos de `<head>` del layout, y una CSP en `<meta>` solo rige lo que viene después (ADR 0013). Hoy solo hay contenido estático propio delante. Tenerlo en cuenta en `verify-dist.ts` (0.10).
+- `public/robots.txt` no existe (T8): decidir en la 0.11 o al fijar el dominio.

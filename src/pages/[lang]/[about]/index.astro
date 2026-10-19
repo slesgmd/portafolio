@@ -2,7 +2,6 @@
 // "Sobre mí" por idioma, con el segmento localizado (PLAN §5.7). El contenido llega en
 // la tarea 0.8.
 import type { GetStaticPaths } from 'astro';
-import LangSwitch from '../../../components/LangSwitch.astro';
 import { locales, messages, segments, type Locale, type Route } from '../../../i18n';
 import Base from '../../../layouts/Base.astro';
 
@@ -22,9 +21,6 @@ const route: Route = { kind: 'about' };
   description={t.site.description}
   route={route}
 >
-  <LangSwitch locale={locale} route={route} />
-  <main>
-    <h1>{t.about.heading}</h1>
-    <p>{t.about.body}</p>
-  </main>
+  <h1>{t.about.heading}</h1>
+  <p>{t.about.body}</p>
 </Base>
