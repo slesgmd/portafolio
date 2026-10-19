@@ -10,6 +10,12 @@
   "commitMessageAction": "actualiza",
   "commitMessageTopic": "{{depName}}",
   "commitMessageExtra": "a {{newValue}}",
+  "pin": {
+    "commitMessageAction": "fija"
+  },
+  "pinDigest": {
+    "commitMessageAction": "fija"
+  },
   "packageRules": [
     {
       "description": "Las versiones no mayores, en una sola PR. Las mayores van cada una en la suya.",
@@ -21,6 +27,16 @@
       "description": "Node se queda en la línea 24 LTS, y sus tipos con él (ADR 0002).",
       "matchPackageNames": ["node", "@types/node"],
       "allowedVersions": "<25"
+    },
+    {
+      "description": ".nvmrc queda en la línea mayor (24), sin fijar la versión exacta (ADR 0002). Solo cambiaría al salir del rango, y node ya está limitado a <25.",
+      "matchManagers": ["nvm"],
+      "rangeStrategy": "replace"
+    },
+    {
+      "description": "TypeScript 7 aún no es compatible con @astrojs/check ni con typescript-eslint (ADR 0002). Se retira cuando ambos lo admitan.",
+      "matchPackageNames": ["typescript"],
+      "allowedVersions": "<7"
     },
     {
       "description": "El rango de engines lo fija el ADR 0002; no se actualiza solo.",
