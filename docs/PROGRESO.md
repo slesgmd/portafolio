@@ -11,7 +11,7 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 - **Sesión 2:** cerrada (18/10/2026). Tarea **0.1b**, hecha de forma autónoma mientras el usuario estaba ausente. Las decisiones tomadas sin consultar (D1–D11) están más abajo; el usuario aprobó D1–D10.
 - **Sesión 3:** cerrada (18/10/2026). Tarea **0.2a**: repositorio público en GitHub, `ci.yml` con los pasos 1–5, protección de `main` y ADR 0010 propuesto. Las decisiones (S1–S8) están más abajo.
 - **Sesión 4:** cerrada (18/10/2026). **Bloque 1** (0.2b): pruebas negativas (PR #2), Renovate (PR #3 y su corrección, PR #5) y protocolo por bloques en `AGENTS.md`. Desde esta sesión se trabaja por bloques.
-- **Siguiente sesión:** 5 → **bloque 2** (0.3 y 0.4).
+- **Sesión 5:** en curso (18/10/2026). **Bloque 2** (0.3 y 0.4). Primer paso: resultado de Renovate (R1–R3).
 - **Protección de `main` comprobada (18/10/2026):** un push directo de prueba fue rechazado con GH006 ("Changes must be made through a pull request").
 - **Checks requeridos en `main` (18/10/2026):** `Pasos 1-5` y `Compuertas` (app de GitHub Actions), con la rama actualizada.
 - **Renovate instalado por el usuario (18/10/2026):** modo interactivo, solo en `portafolio`. Su primera ejecución abrió el issue #4 por un error de configuración, que corrige la PR #5.
@@ -21,7 +21,7 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 | Bloque | Tareas | Estado |
 |---|---|---|
 | 1 | 0.2b (compuertas y Renovate) | cerrado |
-| 2 | 0.3 y 0.4 (Cloudflare y seguridad) | pendiente |
+| 2 | 0.3 y 0.4 (Cloudflare y seguridad) | en curso |
 | 3 | 0.5, 0.6a y 0.6b (i18n y diseño) | pendiente |
 | 4 | 0.7a, 0.7b y 0.7c (arquitectura) | pendiente |
 | 5 | 0.8 y 0.9 (contenido y cierre) | pendiente |
@@ -35,11 +35,7 @@ Indicaciones del usuario por bloque:
 
 ## Siguiente paso concreto
 
-1. **Primer paso del bloque 2 (decisión del usuario): comprobar el resultado de Renovate y anotarlo aquí.** Lo visto al cerrar el bloque 1, sin actuar todavía:
-   - Tras la PR #5, Renovate cerró el issue #4 y abrió el "Dependency Dashboard" (#8): la configuración se acepta.
-   - PR #6 `chore(deps): pin node.js a v24.22.0`: cambia `.nvmrc` de `24` a `v24.22.0`. Decidir si se fija la versión exacta en `.nvmrc` (ADR 0002), o si `.nvmrc` queda en `24` y la regla de `node` pasa a `rangeStrategy: replace` o equivalente.
-   - PR #7 `chore(deps): actualiza typescript a 7.0.2`: falla `Pasos 1-5` y `Compuertas`. TypeScript 7 es incompatible con `@astrojs/check` 0.9.10 y `typescript-eslint` 8.71 (V1, ADR 0002). Propuesta: limitar `typescript` a `<7` en `renovate.json` hasta que ambos lo admitan; Renovate cerrará la PR sola.
-   - La acción "pin" no se tradujo en el título ("pin node.js"). Valorar `commitMessageAction` por tipo de actualización.
+1. **Renovate (hecho):** PR #6 cerrada y `renovate.json` ajustado (R1–R3). Comprobar en la próxima ejecución de Renovate que cierra sola la PR #7 y que no vuelve a abrir la de `.nvmrc`.
 2. **Bloque 2** (0.3 y 0.4): Cloudflare, secretos, entorno `production`, `deploy.yml`, seguridad y `_redirects`. Necesitará acciones del usuario en Cloudflare y en GitHub (token y secretos).
 
 ## Tareas cerradas
@@ -125,6 +121,14 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 | B17 | Regla nueva en `AGENTS.md`: nunca `--no-verify` ni saltarse los hooks (decisión del usuario, tras el commit de prueba de la protección, que los saltó) | — | `AGENTS.md` |
 | B16 | Corrección de `renovate.json` (issue #4 de Renovate): `matchPackageNames` no admite `*` junto con otros patrones; se deja solo `!eslint-plugin-boundaries`, que coincide con todos los paquetes salvo ese | Error de configuración que Renovate informó en su primera ejecución | `renovate.json` |
 | B15 | Sin `lockFileMaintenance` | Opción conservadora. Las dependencias transitivas se renuevan con las directas; se reconsidera si quedan desfasadas | `renovate.json` |
+
+### Sesión 5 (bloque 2)
+
+| # | Decisión | Motivo | Dónde queda |
+|---|---|---|---|
+| R1 | PR #6 cerrada; regla `matchManagers: ["nvm"]` con `rangeStrategy: replace`: `.nvmrc` queda en `24` y solo cambiaría al salir del rango, que `node <25` impide (decisión del usuario) | Node 24 LTS sin fijar la versión exacta (ADR 0002). Además, la 24.22.0 no cumplía los 7 días | `renovate.json` |
+| R2 | `typescript` limitado a `<7` (decisión del usuario); Renovate cerrará la PR #7 sola | TypeScript 7 es incompatible con `@astrojs/check` 0.9.10 y `typescript-eslint` 8.71 (V1, ADR 0002) | `renovate.json` |
+| R3 | Acción de commit `fija` para `pin` y `pinDigest` (decidido sin consultar) | El título de la PR #6 decía "pin node.js": `commitMessageAction` de nivel superior no cubre esos tipos | `renovate.json` |
 
 ## División de la F0a en sesiones (aprobada)
 
