@@ -1,0 +1,22 @@
+---
+// Inicio por idioma (PLAN §5.7). El contenido llega en la tarea 0.8.
+import type { GetStaticPaths } from 'astro';
+import LangSwitch from '../../components/LangSwitch.astro';
+import { locales, messages, type Locale, type Route } from '../../i18n';
+import Base from '../../layouts/Base.astro';
+
+export const getStaticPaths = (() =>
+  locales.map((lang) => ({ params: { lang } }))) satisfies GetStaticPaths;
+
+const locale = Astro.params.lang as Locale;
+const t = messages(locale);
+const route: Route = { kind: 'home' };
+---
+
+<Base locale={locale} title={t.site.name} description={t.site.description} route={route}>
+  <LangSwitch locale={locale} route={route} />
+  <main>
+    <h1>{t.home.heading}</h1>
+    <p>{t.home.body}</p>
+  </main>
+</Base>

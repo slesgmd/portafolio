@@ -1,0 +1,23 @@
+---
+// Selector de idioma sin JavaScript (PLAN §5.7): enlaza a la misma página en el otro
+// idioma. Sin ruta (las 404), enlaza al inicio del otro idioma.
+import { alternatesFor, locales, messages, type Locale, type Route } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  route?: Route;
+}
+
+const { locale, route } = Astro.props;
+const t = messages(locale);
+const alternates = alternatesFor(route ?? { kind: 'home' });
+const others = locales.filter((other) => other !== locale);
+---
+
+<nav aria-label={t.langSwitch.label}>
+  {others.map((other) => (
+    <a href={alternates[other]} hreflang={other} lang={other}>
+      {messages(other).langSwitch.name}
+    </a>
+  ))}
+</nav>
