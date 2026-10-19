@@ -1,6 +1,6 @@
 # Progreso
 
-Memoria entre sesiones. Al empezar, leer este archivo y las secciones del plan de las tareas del bloque actual. Se trabaja por bloques (protocolo más abajo).
+Memoria entre sesiones. Al empezar, leer este archivo y las secciones del plan de las tareas del bloque actual. Se trabaja por bloques (protocolo en `AGENTS.md`).
 
 Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores están en `C:\dev\Portafolio-historico\`.
 
@@ -10,28 +10,23 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 - **Sesión 1:** cerrada (18/10/2026). Revisiones 1.3 y 1.4 del plan, entorno y tarea **0.1a**.
 - **Sesión 2:** cerrada (18/10/2026). Tarea **0.1b**, hecha de forma autónoma mientras el usuario estaba ausente. Las decisiones tomadas sin consultar (D1–D11) están más abajo; el usuario aprobó D1–D10.
 - **Sesión 3:** cerrada (18/10/2026). Tarea **0.2a**: repositorio público en GitHub, `ci.yml` con los pasos 1–5, protección de `main` y ADR 0010 propuesto. Las decisiones (S1–S8) están más abajo.
-- **Sesión 4:** en curso (18/10/2026). **Bloque 1** (0.2b). Desde esta sesión se trabaja por bloques. Pruebas negativas fusionadas (PR #2) y PR de Renovate abierta; el bloque 1 se cierra con las acciones del usuario en su cuenta.
+- **Sesión 4:** cerrada (18/10/2026). **Bloque 1** (0.2b): pruebas negativas (PR #2), Renovate (PR #3 y su corrección, PR #5) y protocolo por bloques en `AGENTS.md`. Desde esta sesión se trabaja por bloques.
+- **Siguiente sesión:** 5 → **bloque 2** (0.3 y 0.4).
 - **Protección de `main` comprobada (18/10/2026):** un push directo de prueba fue rechazado con GH006 ("Changes must be made through a pull request").
 - **Checks requeridos en `main` (18/10/2026):** `Pasos 1-5` y `Compuertas` (app de GitHub Actions), con la rama actualizada.
-- **Renovate instalado por el usuario (18/10/2026):** modo interactivo, solo en `portafolio`. Su primera ejecución abrió el issue #4 por un error de configuración, que corrige la PR `fix/renovate`.
+- **Renovate instalado por el usuario (18/10/2026):** modo interactivo, solo en `portafolio`. Su primera ejecución abrió el issue #4 por un error de configuración, que corrige la PR #5.
 
 ## Bloques de la F0a (decisión del usuario, sesión 4)
 
 | Bloque | Tareas | Estado |
 |---|---|---|
-| 1 | 0.2b (compuertas y Renovate) | hecho; faltan las acciones del usuario en su cuenta |
+| 1 | 0.2b (compuertas y Renovate) | cerrado |
 | 2 | 0.3 y 0.4 (Cloudflare y seguridad) | pendiente |
 | 3 | 0.5, 0.6a y 0.6b (i18n y diseño) | pendiente |
 | 4 | 0.7a, 0.7b y 0.7c (arquitectura) | pendiente |
 | 5 | 0.8 y 0.9 (contenido y cierre) | pendiente |
 
-Protocolo (decisión del usuario, sesión 4). **Pendiente de llevarlo a `AGENTS.md`:** el permiso del asistente bloqueó ese commit (ver Pendientes). Mientras tanto, rige el texto de aquí:
-
-1. Al empezar cada sesión, leer este archivo y las secciones del plan de las tareas del bloque actual.
-2. Dentro de un bloque no se pide ok por tarea. Cada tarea va en su rama y con su PR, y se fusiona con squash cuando la CI está en verde. Después se sigue con la siguiente.
-3. Solo se detiene el trabajo para acciones en las cuentas del usuario (GitHub, Cloudflare, Renovate), decisiones irreversibles o algo que contradiga el plan. Para lo demás se elige la opción más conservadora coherente con el plan, y se anota aquí como "decidido sin consultar".
-4. Al cerrar cada tarea, y antes de seguir, actualizar este archivo: estado, siguiente paso, tarea cerrada con su commit y sus horas, decisiones y pendientes.
-5. Al terminar el bloque, entregar un resumen con lo hecho, lo decidido sin consultar y las horas pendientes, y terminar con la línea "Listo para /clear".
+Protocolo de trabajo por bloques (decisión del usuario, sesión 4): en `AGENTS.md`.
 
 Indicaciones del usuario por bloque:
 
@@ -40,9 +35,12 @@ Indicaciones del usuario por bloque:
 
 ## Siguiente paso concreto
 
-1. Fusionar `fix/renovate` y comprobar que Renovate cierra el issue #4 y abre el "Dependency Dashboard".
-2. Llevar a `AGENTS.md` el protocolo por bloques y la regla de no saltarse los hooks (autorizado por el usuario), en su PR.
-3. Después, **bloque 2** (0.3 y 0.4).
+1. **Primer paso del bloque 2 (decisión del usuario): comprobar el resultado de Renovate y anotarlo aquí.** Lo visto al cerrar el bloque 1, sin actuar todavía:
+   - Tras la PR #5, Renovate cerró el issue #4 y abrió el "Dependency Dashboard" (#8): la configuración se acepta.
+   - PR #6 `chore(deps): pin node.js a v24.22.0`: cambia `.nvmrc` de `24` a `v24.22.0`. Decidir si se fija la versión exacta en `.nvmrc` (ADR 0002), o si `.nvmrc` queda en `24` y la regla de `node` pasa a `rangeStrategy: replace` o equivalente.
+   - PR #7 `chore(deps): actualiza typescript a 7.0.2`: falla `Pasos 1-5` y `Compuertas`. TypeScript 7 es incompatible con `@astrojs/check` 0.9.10 y `typescript-eslint` 8.71 (V1, ADR 0002). Propuesta: limitar `typescript` a `<7` en `renovate.json` hasta que ambos lo admitan; Renovate cerrará la PR sola.
+   - La acción "pin" no se tradujo en el título ("pin node.js"). Valorar `commitMessageAction` por tipo de actualización.
+2. **Bloque 2** (0.3 y 0.4): Cloudflare, secretos, entorno `production`, `deploy.yml`, seguridad y `_redirects`. Necesitará acciones del usuario en Cloudflare y en GitHub (token y secretos).
 
 ## Tareas cerradas
 
@@ -54,6 +52,7 @@ Indicaciones del usuario por bloque:
 | 0.1b ESLint, Prettier, hooks y ADR 0005 propuesto | `chore: configura ESLint, Prettier y los hooks de git` | 0,25 |
 | 0.2a GitHub, `ci.yml` pasos 1–5, protección de `main` y ADR 0010 propuesto | `ci: añade el pipeline mínimo con los pasos 1 a 5 y la comprobación de procedencia` (PR #1) | 0,25 |
 | 0.2b (1/2) Pruebas negativas de los pasos 1–5 y job `Compuertas` | `test: añade las pruebas negativas de las compuertas 1 a 5` (PR #2, `fd708c2`) | 0,1 |
+| Protocolo por bloques y regla de los hooks en `AGENTS.md` | `docs: adopta el protocolo de trabajo por bloques` | — (incluido en la 0.2b) |
 | 0.2b (2/2) Renovate | `chore: configura Renovate` (PR #3, `5481e3b`) | 0,15 |
 
 ## Decisiones tomadas
@@ -123,6 +122,7 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 | B12 | `eslint-plugin-boundaries` fuera del grupo y con una nota en la PR para revisar el override de `eslint-module-utils` | Pendiente del ADR 0005 | `renovate.json` |
 | B13 | Mensajes de commit `chore(deps): actualiza <dependencia> a <versión>` | Convención del repositorio: tipo en inglés y descripción en español | `renovate.json` |
 | B14 | `renovate.json` no se valida en local con `renovate-config-validator`: lo valida la PR de bienvenida de Renovate | El validador exige descargar Renovate, sin revisar ni cumplir la edad mínima | — |
+| B17 | Regla nueva en `AGENTS.md`: nunca `--no-verify` ni saltarse los hooks (decisión del usuario, tras el commit de prueba de la protección, que los saltó) | — | `AGENTS.md` |
 | B16 | Corrección de `renovate.json` (issue #4 de Renovate): `matchPackageNames` no admite `*` junto con otros patrones; se deja solo `!eslint-plugin-boundaries`, que coincide con todos los paquetes salvo ese | Error de configuración que Renovate informó en su primera ejecución | `renovate.json` |
 | B15 | Sin `lockFileMaintenance` | Opción conservadora. Las dependencias transitivas se renuevan con las directas; se reconsidera si quedan desfasadas | `renovate.json` |
 
@@ -194,9 +194,6 @@ Se resuelven en su tarea, sin cambiar el plan ahora:
 - En terminales abiertas antes de instalar pnpm, `pnpm` no está en el `Path`. Se usa `%LOCALAPPDATA%\pnpm\bin`.
 
 ## Pendientes y bloqueos
-
-- **Acciones en la cuenta del usuario (bloque 1):**
-  - Aplicar en `AGENTS.md` el protocolo por bloques (el texto está arriba). El permiso del asistente bloqueó ese commit por tratarse de su propio archivo de instrucciones; lo aplica el usuario o autoriza el permiso.
 
 - PLAN §12 dice que los hooks siguen "el mismo esquema que en Ontos"; ya no es así (I6). Ajustar el texto en la próxima revisión del plan, con ok del usuario.
 - `eslint-plugin-jsx-a11y-x` tiene un solo mantenedor visible. Volver a `eslint-plugin-jsx-a11y` cuando admita ESLint 10 (ADR 0005).
