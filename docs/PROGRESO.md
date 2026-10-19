@@ -11,7 +11,10 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 - **Sesión 2:** cerrada (18/10/2026). Tarea **0.1b**, hecha de forma autónoma mientras el usuario estaba ausente. Las decisiones tomadas sin consultar (D1–D11) están más abajo; el usuario aprobó D1–D10.
 - **Sesión 3:** cerrada (18/10/2026). Tarea **0.2a**: repositorio público en GitHub, `ci.yml` con los pasos 1–5, protección de `main` y ADR 0010 propuesto. Las decisiones (S1–S8) están más abajo.
 - **Sesión 4:** cerrada (18/10/2026). **Bloque 1** (0.2b): pruebas negativas (PR #2), Renovate (PR #3 y su corrección, PR #5) y protocolo por bloques en `AGENTS.md`. Desde esta sesión se trabaja por bloques.
-- **Sesión 5:** en curso (18/10/2026). **Bloque 2** (0.3 y 0.4). Primer paso: resultado de Renovate (R1–R3).
+- **Sesión 5:** cerrada (18/10/2026). **Bloque 2** (0.3 y 0.4): ajuste de Renovate (PR #10), Cloudflare y `deploy.yml` (PR #11), CSP, cabeceras y `_redirects` (PR #12). Decisiones R1–R3, C1–C6 y G1–G3.
+- **Siguiente sesión:** 6 → **bloque 3** (0.5, 0.6a y 0.6b).
+- **Producción (18/10/2026):** `https://portafolio.s-lesgmd.workers.dev`, desplegado por `deploy.yml` desde `main` (primer despliegue con la PR #11; versión `e6a65a86-704e-4c34-a499-526a7dd16425`). Entorno `production` de GitHub restringido a `main` (creado con `gh api`, autorizado por el usuario), con `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` cargados por el usuario.
+- **Comprobado a mano en producción tras la PR #12:** `/` → 302 a `/es/`; `/es/` → 200 con todas las cabeceras de `/*` y la `<meta>` CSP; `/es` → 307 a `/es/`; rutas inexistentes → 404 con las cabeceras. Faltan las 404 por idioma (0.5) y la capa 3 en una URL real (no hay archivos en `/_astro/` todavía).
 - **Protección de `main` comprobada (18/10/2026):** un push directo de prueba fue rechazado con GH006 ("Changes must be made through a pull request").
 - **Checks requeridos en `main` (18/10/2026):** `Pasos 1-5` y `Compuertas` (app de GitHub Actions), con la rama actualizada.
 - **Renovate instalado por el usuario (18/10/2026):** modo interactivo, solo en `portafolio`. Su primera ejecución abrió el issue #4 por un error de configuración, que corrige la PR #5.
@@ -21,7 +24,7 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 | Bloque | Tareas | Estado |
 |---|---|---|
 | 1 | 0.2b (compuertas y Renovate) | cerrado |
-| 2 | 0.3 y 0.4 (Cloudflare y seguridad) | en curso |
+| 2 | 0.3 y 0.4 (Cloudflare y seguridad) | cerrado |
 | 3 | 0.5, 0.6a y 0.6b (i18n y diseño) | pendiente |
 | 4 | 0.7a, 0.7b y 0.7c (arquitectura) | pendiente |
 | 5 | 0.8 y 0.9 (contenido y cierre) | pendiente |
@@ -35,10 +38,8 @@ Indicaciones del usuario por bloque:
 
 ## Siguiente paso concreto
 
-1. **Renovate (hecho):** PR #6 cerrada y `renovate.json` ajustado (R1–R3). Comprobar en la próxima ejecución de Renovate que cierra sola la PR #7 y que no vuelve a abrir la de `.nvmrc`.
-2. **0.3 (PR abierta, sin fusionar):** fusionarla solo cuando existan el entorno `production` (restringido a `main`) y sus dos secretos; si no, el primer `deploy.yml` falla y GitHub crea el entorno sin restricciones. Acciones del usuario pendientes: cuenta de Cloudflare con subdominio `workers.dev`, token, ID de la cuenta, entorno y secretos.
-3. **0.4 (PR abierta, encima de la de la 0.3):** `security.csp`, `_headers` completo, `_redirects` y ADR 0004 aceptado. Comprobado con `wrangler dev`; falta la comprobación a mano en producción tras el primer despliegue (criterio de la F0a).
-4. Las fusiones en `main` las bloquea el clasificador de permisos del asistente ("Production Deploy"): las hace el usuario o las autoriza.
+1. **Bloque 3** (0.5, 0.6a y 0.6b): i18n (ADR 0006), tokens, capas y tema (ADR 0008), layout y componentes base. La 0.5 sustituye la página provisional de `src/pages/es/index.astro` y crea las 404 por idioma; al terminarla, comprobar en producción `/es/404.html`, `/en/404.html` y la 404 raíz bilingüe.
+2. Con el primer script en `/_astro/`, comprobar en producción que recibe la CSP de la capa 3 (§7).
 
 ## Tareas cerradas
 
@@ -52,9 +53,9 @@ Indicaciones del usuario por bloque:
 | 0.2b (1/2) Pruebas negativas de los pasos 1–5 y job `Compuertas` | `test: añade las pruebas negativas de las compuertas 1 a 5` (PR #2, `fd708c2`) | 0,1 |
 | Protocolo por bloques y regla de los hooks en `AGENTS.md` | `docs: adopta el protocolo de trabajo por bloques` | — (incluido en la 0.2b) |
 | 0.2b (2/2) Renovate | `chore: configura Renovate` (PR #3, `5481e3b`) | 0,15 |
-| Ajuste de Renovate (`.nvmrc`, TypeScript < 7) | `chore: ajusta Renovate para .nvmrc y TypeScript` (PR #10, sin fusionar) | 0,05 |
-| 0.3 Cloudflare, `deploy.yml` y ADR 0003 propuesto | `feat: despliega el sitio en Cloudflare Workers con assets estáticos` (PR #11, sin fusionar) | 0,3 |
-| 0.4 CSP, cabeceras, `_redirects` y ADR 0004 | `feat: añade la CSP, las cabeceras de seguridad y la redirección de la raíz` (PR #12, sin fusionar) | 0,2 |
+| Ajuste de Renovate (`.nvmrc`, TypeScript < 7) | `chore: ajusta Renovate para .nvmrc y TypeScript` (PR #10, `b539f77`) | 0,05 |
+| 0.3 Cloudflare, `deploy.yml` y ADR 0003 propuesto | `feat: despliega el sitio en Cloudflare Workers con assets estáticos` (PR #11, `ef5c28f`) | 0,3 |
+| 0.4 CSP, cabeceras, `_redirects` y ADR 0004 | `feat: añade la CSP, las cabeceras de seguridad y la redirección de la raíz` (PR #12, `b59b902`) | 0,2 |
 
 ## Decisiones tomadas
 
@@ -143,6 +144,8 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 | G1 | Página provisional movida a `src/pages/es/index.astro` hasta la 0.5 | Sin ella, la redirección `/ → /es/` de la 0.4 llevaría a un 404 | ADR 0004 |
 | G2 | Comentarios dentro de `_headers` y `_redirects` explicando cada regla | Cloudflare ignora las líneas con `#`; comprobado con `wrangler dev` | `public/` |
 | G3 | Las pruebas de cabeceras (pasos 8 y 11) aceptarán la CSP doble como dos cabeceras o unida con coma | `wrangler dev` las envía separadas; la §7 describe la forma unida | ADR 0004 |
+| G4 | Renovate: la PR #7 (TypeScript 7) quedó cerrada sola y no volvió la de `.nvmrc` | Comprobación de R1 y R2 | — |
+| G5 | Fusiones en `main` con permiso explícito del usuario en cada una; ramas apiladas actualizadas con `rebase` sobre `main` y `--force-with-lease` | El clasificador de permisos del asistente trata la fusión en `main` como despliegue a producción | — |
 
 ## División de la F0a en sesiones (aprobada)
 
@@ -219,6 +222,7 @@ Se resuelven en su tarea, sin cambiar el plan ahora:
 - La verificación de la §4 se hizo con fixtures temporales, no versionados. Los casos permanentes van en `tests/gates/` (0.2b y 0.7).
 - `ui/` no puede importar `astro` ni `astro:*`. Si `Tool.astro` necesita sus tipos, se decide en la 0.7.
 - **Conectar `tsc -p tsconfig.domain.json` al paso 2 en cuanto haya archivos en `core/` (tarea 0.7b).** Hoy falla con TS18003 porque `core/` y `domain/` están vacíos (ADR 0002). Añadirlo al paso 2 de `ci.yml` y a `pnpm check`.
+- `deploy.yml` muestra un aviso `DEP0005` (`Buffer()`) de una dependencia de wrangler. No afecta; revisar si persiste al actualizar wrangler.
 - Renovate no tenía tarea en la §14; el usuario lo asignó a la 0.2b. Reflejarlo en la §14 en la próxima revisión del plan, con ok del usuario.
 - La §14 dice "0.2" para el pipeline mínimo y las compuertas; la sesión 3 lo dividió en 0.2a y 0.2b. Reflejarlo en la próxima revisión del plan, con ok del usuario.
 - Atribución desactivada en los ajustes de usuario del asistente (fuera del repositorio); el hook `commit-msg` de la 0.1b es la segunda barrera.
