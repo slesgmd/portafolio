@@ -9,17 +9,18 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 - **Fase:** F0a — Sitio en producción.
 - **Sesión 1:** cerrada (18/10/2026). Revisiones 1.3 y 1.4 del plan, entorno y tarea **0.1a**.
 - **Sesión 2:** cerrada (18/10/2026). Tarea **0.1b**, hecha de forma autónoma mientras el usuario estaba ausente. Las decisiones tomadas sin consultar (D1–D11) están más abajo; el usuario aprobó D1–D10.
-- **Siguiente sesión:** 3 → tarea **0.2a** (repo en GitHub, `ci.yml` pasos 1–5, protección de `main`).
+- **Sesión 3:** cerrada (18/10/2026). Tarea **0.2a**: repositorio público en GitHub, `ci.yml` con los pasos 1–5, protección de `main` y ADR 0010 propuesto. Las decisiones (S1–S8) están más abajo.
+- **Siguiente sesión:** 4 → tarea **0.2b** (`tests/gates/` y job de pruebas negativas).
 
 ## Siguiente paso concreto
 
-1. Plan breve de la 0.2a y esperar el ok. Crear el repositorio en GitHub y proteger `main` toca la cuenta del usuario: requiere su ok explícito en el momento.
-2. **Para la 0.2a** (rev. 1.4):
-   - `scripts/check-provenance.ts` en el paso 3, con `fetch-depth: 0`, y su prueba negativa en un repositorio git temporal. Casos: trailer `Co-authored-by`, mensaje, contenido y nombre de archivo, más un caso limpio.
-   - `ASTRO_TELEMETRY_DISABLED=1` en los workflows.
-   - Los términos de `check-provenance.ts` deben ser los mismos que los de `.githooks/commit-msg` (`names`).
-   - El paso 3 de `ci.yml` ejecuta `pnpm lint` y `pnpm format:check`.
-   - Al instalar Vitest, comprobar que el filtro del `pre-commit` (`vitest run --passWithNoTests src/core/ /domain/`) selecciona solo las pruebas de core y domain, y ajustarlo si no.
+1. Plan breve de la 0.2b y esperar el ok. Todo cambio en `main` entra ya por PR, con el check `Pasos 1-5` en verde y la rama actualizada.
+2. **Al empezar la 0.2b (decisión del usuario):** comprobar la protección de `main` con un push directo de prueba, que debe ser rechazado. Si no lo es, revertir de inmediato y revisar la protección.
+3. **Para la 0.2b** (§12, pruebas negativas de las compuertas):
+   - Casos genéricos de los pasos 1 a 5 sobre fixtures propios de `tests/gates/`: lockfile desactualizado (1); error de tipos (2); violación de ESLint, de formato y de procedencia (3); prueba que falla y cobertura bajo el umbral (4); build que falla (5). Los casos específicos de los pasos 2, 3 y 5 llegan en la 0.5 y la 0.7.
+   - Un job en `ci.yml` que verifica que cada caso falla en su compuerta. Si es un job aparte, añadirlo como check requerido en la protección de `main`.
+   - La prueba de procedencia ya cubre sus casos en `scripts/check-provenance.test.ts`. Decidir si `tests/gates/` la reutiliza o la duplica.
+4. **Renovate en la 0.2b (decisión del usuario):** `renovate.json` según la §7: edad mínima de 7 días, actualizaciones agrupadas y actualización de los SHA de las acciones. Incluir los pasos para que el usuario instale la app de Renovate en el repositorio; la instala él.
 
 ## Tareas cerradas
 
@@ -29,6 +30,7 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 | Revisiones 1.3 y 1.4 del plan | `docs: añade el plan (rev. 1.4) y el progreso` | 0,5 |
 | 0.1a Repositorio base | `chore: inicializa el repositorio con Astro y TypeScript` | 0,5 |
 | 0.1b ESLint, Prettier, hooks y ADR 0005 propuesto | `chore: configura ESLint, Prettier y los hooks de git` | 0,25 |
+| 0.2a GitHub, `ci.yml` pasos 1–5, protección de `main` y ADR 0010 propuesto | `ci: añade el pipeline mínimo con los pasos 1 a 5 y la comprobación de procedencia` (PR #1) | 0,25 |
 
 ## Decisiones tomadas
 
@@ -65,6 +67,19 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 | D9 | `commit-msg`: 11 tipos de Conventional Commits, asunto ≤ 100 caracteres, acepta `fixup!`/`squash!`/`amend!`/`Merge`; elimina `Co-authored-by:`, "Generated with/by" y enlaces al dominio del asistente o del proveedor, e informa de cada línea eliminada; términos: nombre del asistente y del proveedor | §12; 100 es el límite habitual de commitlint | `.githooks/commit-msg` |
 | D10 | Hooks activados con `pnpm hooks:install` (y ya activados en este clon), no con un script `prepare` automático | Sin efectos laterales al instalar; CI no los necesita | `package.json`, README |
 | D11 | Hooks escritos desde cero sin mirar Ontos (instrucción del usuario; no se compararán) | — | I6 |
+
+### Sesión 3 (0.2a)
+
+| # | Decisión | Motivo | Dónde queda |
+|---|---|---|---|
+| S1 | Repositorio público `slesgmd/portafolio`, sin plantillas; wiki desactivada. Issues activos: la auditoría semanal de la §7 abre issues | Aprobado por el usuario | GitHub |
+| S2 | Vitest y `@vitest/coverage-v8` 5.0.3; umbral del 90 % de ramas sobre `src/core/` y `src/tools/*/domain/` (corrección del usuario) | La 5.0.4 y la 5.0.5 no cumplían los 7 días. Sin archivos, el umbral no falla; con una rama sin cubrir, sí (comprobado) | `vitest.config.ts`, ADR 0010 |
+| S3 | `@types/node` 24.19.2 | `astro check` comprueba los scripts. Sus globales llegan a `ui/` y `platform/`; las capas puras siguen protegidas por `tsconfig.domain.json` | ADR 0010 |
+| S4 | Scripts en TypeScript ejecutados con Node 24 directamente, sin `tsx` | Sin dependencias nuevas | ADR 0010 |
+| S5 | `check-provenance.ts`: sin base revisa todo el historial; en CI, `origin/<rama base>..HEAD`; falla con un clon superficial; omite el contenido binario | §12 | `scripts/check-provenance.ts` |
+| S6 | `pre-commit`: Vitest obligatorio y `MSYS_NO_PATHCONV=1` | El sh de Git en Windows convertía `/domain/` en `C:/Program Files/Git/domain/` y el filtro no seleccionaba nada | `.githooks/pre-commit`, ADR 0010 |
+| S7 | `ci.yml`: un solo job (`Pasos 1-5`) con los cinco pasos en orden; acciones fijadas por SHA (checkout 7.0.1, setup-node 7.1.0, pnpm/action-setup 6.1.0, todas con ≥ 7 días); `contents: read`; `persist-credentials: false` | Una instalación para todos los pasos; cualquier fallo bloquea la fusión | `.github/workflows/ci.yml` |
+| S8 | Protección de `main`: solo por PR (0 aprobaciones), check `Pasos 1-5` requerido (app de GitHub Actions) con la rama actualizada, también para administradores, sin push forzado ni borrado. Solo squash, con borrado automático de la rama | Aprobado por el usuario | GitHub |
 
 ## División de la F0a en sesiones (aprobada)
 
@@ -140,6 +155,7 @@ Se resuelven en su tarea, sin cambiar el plan ahora:
 - Retirar el override de `eslint-module-utils` cuando `eslint-plugin-boundaries` dependa de la 2.14.0 o de una posterior. Revisarlo en cada PR de Renovate que lo actualice.
 - La verificación de la §4 se hizo con fixtures temporales, no versionados. Los casos permanentes van en `tests/gates/` (0.2b y 0.7).
 - `ui/` no puede importar `astro` ni `astro:*`. Si `Tool.astro` necesita sus tipos, se decide en la 0.7.
-- `tsconfig.domain.json` falla con TS18003 mientras `core/` y `domain/` estén vacíos: conectarlo al paso 2 cuando tengan código (ADR 0002).
-- Telemetría de Astro: desactivada en local (18/10/2026). En CI, `ASTRO_TELEMETRY_DISABLED=1` en los workflows de la 0.2a.
+- **Conectar `tsc -p tsconfig.domain.json` al paso 2 en cuanto haya archivos en `core/` (tarea 0.7b).** Hoy falla con TS18003 porque `core/` y `domain/` están vacíos (ADR 0002). Añadirlo al paso 2 de `ci.yml` y a `pnpm check`.
+- Renovate no tenía tarea en la §14; el usuario lo asignó a la 0.2b. Reflejarlo en la §14 en la próxima revisión del plan, con ok del usuario.
+- La protección de `main` se comprobó por la API, no con un push rechazado: se comprueba con un push de prueba al empezar la 0.2b.
 - Atribución desactivada en los ajustes de usuario del asistente (fuera del repositorio); el hook `commit-msg` de la 0.1b es la segunda barrera.

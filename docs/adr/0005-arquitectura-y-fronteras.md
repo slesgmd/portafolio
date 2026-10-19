@@ -69,7 +69,7 @@ Los casos permanentes de esta compuerta se añaden en `tests/gates/` en las tare
 
 **Hooks (`.githooks/`, activados con `pnpm hooks:install`):**
 
-- `pre-commit`: Prettier (`--check`) sobre los archivos preparados, ESLint sobre los de código y las pruebas de core y domain cuando Vitest esté instalado (tarea 0.2a). Revisa la copia de trabajo, no la versión preparada; la compuerta que bloquea es el paso 3 de la CI.
+- `pre-commit`: Prettier (`--check`) sobre los archivos preparados, ESLint sobre los de código y las pruebas de core y domain (Vitest, desde la tarea 0.2a; ADR 0010). Revisa la copia de trabajo, no la versión preparada; la compuerta que bloquea es el paso 3 de la CI.
 - `commit-msg`: elimina las líneas de coautoría (`Co-authored-by:`), las de "Generated with/by" y las que enlazan al dominio del asistente de código o de su proveedor, e informa de cada línea eliminada. Valida Conventional Commits (tipos `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, `test`; ámbito opcional; `!` opcional; asunto de 100 caracteres como máximo) y acepta `fixup!`, `squash!`, `amend!` y `Merge`. Rechaza el mensaje si sigue nombrando al asistente o a su proveedor. Ignora los comentarios y lo que sigue a la línea de tijera de `git commit -v`, y normaliza CRLF a LF.
 - Los términos prohibidos se escriben con clases de caracteres, como en `scripts/check-provenance.ts` (tarea 0.2a).
 - Se escribieron desde cero según la §12, sin consultar los de Ontos. La comparación con su esquema queda pendiente.
