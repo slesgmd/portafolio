@@ -52,7 +52,7 @@ Indicaciones del usuario por bloque:
 | 0.1b ESLint, Prettier, hooks y ADR 0005 propuesto | `chore: configura ESLint, Prettier y los hooks de git` | 0,25 |
 | 0.2a GitHub, `ci.yml` pasos 1–5, protección de `main` y ADR 0010 propuesto | `ci: añade el pipeline mínimo con los pasos 1 a 5 y la comprobación de procedencia` (PR #1) | 0,25 |
 | 0.2b (1/2) Pruebas negativas de los pasos 1–5 y job `Compuertas` | `test: añade las pruebas negativas de las compuertas 1 a 5` (PR #2, `fd708c2`) | pendiente (las registra el usuario) |
-| 0.2b (2/2) Renovate | `chore: configura Renovate` | pendiente (las registra el usuario) |
+| 0.2b (2/2) Renovate | `chore: configura Renovate` (PR #3) | pendiente (las registra el usuario) |
 
 ## Decisiones tomadas
 
