@@ -1,0 +1,38 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Actualización de dependencias (PLAN §4 y §7, ADR 0002).",
+  "extends": ["config:recommended", "helpers:pinGitHubActionDigestsToSemver", "schedule:weekly"],
+  "minimumReleaseAge": "7 days",
+  "internalChecksFilter": "strict",
+  "rangeStrategy": "pin",
+  "labels": ["dependencias"],
+  "semanticCommits": "enabled",
+  "commitMessageAction": "actualiza",
+  "commitMessageTopic": "{{depName}}",
+  "commitMessageExtra": "a {{newValue}}",
+  "packageRules": [
+    {
+      "description": "Las versiones no mayores, en una sola PR. Las mayores van cada una en la suya.",
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "matchPackageNames": ["*", "!eslint-plugin-boundaries"],
+      "groupName": "dependencias no mayores"
+    },
+    {
+      "description": "Node se queda en la línea 24 LTS, y sus tipos con él (ADR 0002).",
+      "matchPackageNames": ["node", "@types/node"],
+      "allowedVersions": "<25"
+    },
+    {
+      "description": "El rango de engines lo fija el ADR 0002; no se actualiza solo.",
+      "matchDepTypes": ["engines"],
+      "enabled": false
+    },
+    {
+      "description": "Aviso para retirar el override de eslint-module-utils (ADR 0005).",
+      "matchPackageNames": ["eslint-plugin-boundaries"],
+      "prBodyNotes": [
+        "Comprobar si esta versión depende de `eslint-module-utils` 2.14.0 o posterior. Si es así, retirar el override de `pnpm-workspace.yaml` y la nota del ADR 0005."
+      ]
+    }
+  ]
+}
