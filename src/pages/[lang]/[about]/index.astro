@@ -1,6 +1,14 @@
 ---
 import type { GetStaticPaths } from 'astro';
-import { locales, messages, segments, siteName, type Locale, type Route } from '../../../i18n';
+import {
+  editorial,
+  locales,
+  messages,
+  segments,
+  siteName,
+  type Locale,
+  type Route,
+} from '../../../i18n';
 import Base from '../../../layouts/Base.astro';
 
 export const getStaticPaths = (() =>
@@ -10,20 +18,21 @@ export const getStaticPaths = (() =>
 
 const locale = Astro.params.lang as Locale;
 const t = messages(locale);
+const content = editorial(locale);
 const route: Route = { kind: 'about' };
 ---
 
 <Base
   locale={locale}
   title={`${t.about.title} · ${siteName}`}
-  description={t.site.description}
+  description={content.description}
   route={route}
 >
   <h1>{t.about.heading}</h1>
-  <p>{t.about.intro}</p>
-  <p>{t.about.motivation}</p>
-  <p>{t.about.stack}</p>
+  <p>{content.about.intro}</p>
+  <p>{content.about.motivation}</p>
+  <p>{content.about.stack}</p>
   <p>
-    {t.about.code} <a href="https://github.com/slesgmd">slesgmd</a>.
+    {content.about.code} <a href="https://github.com/slesgmd">slesgmd</a>.
   </p>
 </Base>

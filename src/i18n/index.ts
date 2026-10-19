@@ -3,6 +3,7 @@ import { en } from './en.ts';
 import { es } from './es.ts';
 import type { Locale } from './routes.ts';
 
+export * from './editorial.ts';
 export * from './routes.ts';
 export * from './site.ts';
 export * from './tool-texts.ts';

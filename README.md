@@ -150,4 +150,4 @@ Se crea `src/tools/<slug>/`, con el slug en kebab-case y en inglés (PLAN §5.7)
 ## Licencias
 
 - Código: [MIT](LICENSE).
-- Contenido (textos e imágenes del sitio): todos los derechos reservados ([`LICENSE-CONTENT`](LICENSE-CONTENT)).
+- Contenido (textos e imágenes del sitio): todos los derechos reservados ([`LICENSE-CONTENT`](LICENSE-CONTENT)). Los textos editoriales están en `src/i18n/editorial.ts`; los de interfaz, en `src/i18n/es.ts` y `en.ts`, son parte del código.

@@ -3,6 +3,7 @@ import { compareKeys } from './dict.ts';
 import {
   alternatesFor,
   defineToolTexts,
+  editorial,
   isLocale,
   locales,
   messages,
@@ -58,6 +59,13 @@ describe('messages', () => {
   it('devuelve el diccionario de cada idioma', () => {
     expect(messages('es').tools.title).toBe('Herramientas');
     expect(messages('en').tools.title).toBe('Tools');
+  });
+});
+
+describe('editorial', () => {
+  it('devuelve el contenido de cada idioma', () => {
+    expect(editorial('es').about.code).toBe('Mi código está en GitHub:');
+    expect(editorial('en').about.code).toBe('My code is on GitHub:');
   });
 });
 

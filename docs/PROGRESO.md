@@ -16,6 +16,7 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 - **Sesión 7:** cerrada (18/10/2026). Regla de estilo de `AGENTS.md` (PR #18) y limpieza de comentarios (PR #19), pedidas por el usuario. **Bloque 4** (0.7a, 0.7b y 0.7c): validador y decisión 6 (PR #20), `core/` y `platform/` (PR #21), registro, índice y ruta dinámica (PR #22). Decisiones A1–A26, tomadas sin consultar, más abajo.
 - **Sesión 8:** en curso (19/10/2026). **Bloque 5** (0.8 y 0.9): entrevista al usuario para los textos y la dirección de diseño.
 - **0.7c comprobada en producción (18/10/2026, tras la PR #22):** `/es/herramientas/` y `/en/tools/` → 200 con las cabeceras de `/*`; el índice indica que no hay herramientas; la cabecera enlaza a él y el sitemap lo incluye.
+- **0.8 revisada y comprobada (19/10/2026):** el usuario revisó la PR #24 en navegador a 320 px, en los dos idiomas y los dos temas (sin desbordamiento horizontal; los títulos se parten bien) y aprobó los textos, los tokens y E1, E3 y E5. Tras la fusión, `/es/`, `/en/`, `/es/sobre-mi/` y `/en/about/` → 200 en producción, con sus títulos, `meta description`, textos, enlaces y cabeceras; la hoja de `/_astro/` lleva la paleta ámbar, `--color-focus`, `::selection` y Cascadia Mono.
 - **Revisión manual en navegador (usuario, 19/10/2026):** el tema no parpadea al recargar con `Claro` u `Oscuro` elegido, el interruptor funciona con teclado y no hay desplazamiento horizontal a 320 px (§9, §10).
 - **Producción (18/10/2026):** `https://portafolio.s-lesgmd.workers.dev`, desplegado por `deploy.yml` desde `main` (primer despliegue con la PR #11; versión `e6a65a86-704e-4c34-a499-526a7dd16425`). Entorno `production` de GitHub restringido a `main` (creado con `gh api`, autorizado por el usuario), con `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` cargados por el usuario.
 - **Comprobado a mano en producción tras la PR #12:** `/` → 302 a `/es/`; `/es/` → 200 con todas las cabeceras de `/*` y la `<meta>` CSP; `/es` → 307 a `/es/`; rutas inexistentes → 404 con las cabeceras. Faltan las 404 por idioma (0.5) y la capa 3 en una URL real (no hay archivos en `/_astro/` todavía).
@@ -45,9 +46,8 @@ Indicaciones del usuario por bloque:
 
 ## Siguiente paso concreto
 
-1. **0.8:** PR `feat/contenido-inicio-sobre-mi` abierta, a la espera de que el usuario revise los textos y los tokens antes de fusionar. Después, comprobar en producción `/es/`, `/en/`, `/es/sobre-mi/` y `/en/about/`.
-2. **0.9:** revisión de los ADR 0001–0015 y redacción de los que falten (0007 propuesto), entrada de la F0a en `CHANGELOG.md` y recalibración de las estimaciones.
-3. La capa 3 sobre un script real de `/_astro/` ya se comprobó con `wrangler dev` y una herramienta temporal (ADR 0014). En producción queda para la primera herramienta real (F1).
+1. **0.9:** revisión de los ADR 0001–0015 y redacción de los que falten (0007 propuesto), entrada de la F0a en `CHANGELOG.md` y recalibración de las estimaciones.
+2. La capa 3 sobre un script real de `/_astro/` ya se comprobó con `wrangler dev` y una herramienta temporal (ADR 0014). En producción queda para la primera herramienta real (F1).
 
 ## Tareas cerradas
 
@@ -72,7 +72,8 @@ Indicaciones del usuario por bloque:
 | 0.7a Validador (ADR 0011), decisión 6 y aceptación del ADR 0005 | `feat: elige Valibot como validador y fija la interfaz sin framework` (PR #20, `a010eec`) | 0,4 |
 | 0.7b `core/` (puertos y persistencia versionada) y `platform/` | `feat: añade los puertos de core, la persistencia versionada y platform` (PR #21, `58cb6af`) | 0,4 |
 | 0.7c Registro, índice de herramientas, ruta dinámica y ADR 0014 | `feat: añade el registro, el índice de herramientas y su ruta dinámica` (PR #22, `15a211e`) | 0,5 |
-| 0.8 Textos de inicio y "sobre mí", paleta ámbar y ADR 0015 | `feat: añade los textos de inicio y sobre mí y la paleta ámbar` (PR pendiente de fusionar) | 0,75 |
+| 0.8 Textos de inicio y "sobre mí", paleta ámbar y ADR 0015 | `feat: añade los textos de inicio y sobre mí y la paleta ámbar` (PR #24, `903459e`) | 0,75 |
+| 0.8 Separación del contenido editorial (ADR 0009) | `fix: separa el contenido editorial de los textos de interfaz` | 0,15 |
 
 ## Decisiones tomadas
 
@@ -231,6 +232,7 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 | E6 | Los nombres de herramienta de la lista van en `--font-heading` | Coherencia con los títulos | `ToolList.astro` |
 | E7 | "Sobre mí" usa la `meta description` del sitio | El usuario no dio una propia | `[about]/index.astro` |
 | E8 | La prueba de `messages` compara `tools.title` en lugar de `site.name` | `site.name` ya no existe | `i18n.test.ts` |
+| E9 | El contenido editorial (descripción, textos de inicio y de "sobre mí") pasa de `es.ts`/`en.ts` a `src/i18n/editorial.ts`, con su licencia en la cabecera y sus claves comparadas al cargarse; `es.ts` y `en.ts` quedan solo con textos de interfaz (MIT) | El ADR 0009 pedía revisar en la 0.8 la frontera entre contenido y textos de interfaz, y separar los archivos que mezclaran ambos. Se detectó al revisar los ADR en la 0.9 | `editorial.ts`, README |
 
 ## Textos provisionales
 
@@ -315,4 +317,3 @@ Se resuelven en su tarea, sin cambiar el plan ahora:
 - Atribución desactivada en los ajustes de usuario del asistente (fuera del repositorio); el hook `commit-msg` de la 0.1b es la segunda barrera.
 - La `<meta>` CSP que inserta Astro queda detrás de los elementos de `<head>` del layout, y una CSP en `<meta>` solo rige lo que viene después (ADR 0013). Hoy solo hay contenido estático propio delante. Tenerlo en cuenta en `verify-dist.ts` (0.10).
 - `public/robots.txt` no existe (T8): decidir en la 0.11 o al fijar el dominio.
-- Revisión en navegador del reflujo a 320 px con los títulos monoespaciados (ADR 0015), al revisar la PR de la 0.8.
