@@ -35,6 +35,12 @@ const replaceOnce =
     return current.replace(search, replacement);
   };
 
+const domainImportsPlatform = {
+  'src/tools/caso/domain/usa-platform.ts':
+    "import { createLocalStore } from '../../../platform/local-store.ts';\n\n" +
+    'export const store = createLocalStore();\n',
+};
+
 const enKey = "    name: 'English',\n";
 const withoutEnKey = replaceOnce(enKey, '');
 const withExtraEnKey = replaceOnce(enKey, `${enKey}    extra: 'Extra',\n`);
@@ -77,6 +83,13 @@ export const cases: GateCase[] = [
     expected: /caso-dom\.ts.*Cannot find name 'window'/,
   },
   {
+    step: 2,
+    name: 'domain importa platform (tipos)',
+    command: ['check'],
+    files: domainImportsPlatform,
+    expected: /platform\/local-store\.ts.*Cannot find name '(Storage|DOMException|localStorage)'/,
+  },
+  {
     step: 3,
     name: 'violación de ESLint',
     command: ['lint'],
@@ -93,6 +106,13 @@ export const cases: GateCase[] = [
         "import { ahora } from '../platform/reloj.ts';\n\nexport const t = ahora();\n",
     },
     expected: /boundaries\/dependencies/,
+  },
+  {
+    step: 3,
+    name: 'violación de fronteras (domain importa platform)',
+    command: ['lint'],
+    files: domainImportsPlatform,
+    expected: /tool-domain no puede importar \.\.\/\.\.\/\.\.\/platform\/local-store\.ts/,
   },
   {
     step: 3,
