@@ -6,6 +6,19 @@ export const es = {
     name: 'Portafolio',
     description: 'Caja de herramientas personal que se ejecuta en el navegador.',
   },
+  skipLink: 'Saltar al contenido',
+  nav: {
+    label: 'Principal',
+  },
+  theme: {
+    label: 'Tema',
+    light: 'Claro',
+    dark: 'Oscuro',
+    system: 'Sistema',
+  },
+  footer: {
+    source: 'Código fuente',
+  },
   langSwitch: {
     label: 'Idioma',
     // Nombre de este idioma, escrito en él: el selector lo muestra en los demás.

@@ -1,0 +1,98 @@
+---
+// Interruptor de tema (PLAN §10, ADR 0008): claro, oscuro o el del sistema. Guarda la
+// elección en `localStorage`. Sin JavaScript no se muestra: lo revela `data-js`, que
+// marca el script de tema antes del primer pintado, sin desplazar el contenido.
+import { messages, type Locale } from '../i18n';
+import { themes } from './theme.ts';
+
+interface Props {
+  locale: Locale;
+}
+
+const t = messages(Astro.props.locale);
+---
+
+<div class="theme-toggle" role="group" aria-label={t.theme.label} data-theme-toggle>
+  {themes.map((theme) => (
+    <button type="button" value={theme} aria-pressed={theme === 'system' ? 'true' : 'false'}>
+      {t.theme[theme]}
+    </button>
+  ))}
+</div>
+
+<script>
+  import { themeStorageKey, themes, type Theme } from './theme.ts';
+
+  const root = document.documentElement;
+  const isTheme = (value: unknown): value is Theme => themes.some((theme) => theme === value);
+
+  // `localStorage` puede lanzar al acceder (bloqueado por el navegador): la elección
+  // se aplica igual, solo que no se recuerda.
+  const read = (): Theme => {
+    try {
+      const value = localStorage.getItem(themeStorageKey);
+      return isTheme(value) ? value : 'system';
+    } catch {
+      return 'system';
+    }
+  };
+
+  const groups = document.querySelectorAll<HTMLElement>('[data-theme-toggle]');
+
+  const show = (theme: Theme): void => {
+    for (const group of groups) {
+      for (const button of group.querySelectorAll('button')) {
+        button.setAttribute('aria-pressed', String(button.value === theme));
+      }
+    }
+  };
+
+  const apply = (theme: Theme): void => {
+    if (theme === 'system') delete root.dataset.theme;
+    else root.dataset.theme = theme;
+    try {
+      localStorage.setItem(themeStorageKey, theme);
+    } catch {
+      // Sin almacenamiento: el tema dura hasta recargar.
+    }
+    show(theme);
+  };
+
+  for (const group of groups) {
+    group.addEventListener('click', (event) => {
+      const button = (event.target as Element).closest('button');
+      if (button && isTheme(button.value)) apply(button.value);
+    });
+  }
+  show(read());
+</script>
+
+<style>
+  @layer components {
+    .theme-toggle {
+      display: none;
+      gap: var(--space-3xs);
+    }
+
+    :global(:root[data-js]) .theme-toggle {
+      display: flex;
+    }
+
+    button {
+      min-block-size: 1.5rem;
+      padding: var(--space-3xs) var(--space-2xs);
+      border: 1px solid var(--color-border-strong);
+      border-radius: var(--radius-s);
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      font-size: var(--step--1);
+      cursor: pointer;
+    }
+
+    button[aria-pressed='true'] {
+      background-color: var(--color-text);
+      color: var(--color-bg);
+      border-color: var(--color-text);
+    }
+  }
+</style>

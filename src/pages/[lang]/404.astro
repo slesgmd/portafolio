@@ -2,7 +2,6 @@
 // 404 por idioma (PLAN §5.7): Cloudflare sirve el `404.html` más cercano subiendo por
 // la ruta (`not_found_handling: "404-page"`).
 import type { GetStaticPaths } from 'astro';
-import LangSwitch from '../../components/LangSwitch.astro';
 import { locales, messages, pathFor, type Locale } from '../../i18n';
 import Base from '../../layouts/Base.astro';
 
@@ -14,12 +13,9 @@ const t = messages(locale);
 ---
 
 <Base locale={locale} title={`${t.notFound.title} · ${t.site.name}`} description={t.notFound.body}>
-  <LangSwitch locale={locale} />
-  <main>
-    <h1>{t.notFound.heading}</h1>
-    <p>{t.notFound.body}</p>
-    <p>
-      <a href={pathFor(locale, { kind: 'home' })}>{t.notFound.home}</a>
-    </p>
-  </main>
+  <h1>{t.notFound.heading}</h1>
+  <p>{t.notFound.body}</p>
+  <p>
+    <a href={pathFor(locale, { kind: 'home' })}>{t.notFound.home}</a>
+  </p>
 </Base>

@@ -38,6 +38,9 @@
     --leading-normal: 1.5;
     --measure: 70ch;
 
+    /* Ancho máximo del contenido de la página. */
+    --page-max: 60rem;
+
     /* Espaciado. */
     --space-3xs: 0.25rem;
     --space-2xs: 0.5rem;

@@ -9,25 +9,23 @@ const title = locales.map((locale) => messages(locale).notFound.title).join(' ·
 ---
 
 <Base locale={defaultLocale} title={title} description={t.notFound.body}>
-  <main>
-    <h1>
-      {locales.map((locale, i) => (
-        <>
-          {i > 0 && ' · '}
-          <span lang={locale}>{messages(locale).notFound.heading}</span>
-        </>
-      ))}
-    </h1>
-    {locales.map((locale) => {
-      const m = messages(locale);
-      return (
-        <section lang={locale}>
-          <p>{m.notFound.body}</p>
-          <p>
-            <a href={pathFor(locale, { kind: 'home' })}>{m.notFound.home}</a>
-          </p>
-        </section>
-      );
-    })}
-  </main>
+  <h1>
+    {locales.map((locale, i) => (
+      <>
+        {i > 0 && ' · '}
+        <span lang={locale}>{messages(locale).notFound.heading}</span>
+      </>
+    ))}
+  </h1>
+  {locales.map((locale) => {
+    const m = messages(locale);
+    return (
+      <section lang={locale}>
+        <p>{m.notFound.body}</p>
+        <p>
+          <a href={pathFor(locale, { kind: 'home' })}>{m.notFound.home}</a>
+        </p>
+      </section>
+    );
+  })}
 </Base>

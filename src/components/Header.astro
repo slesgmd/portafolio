@@ -1,0 +1,88 @@
+---
+// Cabecera (PLAN §10): nombre del sitio, navegación, selector de idioma e interruptor
+// de tema. El enlace a las herramientas llega con su índice (tarea 0.7).
+import { messages, pathFor, type Locale, type Route } from '../i18n';
+import LangSwitch from './LangSwitch.astro';
+import ThemeToggle from './ThemeToggle.astro';
+
+interface Props {
+  locale: Locale;
+  route?: Route | undefined;
+}
+
+const { locale, route } = Astro.props;
+const t = messages(locale);
+const links: { route: Route; label: string }[] = [
+  { route: { kind: 'about' }, label: t.about.title },
+];
+const current = (target: Route) => (route?.kind === target.kind ? 'page' : undefined);
+---
+
+<header class="header">
+  <a
+    class="brand"
+    href={pathFor(locale, { kind: 'home' })}
+    aria-current={current({ kind: 'home' })}
+  >
+    {t.site.name}
+  </a>
+  <nav aria-label={t.nav.label}>
+    <ul>
+      {links.map((link) => (
+        <li>
+          <a href={pathFor(locale, link.route)} aria-current={current(link.route)}>
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+  <div class="actions">
+    <LangSwitch locale={locale} route={route} />
+    <ThemeToggle locale={locale} />
+  </div>
+</header>
+
+<style>
+  @layer components {
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-xs) var(--space-m);
+      padding-block: var(--space-s);
+      padding-inline: max(var(--space-s), (100% - var(--page-max)) / 2);
+      border-block-end: 1px solid var(--color-border);
+    }
+
+    .brand {
+      color: var(--color-text);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-s);
+      padding: 0;
+      list-style: none;
+    }
+
+    a[aria-current='page'] {
+      text-decoration-thickness: 0.15em;
+    }
+
+    .brand[aria-current='page'] {
+      text-decoration-line: none;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-s);
+      margin-inline-start: auto;
+    }
+  }
+</style>

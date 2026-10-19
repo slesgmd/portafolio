@@ -1,8 +1,6 @@
-/* Orden de las capas (PLAN §10, ADR 0008). Este archivo se importa el primero, así que
-   la declaración fija el orden para todo el sitio. Los estilos de los componentes van
-   dentro de `@layer components`: un estilo sin capa ganaría a todas. */
-@layer reset, tokens, base, layout, components, utilities;
-
+/* Reset mínimo (PLAN §10, ADR 0008). El orden de las capas se declara en
+   `src/layouts/layer-order.ts`. Los estilos de los componentes van dentro de
+   `@layer components`: un estilo sin capa ganaría a todas. */
 @layer reset {
   *,
   *::before,
