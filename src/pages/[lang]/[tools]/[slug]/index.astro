@@ -1,6 +1,6 @@
 ---
 import type { GetStaticPaths } from 'astro';
-import { locales, messages, segments, type Locale, type Route } from '../../../../i18n';
+import { locales, segments, siteName, type Locale, type Route } from '../../../../i18n';
 import Base from '../../../../layouts/Base.astro';
 import { textsFor, tools, type ToolEntry } from '../../../../registry';
 
@@ -27,7 +27,6 @@ const { entry } = Astro.props;
 // `ui/` no importa `meta.ts`: la estrategia de carga le llega en `data-hydration` (ADR 0005).
 const { slug, hydration } = entry.meta;
 const locale = Astro.params.lang as Locale;
-const t = messages(locale);
 const texts = textsFor(entry, locale);
 const route: Route = { kind: 'tool', slug };
 const Tool = interfaces[`../../../../tools/${slug}/ui/Tool.astro`]?.default;
@@ -36,7 +35,7 @@ if (Tool === undefined) throw new Error(`tools/${slug}: falta ui/Tool.astro`);
 
 <Base
   locale={locale}
-  title={`${texts.name} · ${t.site.name}`}
+  title={`${texts.name} · ${siteName}`}
   description={texts.description}
   route={route}
 >

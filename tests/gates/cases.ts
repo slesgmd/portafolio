@@ -205,7 +205,7 @@ export const cases: GateCase[] = [
     command: ['test:coverage'],
     files: {
       'src/design/tokens.css': replaceOnce(
-        '--color-text-muted: light-dark(oklch(45% ',
+        '--color-text-muted: light-dark(oklch(46% ',
         '--color-text-muted: light-dark(oklch(80% ',
       ),
     },

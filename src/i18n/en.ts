@@ -3,8 +3,8 @@ import type { es } from './es.ts';
 
 export const en = {
   site: {
-    name: 'Portfolio',
-    description: 'Personal toolbox that runs in the browser.',
+    description:
+      'Tools that run in your browser without sending your data. No accounts, no analytics.',
   },
   skipLink: 'Skip to content',
   nav: {
@@ -24,9 +24,10 @@ export const en = {
     name: 'English',
   },
   home: {
-    title: 'Home',
-    heading: 'Portfolio',
-    body: 'Under construction.',
+    lead: 'Tools that run entirely in your browser. Nothing you type or open leaves your device: no accounts, no analytics.',
+    toolsLink: 'See the tools',
+    intro: "I'm Sebastián Lescano, a Computer Science student at UTEC.",
+    aboutLink: 'More about me',
   },
   tools: {
     title: 'Tools',
@@ -38,7 +39,13 @@ export const en = {
   about: {
     title: 'About',
     heading: 'About',
-    body: 'Under construction.',
+    intro:
+      "I'm Sebastián Lescano, a Computer Science student at UTEC in Peru. I'm interested in cybersecurity, web development, applied mathematics and machine learning, especially neural networks.",
+    motivation:
+      'I built this site because I wanted my own tools, ones that help me stay organized and that I can adapt as I see fit. I also wanted a personal project to show on GitHub.',
+    stack:
+      "It's built with TypeScript and Astro and deployed to Cloudflare Workers through GitHub Actions. I pick up whatever each project requires.",
+    code: 'My code is on GitHub:',
   },
   notFound: {
     title: 'Page not found',

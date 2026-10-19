@@ -1,8 +1,9 @@
 ---
 import type { GetStaticPaths } from 'astro';
-import { locales, messages, pathFor, segments, type Locale, type Route } from '../../../i18n';
+import ToolList from '../../../components/ToolList.astro';
+import { locales, messages, segments, siteName, type Locale, type Route } from '../../../i18n';
 import Base from '../../../layouts/Base.astro';
-import { textsFor, tools } from '../../../registry';
+import { tools } from '../../../registry';
 
 export const getStaticPaths = (() =>
   locales.map((lang) => ({
@@ -16,49 +17,10 @@ const route: Route = { kind: 'tools' };
 
 <Base
   locale={locale}
-  title={`${t.tools.title} · ${t.site.name}`}
+  title={`${t.tools.title} · ${siteName}`}
   description={t.tools.description}
   route={route}
 >
   <h1>{t.tools.heading}</h1>
-  {tools.length === 0 ? (
-    <p>{t.tools.empty}</p>
-  ) : (
-    <ul class="tools">
-      {tools.map((entry) => {
-        const texts = textsFor(entry, locale);
-        return (
-          <li>
-            <a href={pathFor(locale, { kind: 'tool', slug: entry.meta.slug })}>{texts.name}</a>
-            {entry.meta.status === 'beta' && <span class="status">{t.tools.beta}</span>}
-            <p>{texts.description}</p>
-          </li>
-        );
-      })}
-    </ul>
-  )}
+  {tools.length === 0 ? <p>{t.tools.empty}</p> : <ToolList locale={locale} />}
 </Base>
-
-<style>
-  @layer components {
-    .tools {
-      display: grid;
-      gap: var(--space-m);
-      padding: 0;
-      list-style: none;
-    }
-
-    .tools a {
-      font-weight: 700;
-    }
-
-    .status {
-      margin-inline-start: var(--space-2xs);
-      padding-inline: var(--space-3xs);
-      border: 1px solid var(--color-border-strong);
-      border-radius: var(--radius-s);
-      color: var(--color-text-muted);
-      font-size: var(--step--1);
-    }
-  }
-</style>
