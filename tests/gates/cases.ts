@@ -41,6 +41,14 @@ const domainImportsPlatform = {
     'export const store = createLocalStore();\n',
 };
 
+// El umbral es global: con tantas ramas sin cubrir, el total queda por debajo del 90 %
+// mientras el resto del repositorio tenga menos de 4.000 ramas cubiertas.
+const uncoveredBranches = 500;
+const manyBranches =
+  'export const cuenta = (n: number): number => {\n  let total = 0;\n' +
+  Array.from({ length: uncoveredBranches }, (_, i) => `  if (n === ${i}) total += 1;\n`).join('') +
+  '  return total;\n};\n';
+
 const enKey = "    name: 'English',\n";
 const withoutEnKey = replaceOnce(enKey, '');
 const withExtraEnKey = replaceOnce(enKey, `${enKey}    extra: 'Extra',\n`);
@@ -157,12 +165,12 @@ export const cases: GateCase[] = [
     name: 'cobertura de ramas bajo el umbral',
     command: ['test:coverage'],
     files: {
-      'src/core/signo.ts': 'export const signo = (n: number): number => (n < 0 ? -1 : 1);\n',
-      'src/core/signo.test.ts':
-        "import { expect, it } from 'vitest';\nimport { signo } from './signo.ts';\n\n" +
-        "it('positivo', () => {\n  expect(signo(2)).toBe(1);\n});\n",
+      'src/core/ramas.ts': manyBranches,
+      'src/core/ramas.test.ts':
+        "import { expect, it } from 'vitest';\nimport { cuenta } from './ramas.ts';\n\n" +
+        "it('ninguna rama', () => {\n  expect(cuenta(-1)).toBe(0);\n});\n",
     },
-    expected: /Coverage for branches \(50%\) does not meet global threshold \(90%\)/,
+    expected: /Coverage for branches \([\d.]+%\) does not meet global threshold \(90%\)/,
   },
   {
     step: 4,

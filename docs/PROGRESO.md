@@ -203,6 +203,7 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 | A15 | `platform/hydration.ts` (A7): sin `data-hydration` o sin `IntersectionObserver`, carga al instante | Cargar de más es preferible a no cargar la interfaz | `hydration.ts` |
 | A16 | Las pruebas de `platform/` corren en el entorno `node` con dobles (`Storage`, `IntersectionObserver`) y el Web Crypto de Node; sin umbral de cobertura | §11 fija el umbral solo en `core` y `domain`; el comportamiento real en los navegadores lo cubren las E2E (F0b) | `src/platform/*.test.ts` |
 | A17 | Casos nuevos de `tests/gates/`: `domain` importa `platform` (pasos 2 y 3) | Ejemplo de la §12 | `cases.ts` |
+| A18 | El caso de cobertura de `tests/gates/` usa un archivo con 500 ramas sin cubrir y una firma sin porcentaje fijo | Con las ramas cubiertas de `versioned-store.ts`, el 50 % de un solo archivo ya no bajaba del 90 % el umbral global, y el caso dejó de fallar (CI de la PR #21). Se mantiene el umbral global de la §11 | `cases.ts` |
 
 ## División de la F0a en sesiones (aprobada)
 
