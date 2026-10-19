@@ -29,7 +29,7 @@ Fuente de verdad: `docs/PLAN.md` (revisión 1.4). Las revisiones anteriores est�
 | 1 | 0.2b (compuertas y Renovate) | cerrado |
 | 2 | 0.3 y 0.4 (Cloudflare y seguridad) | cerrado |
 | 3 | 0.5, 0.6a y 0.6b (i18n y diseño) | cerrado |
-| 4 | 0.7a, 0.7b y 0.7c (arquitectura) | pendiente |
+| 4 | 0.7a, 0.7b y 0.7c (arquitectura) | en curso |
 | 5 | 0.8 y 0.9 (contenido y cierre) | pendiente |
 
 Protocolo de trabajo por bloques (decisión del usuario, sesión 4): en `AGENTS.md`.
@@ -41,7 +41,7 @@ Indicaciones del usuario por bloque:
 
 ## Siguiente paso concreto
 
-1. **Bloque 4** (0.7a, 0.7b y 0.7c), tras la PR #19: validador (ADR 0011) y decisión 6 (acepta el ADR 0005), `core/` y `platform/`, registro, índice de herramientas y ruta dinámica. Al crear el índice, añadir su enlace a `Header.astro` y sus rutas al sitemap.
+1. **Bloque 4**, tras la 0.7a (PR #20): **0.7b** `core/` (puertos y `versioned-store.ts`) y `platform/` (`local-store.ts`, `web-crypto.ts`, `clock.ts` y la carga de la interfaz de la decisión 6), con el caso de `tests/gates/` de `domain` → `platform` (pasos 2 y 3); después **0.7c**, registro, índice de herramientas y ruta dinámica. Al crear el índice, añadir su enlace a `Header.astro` y sus rutas al sitemap.
 2. Los scripts siguen inline (Astro inserta en línea el del interruptor), así que la comprobación de la capa 3 sobre un script real de `/_astro/` queda para el primero que se emita, como tarde con los workers de la F1. La regla ya se comprobó en producción sobre la hoja de estilos de `/_astro/`.
 3. **Revisión manual pendiente (usuario):** en un navegador real, que el tema no parpadea al recargar con `Claro` u `Oscuro` elegido, que el interruptor funciona con teclado, y el reflujo a 320 px con zoom al 200 % (§9). En esta sesión no hubo navegador disponible.
 
@@ -64,7 +64,8 @@ Indicaciones del usuario por bloque:
 | 0.6a Tokens, capas, tema sin parpadeo y ADR 0008 | `feat: añade los tokens de diseño, las capas CSS y el script de tema` (PR #15, `b063711`) | 0,25 |
 | 0.6b Layout, cabecera, pie, interruptor de tema y ADR 0013 | `feat: añade el layout con cabecera, pie e interruptor de tema` (PR #16, `7a7c321`) | 0,25 |
 | Regla de estilo en `AGENTS.md` (sin tarea del plan) | `docs: añade la regla de estilo de comentarios y documentación` (PR #18, `e92b03d`) | 0,05 |
-| Limpieza de comentarios según la regla (sin tarea del plan) | `refactor: limpia los comentarios según la regla de estilo` (PR #19) | 0,2 |
+| Limpieza de comentarios según la regla (sin tarea del plan) | `refactor: limpia los comentarios según la regla de estilo` (PR #19, `0cd1d17`) | 0,2 |
+| 0.7a Validador (ADR 0011), decisión 6 y aceptación del ADR 0005 | `feat: elige Valibot como validador y fija la interfaz sin framework` (PR #20) | 0,4 |
 
 ## Decisiones tomadas
 
@@ -186,6 +187,12 @@ El usuario autorizó hacer la 0.1b completa sin preguntar: elegir la opción má
 |---|---|---|---|
 | A1 | Limpieza de comentarios: se quitan los que describen el archivo o repiten el código, y los encabezados de sección; se conservan los que explican un porqué o una restricción, acortados, con su referencia (§ o ADR) y sin los identificadores de este archivo (D3, T7). Dos nombres sustituyen comentarios (`cspHash`, `copyTrackedFiles`) y una tupla con nombres el de `pairs` | Regla de estilo de `AGENTS.md` (PR #18) | PR #19 |
 | A2 | La limpieza no toca `docs/PLAN.md`, los ADR ni este archivo, ni las etiquetas de sección de `.gitignore` ni las `description` de `renovate.json` | Los ADR aceptados no se editan (§15) y el plan cambia por revisiones con ok; las etiquetas y las descripciones son parte del formato de esos archivos | — |
+| A3 | Validador: Valibot 1.5.0 (2,0 KB con gzip frente a 6,5 KB de `zod/mini` y 26,3 KB de Zod 4.6.6, con el mismo esquema y esbuild del lockfile) | Indicación del usuario: el de menor peso medido que cubra lo necesario. Zod 4.6.7 no cumplía la edad mínima | ADR 0011 |
+| A4 | `defineTool` solo tipa; `parseToolMeta` valida y devuelve `Result` con `ruta: mensaje`, y el registro (0.7c) lo convierte en `invalid_meta` | Si `defineTool` lanzara al importarse, el build no podría informar de todos los errores juntos (§5.4) | ADR 0011 |
+| A5 | `src/core/result.ts` se adelanta a la 0.7a, y con él `tsc -p tsconfig.domain.json` entra en `pnpm check` (paso 2) | `parseToolMeta` lo devuelve; con un archivo en `core/` el comando ya no falla con TS18003 | `package.json`, ADR 0011 |
+| A6 | Casos nuevos de `tests/gates/`: una API del navegador en `core` (paso 2) y `core` importa el validador (paso 3) | El paso 2 ya incluye `tsc` de las capas puras, y ningún caso probaba aún un paquete externo prohibido por capa | `cases.ts` |
+| A7 | Decisión 6: scripts de Astro sin framework. La página envuelve `Tool.astro` en un elemento con `data-hydration`; su `<script>` pasa un `import()` a una función de `platform/` (0.7b) que lo carga al instante o con `IntersectionObserver` | Recomendación del plan (indicación del usuario). `ui/` no importa `meta.ts`, así que la estrategia llega por el HTML. La `<meta>` CSP lleva `script-src 'self'` y admite los chunks del `import()` | ADR 0005 |
+| A8 | `Tool.astro` no importa `astro`: declara `Props` y usa el global `Astro` | Cierra el pendiente de la 0.1b sin tocar la tabla de la §5.2 | ADR 0005 |
 
 ## División de la F0a en sesiones (aprobada)
 
@@ -260,8 +267,6 @@ Se resuelven en su tarea, sin cambiar el plan ahora:
 - `eslint-plugin-jsx-a11y-x` tiene un solo mantenedor visible. Volver a `eslint-plugin-jsx-a11y` cuando admita ESLint 10 (ADR 0005).
 - Retirar el override de `eslint-module-utils` cuando `eslint-plugin-boundaries` dependa de la 2.14.0 o de una posterior. Revisarlo en cada PR de Renovate que lo actualice.
 - La verificación de la §4 se hizo con fixtures temporales, no versionados. Los casos permanentes van en `tests/gates/` (0.2b y 0.7).
-- `ui/` no puede importar `astro` ni `astro:*`. Si `Tool.astro` necesita sus tipos, se decide en la 0.7.
-- **Conectar `tsc -p tsconfig.domain.json` al paso 2 en cuanto haya archivos en `core/` (tarea 0.7b).** Hoy falla con TS18003 porque `core/` y `domain/` están vacíos (ADR 0002). Añadirlo al paso 2 de `ci.yml` y a `pnpm check`.
 - `deploy.yml` muestra un aviso `DEP0005` (`Buffer()`) de una dependencia de wrangler. No afecta; revisar si persiste al actualizar wrangler.
 - Renovate no tenía tarea en la §14; el usuario lo asignó a la 0.2b. Reflejarlo en la §14 en la próxima revisión del plan, con ok del usuario.
 - La §14 dice "0.2" para el pipeline mínimo y las compuertas; la sesión 3 lo dividió en 0.2a y 0.2b. Reflejarlo en la próxima revisión del plan, con ok del usuario.

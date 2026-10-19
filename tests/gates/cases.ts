@@ -70,6 +70,13 @@ export const cases: GateCase[] = [
     expected: /'extra' does not exist/,
   },
   {
+    step: 2,
+    name: 'API del navegador en core',
+    command: ['check'],
+    files: { 'src/core/caso-dom.ts': 'export const ancho = (): number => window.innerWidth;\n' },
+    expected: /caso-dom\.ts.*Cannot find name 'window'/,
+  },
+  {
     step: 3,
     name: 'violación de ESLint',
     command: ['lint'],
@@ -86,6 +93,16 @@ export const cases: GateCase[] = [
         "import { ahora } from '../platform/reloj.ts';\n\nexport const t = ahora();\n",
     },
     expected: /boundaries\/dependencies/,
+  },
+  {
+    step: 3,
+    name: 'paquete no permitido (core importa el validador)',
+    command: ['lint'],
+    files: {
+      'src/core/usa-validador.ts':
+        "import * as v from 'valibot';\n\nexport const s = v.string();\n",
+    },
+    expected: /core no puede importar valibot/,
   },
   {
     step: 3,

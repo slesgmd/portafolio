@@ -1,8 +1,8 @@
 # ADR 0005: Arquitectura por módulos, capas y su verificación
 
-- **Estado:** propuesto. Recoge las fronteras (tarea 0.1); se acepta en la tarea 0.7a con la decisión 6 (interfaz de las herramientas).
+- **Estado:** aceptado (tarea 0.7a, con la decisión 6).
 - **Fecha:** 18/10/2026
-- **Tarea:** 0.1 (fronteras); 0.7 (decisión 6)
+- **Tarea:** 0.1 (fronteras); 0.7a (decisión 6)
 
 ## Contexto
 
@@ -49,7 +49,7 @@ Ninguna necesita scripts de instalación: `allowBuilds` sigue vacío.
 - Cada capa de la §5.2 es un elemento de boundaries con su ruta completa desde la raíz (`partialMatch: false`). Las herramientas se dividen en `tool-domain` (`src/tools/*/domain`), `tool-ui` (`src/tools/*/ui`) y `tool` (los archivos sueltos: `meta.ts`, `i18n.ts`, `e2e.spec.ts`), y las tres capturan el nombre de la herramienta.
 - `boundaries/dependencies` con `default: 'disallow'` y `checkAllOrigins: true`: todo import, local, externo o de Node, está prohibido salvo que una política lo permita. Las políticas reproducen la tabla de la §5.2. "Su propio domain" se expresa comparando la captura `tool` del origen y del destino.
 - `no-unknown-files`, `no-unknown-dependencies` y `no-ignored-dependencies`: todo archivo de `src/` pertenece a una capa, y nadie importa archivos sin capa.
-- Paquetes externos permitidos hoy: en páginas, layouts y componentes, `astro`, `astro:*` y `@astrojs/*` ("integraciones de Astro"); en los archivos de prueba (`*.test.ts`, `*.spec.ts`), `vitest`, `fast-check`, `@playwright/test` y `@axe-core/playwright`. Ninguno más: el validador (ADR 0011), unified (ADR 0007), el polyfill de Temporal (ADR 0012) y el framework de la decisión 6, si lo hay, se añaden a la política de su capa en la tarea de su ADR.
+- Paquetes externos permitidos hoy: en páginas, layouts y componentes, `astro`, `astro:*` y `@astrojs/*` ("integraciones de Astro"); en los archivos de prueba (`*.test.ts`, `*.spec.ts`), `vitest`, `fast-check`, `@playwright/test` y `@axe-core/playwright`. Desde la tarea 0.7a, el validador (`valibot`, ADR 0011) en `tool-domain` y `registry`. Ninguno más: unified (ADR 0007) y el polyfill de Temporal (ADR 0012) se añaden a la política de su capa en la tarea de su ADR. La decisión 6 no añade ningún framework.
 - Interpretaciones de la tabla de la §5.2:
   - **`src/design/`** es una capa propia que solo contiene CSS. Las páginas, layouts y componentes pueden importarla, porque el CSS global se importa desde el layout (tarea 0.6). La tabla no la nombra.
   - **`src/content/`** es una capa sin políticas hasta la sección de proyectos: ni importa ni se importa.
@@ -75,12 +75,26 @@ Los casos permanentes de esta compuerta se añaden en `tests/gates/` en las tare
 - Los términos prohibidos se escriben con clases de caracteres, como en `scripts/check-provenance.ts` (tarea 0.2a).
 - Se escribieron desde cero según la §12, sin consultar los de Ontos. La comparación con su esquema queda pendiente.
 
-**Decisión 6 (interfaz de las herramientas):** pendiente hasta la tarea 0.7a.
+**Decisión 6 (interfaz de las herramientas, tarea 0.7a):** scripts de Astro sin framework, la recomendación de la §16.
+
+Opciones consideradas:
+
+1. **Scripts de Astro sin framework.** Cero dependencias y cero peso añadido. Cada `ui/Tool.astro` renderiza su HTML en el build y lleva un `<script>` que Astro empaqueta como módulo. La CSP lo autoriza por hash si Astro lo inserta en línea, o por `'self'` si lo emite en `/_astro/`: la `<meta>` generada lleva `script-src 'self'` además de los hashes (comprobado en el build del 18/10/2026), así que también admite los chunks que se cargan con `import()`.
+2. **Un framework de islas** (Preact, Solid, Svelte u otro con las directivas `client:*`). Da estado reactivo y componentes, a cambio de una dependencia de ejecución por herramienta, su peso frente a la §11 y su integración con la CSP.
+
+Ninguna herramienta de la v1 (§2) tiene un estado tan complejo que lo justifique: son formularios con una entrada y una salida, y el visor de Markdown hace el trabajo pesado en un worker (§5.8). Se elige la opción 1. Un framework solo entra si una herramienta lo necesita, con un ADR que mida su peso frente a la §11.
+
+Cómo se aplica:
+
+- **Carga (§5.8).** Las directivas `client:*` no sirven sin framework. La página de la herramienta envuelve `Tool.astro` en un elemento con la estrategia del `meta.ts` (`data-hydration`). El `<script>` de `Tool.astro` es mínimo: pasa ese elemento y un `import()` del módulo principal de la interfaz a una función de `platform/`, que lo carga al instante (`load`) o cuando el elemento entra en pantalla, con `IntersectionObserver` (`visible`). El código de la herramienta queda en un chunk aparte, fuera de la carga inicial.
+- **Sin imports de `astro` en `ui/`.** `Tool.astro` declara su `interface Props` y usa el global `Astro`, sin importar nada de `astro`. Se mantiene la tabla de la §5.2 y se cierra la cuestión que dejaba abierta este ADR.
+- **Estado.** Cada herramienta guarda su estado en variables del módulo de su `ui/` y actualiza el DOM a mano. Si una herramienta acaba necesitando más, es la señal para reconsiderar la opción 2.
 
 ## Consecuencias
 
 - Una capa nueva o un paquete nuevo en una capa exige tocar las políticas de `eslint.config.js` y el ADR que lo justifica. Sin eso, el lint falla.
-- `ui/` no puede importar `astro` ni `astro:*`, porque la tabla no se lo permite. Si `Tool.astro` necesita sus tipos, se decide en la tarea 0.7.
+- `ui/` no puede importar `astro` ni `astro:*`, porque la tabla no se lo permite. `Tool.astro` no lo necesita (decisión 6).
+- Sin framework, cada herramienta escribe a mano la actualización del DOM. La carga diferida depende de una función propia de `platform/`, no de las directivas de Astro.
 - El override de eslint-module-utils hay que revisarlo con cada actualización de boundaries. Si boundaries cambia de resolución, la verificación de la §4 se repite: los casos de `tests/gates/` la harán automática.
 - eslint-plugin-jsx-a11y-x es una bifurcación con un solo mantenedor visible. Si se abandona, o si la original admite ESLint 10, se vuelve a la original: eslint-plugin-astro prefiere esa cuando están las dos.
 - Prettier no formatea Markdown, así que el estilo de los documentos depende de la revisión.

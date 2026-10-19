@@ -27,7 +27,7 @@ La CSP no se aplica en `astro dev`; se comprueba sobre el build.
 ## Comprobar y construir
 
 ```sh
-pnpm check        # tipos (astro check)
+pnpm check        # tipos (astro check y tsc de las capas puras)
 pnpm lint         # ESLint, con las fronteras entre capas (ADR 0005)
 pnpm format       # aplica Prettier
 pnpm format:check # comprueba el formato sin cambiar archivos
