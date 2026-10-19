@@ -1,0 +1,75 @@
+/* Tokens de diseño (PLAN §10, ADR 0008). La paleta y la razón de la escala tipográfica
+   se fijan en la tarea 0.6 (§11); el contraste de los pares lo comprueba
+   `tests/design/contrast.test.ts`. */
+@layer tokens {
+  :root {
+    /* Por defecto sigue `prefers-color-scheme`; `data-theme` lo fija (script de tema). */
+    color-scheme: light dark;
+
+    /* Color en OKLCH, en pares claro y oscuro con `light-dark()`. */
+    --color-bg: light-dark(oklch(99% 0.003 250), oklch(18% 0.01 250));
+    --color-surface: light-dark(oklch(96% 0.006 250), oklch(23% 0.012 250));
+    --color-text: light-dark(oklch(22% 0.02 250), oklch(93% 0.008 250));
+    --color-text-muted: light-dark(oklch(45% 0.02 250), oklch(74% 0.015 250));
+    /* Separadores decorativos, sin requisito de contraste. */
+    --color-border: light-dark(oklch(88% 0.008 250), oklch(32% 0.012 250));
+    /* Bordes de componentes de interfaz: ≥ 3:1 (§11). */
+    --color-border-strong: light-dark(oklch(55% 0.02 250), oklch(62% 0.02 250));
+    /* Enlaces y anillo de foco. */
+    --color-accent: light-dark(oklch(50% 0.16 258), oklch(76% 0.12 250));
+    --color-danger: light-dark(oklch(50% 0.18 27), oklch(74% 0.14 27));
+
+    /* Fuentes del sistema: ninguna petición de fuentes (§4). */
+    --font-sans:
+      system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif,
+      'Apple Color Emoji', 'Segoe UI Emoji';
+    --font-mono:
+      ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+    /* Escala tipográfica modular: tercera menor (1,2) sobre 1rem. */
+    --type-ratio: 1.2;
+    --step--1: calc(1rem / var(--type-ratio));
+    --step-0: 1rem;
+    --step-1: calc(1rem * var(--type-ratio));
+    --step-2: calc(1rem * pow(var(--type-ratio), 2));
+    --step-3: calc(1rem * pow(var(--type-ratio), 3));
+    --step-4: calc(1rem * pow(var(--type-ratio), 4));
+    --leading-tight: 1.2;
+    --leading-normal: 1.5;
+    --measure: 70ch;
+
+    /* Espaciado. */
+    --space-3xs: 0.25rem;
+    --space-2xs: 0.5rem;
+    --space-xs: 0.75rem;
+    --space-s: 1rem;
+    --space-m: 1.5rem;
+    --space-l: 2rem;
+    --space-xl: 3rem;
+    --space-2xl: 4rem;
+
+    /* Radios. */
+    --radius-s: 0.25rem;
+    --radius-m: 0.5rem;
+    --radius-full: 9999px;
+
+    /* Duraciones: cero salvo con `prefers-reduced-motion: no-preference` (§10). */
+    --duration-fast: 0ms;
+    --duration-normal: 0ms;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :root {
+      --duration-fast: 150ms;
+      --duration-normal: 250ms;
+    }
+  }
+
+  :root[data-theme='light'] {
+    color-scheme: light;
+  }
+
+  :root[data-theme='dark'] {
+    color-scheme: dark;
+  }
+}

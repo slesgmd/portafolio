@@ -1,4 +1,10 @@
+import { createHash } from 'node:crypto';
 import { defineConfig } from 'astro/config';
+import { themeScript } from './src/components/theme.ts';
+
+// Hash de un script inline para la CSP, en el formato de `security.csp`.
+const sha256 = (source: string): `sha256-${string}` =>
+  `sha256-${createHash('sha256').update(source).digest('base64')}`;
 
 export default defineConfig({
   // Sin dominio propio, el sitio se sirve en `workers.dev` (§16, decisión 3). Cambia
@@ -25,6 +31,9 @@ export default defineConfig({
         "form-action 'none'",
         "worker-src 'self'",
       ],
+      // Astro no calcula el hash de los scripts `is:inline`. El del tema se calcula
+      // aquí a partir de su fuente, así que no se desincroniza (§7, ADR 0008).
+      scriptDirective: { hashes: [sha256(themeScript)] },
     },
   },
 });
